@@ -79,37 +79,26 @@ headers, trailing bytes, and parser resource-limit violations.
 `pixi run check` passed: 25 core tests, 8 framework tests, package compilation,
 CLI smoke test and construction example.
 
-## Public-policy timing check
+## Evidence behind the policy
 
-On the Ryzen 5950X, seven randomized process batches per configuration pinned
-to CPU 0 gave these median decode times in microseconds. Balsa's checked mode
-uses one validation worker. Each process performs eight operation warmups;
-measured loops are 1,500 for medium forests and 20 for large forests. Native is
-the existing Treelite 4.6.1 worker. These are fresh within-session comparisons,
-not timing differences against the earlier report's separate session.
-
-| Forest | Balsa checked | Balsa unchecked | Native Treelite |
-| --- | ---: | ---: | ---: |
-| XGBoost, 960 nodes | 56.19 | 43.64 | 51.35 |
-| RF multioutput, 960 nodes | 59.73 | 47.42 | 62.99 |
-| XGBoost, 100,020 nodes | 7,751.74 | 6,602.46 | 6,162.17 |
-| RF multioutput, 100,020 nodes | 9,230.78 | 7,723.12 | 7,984.23 |
-
-Skipping model validation lowers time by 15–22% in this sample. Large XGBoost
-remains about 7% slower than native; large RF is about 3% faster. This is a
-targeted confirmation, not evidence of universal parity across tree shapes.
-Raw samples, commands, fixture hashes and worker hash are in the ignored
-`build/validation-policy-benchmark.json`; the local driver is
+A four-case paired check on Ryzen 5950X, CPU 0, used seven randomized process
+batches and eight operation warmups. Disabling validation reduced serial decode
+time 15–22%. For 100,020-node XGBoost, checked/unchecked decode measured
+7.75/6.60 ms; for RF multioutput, 9.23/7.72 ms. This isolates the policy's cost
+within that session; it is not a universal estimate across tree shapes.
+Raw samples and the measured worker hash remain in ignored
+`build/validation-policy-benchmark.json`, with the local driver at
 `build/benchmark-validation-policy.py`.
 
-Build and invoke the policy worker with:
+The subsequent [full controlled comparison](validation-opt-out-results.md)
+replaces the small check as the native/Python Treelite comparison: all 12
+checkpoints, encode and decode, 144 pyperf jobs. It reports large RF decode as
+overlapping parity and large XGBoost as 4.3% slower than native; the smaller
+pilot's point estimates should not be substituted for those results.
 
-```sh
-pixi run mojo build -O3 -I src tools/validation_policy_worker.mojo -o build/validation-policy-worker
-taskset -c 0 build/validation-policy-worker build/decode-confirmation/xgboost_regression_x1667.tl 1 4096 65536 20 1 decode no-validation
-```
-
-Omit the final argument for checked serial decoding. The measured binary was
-built before extracting its unchanged operation function into a shared import
-from `decode_worker`; the source with that extraction is compiled and smoke-tested
-separately.
+Build `tools/validation_policy_worker.mojo` with `mojo build -O3 -I src` and
+supply `FILE WORKERS MIN_TREES MIN_NODES LOOPS CALLERS OP [no-validation]`.
+Omit the final argument for checked measurements. This tracked worker retains
+validated setup and byte-parity checks; the paired pilot preceded extraction
+of its unchanged operation helper into a shared import, which was separately
+compiled and smoke-tested.

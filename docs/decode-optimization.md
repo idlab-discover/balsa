@@ -1,7 +1,10 @@
-# Serial decode and validation: profile-guided improvements
+# Serial decode optimization: completed stage
 
 Investigation against `06ee661`, Mojo 1.0.0 / MAX core 26.5.0, Treelite 4.6.1,
-Ryzen 5950X, Linux, 2026-09-11. All public validation remains enabled.
+Ryzen 5950X, Linux, 2026-09-11; retained in `c00ca17`. All validation was enabled
+in this stage. The later [policy](validation-policy.md) added a supported opt-out;
+the [full opt-out comparison](validation-opt-out-results.md) is the latest
+Treelite result. These historical timings isolate the preceding optimizations.
 
 ## Findings and implementation
 
@@ -44,55 +47,30 @@ variable latency improvement and reduced allocation traffic. Removing redundant
 validation indexing improved standalone validation by roughly a quarter. The
 final comparison below confirms the combined result on the whole corpus.
 
-## Final timing comparison
+## Decision and timing evidence
 
-Seven independently launched batches per configuration, seeded shuffled order,
-12 real-framework/scaled checkpoints, 924 process batches. Both engines perform
-eight **operation-specific** warmups. Batch lengths target 80 ms, capped at 10,000
-calls (short operations therefore have shorter batches). The driver checks
-checksums, and workers check byte parity outside timing. Input copies and output/model destruction are included; startup, file I/O, setup and warmup are excluded.
+Keep all three changes. Across 12 real-framework/scaled checkpoints, serial
+decode time fell **23–34%** and standalone serial validation **22–29%**.
+The 924-batch sweep used seven independent shuffled process batches per
+configuration, CPUs 0–7, eight operation-specific warmups, and an 80 ms target
+capped at 10,000 calls. Copies and destruction were included; setup, I/O and
+warmup were excluded. The host was not isolated or frequency-locked.
 
-All processes have CPU affinity 0–7. Serial columns explicitly use one validation
-worker; the default column uses the existing four-worker activation policy.
-Treelite uses its public C ABI and returns independently owned bytes in the
-harness, matching Balsa's output ownership. This is a wall-time comparison, not
-an equal-instruction or equal-CPU-work contract. The desktop host is not isolated
-or frequency-locked. No instrumented timings are used in this table.
+| 100,020-node forest | Before serial decode | After serial | After default | Native Treelite |
+| --- | ---: | ---: | ---: | ---: |
+| XGBoost | 12.11 ms | 9.02 ms | 8.61 ms | 6.88 ms |
+| RF multioutput | 13.99 ms | 10.81 ms | 10.33 ms | 8.54 ms |
 
-Median decode times in microseconds:
+Serial decode speedup intervals were approximately 1.31–1.41× / 1.25–1.36×
+(XGBoost / RF), from 5,000 bootstrap resamples of process-batch medians.
+Default validated decoding still took 25% / 21% longer than native at this
+stage. Large default encode took 4.02 / 4.19 ms versus native's 4.68 / 5.56 ms.
+Small LightGBM encode was 0.07 µs slower, with an interval overlapping parity;
+there was no established uniform small-model encode win.
 
-| Checkpoint | Before, serial | After, serial | Time reduction | After, default | Native Treelite |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| catboost_numeric_regression | 6.00 | 3.97 | 33.9% | 4.00 | 3.21 |
-| lightgbm_categorical | 5.63 | 3.99 | 29.1% | 3.93 | 3.66 |
-| sklearn_extra_multioutput_classification | 6.55 | 4.64 | 29.1% | 4.54 | 4.09 |
-| sklearn_gradient_binary | 6.73 | 4.60 | 31.6% | 4.55 | 4.02 |
-| sklearn_hist_missing_regression | 6.42 | 4.33 | 32.5% | 4.38 | 3.76 |
-| sklearn_rf_multiclass | 6.41 | 4.39 | 31.5% | 4.44 | 4.04 |
-| sklearn_rf_multioutput_regression | 6.68 | 4.59 | 31.2% | 4.69 | 4.05 |
-| sklearn_rf_multioutput_regression_x16 | 92.69 | 68.07 | 26.6% | 65.18 | 65.62 |
-| sklearn_rf_multioutput_regression_x1667 | 13985.41 | 10805.17 | 22.7% | 10332.71 | 8537.66 |
-| xgboost_regression | 6.28 | 4.42 | 29.6% | 4.48 | 3.65 |
-| xgboost_regression_x16 | 88.48 | 62.97 | 28.8% | 62.09 | 56.61 |
-| xgboost_regression_x1667 | 12111.56 | 9024.76 | 25.5% | 8607.93 | 6881.33 |
-
-Serial decode improves **23–34% across all twelve cases**; standalone serial
-validation improves **22–29%**. On the large XGBoost / random-forest cases,
-serial decode speedup is 1.34× / 1.29×, with approximate 95% bootstrap intervals
-of 1.31–1.41× / 1.25–1.36× (5,000 independent resamples of process-batch medians).
-These intervals quantify batch variation, not hardware or workload generality.
-
-Large default decode now takes 8.61 / 10.33 ms versus native Treelite's
-6.88 / 8.54 ms: still about **25% / 21% more time**, but substantially closer.
-Large serial encode takes 4.45 / 4.69 ms; default encode takes 4.02 / 4.19 ms,
-versus native Treelite's 4.68 / 5.56 ms. Small encoding mostly improves; the
-categorical LightGBM case is about 0.07 µs (3%) slower in this run, with a
-before/after interval that includes parity. This is not evidence of a uniform
-encode win on small models.
-
-An earlier complete sweep with validation-only Balsa warmups also showed the
-same broad gains; the final figures above use the corrected, matched
-operation-specific warmups in `tools/decode_worker.mojo`.
+An earlier sweep warmed only validation. Its broad trend agreed, but the
+reported results use corrected, matched operation-specific warmups. The complete
+12-case table remains in the original report in Git history and raw evidence.
 
 ## Instruction and allocation evidence
 
@@ -155,37 +133,28 @@ These are process peaks, not per-operation live memory or proof that the
 allocator returns freed pages to the OS. They corroborate the reduced
 tree-growth allocation traffic without claiming identical storage strategies.
 
-## Remaining gap and varied tree sizes
+## Paths ruled out and the next decision
 
-An ignored diagnostic build skips only the final `validate` call inside decode,
-using known-valid fixtures that are separately validated by encode. This build
-is never used for public output, malformed-input handling or the timing table
-above. It estimates how much of the remaining gap comes from validation, rather
-than proposing a validation bypass. See the supplemental measurements below.
+Nearly equal allocation counts ruled out "Balsa allocates many more objects"
+as the explanation for its serial gap. A generic malloc hook alone missed Mojo
+allocations; the KGEN hook was necessary. Reservation saved requested bytes,
+but scalar loading delivered the larger latency improvement. Dynamic topology
+checks were retained: only checks justified by existing array-length proofs
+were removed.
 
+A separate diagnostic build skipped the final decode validation call on valid
+fixtures, with independent validation outside timing. Seven-batch CPU 0 probes
+included repeated small trees, single-node trees, uneven 1/255-node trees,
+128 trees of 1,023 nodes, and a dominant 65,535-node tree plus leaves. The parser
+was broadly competitive with native. For 128 large trees, validated decode took
+1.99 ms, diagnostic parse-only 0.43 ms, and native 0.57 ms: model validation
+dominated that shape. Separate binaries and sessions prevent interpreting those
+numbers as an exact additive cost breakdown.
 
-Supplemental seven-batch serial measurements on CPU 0, in microseconds. These
-are a separate session from the full corpus table, with matched operation
-warmups. Larger individual trees and highly unequal sizes supplement the
-real-framework corpus of mostly tiny repeated trees.
-
-| Case | Before full decode | After full decode | Diagnostic parse only | Native Treelite |
-| --- | ---: | ---: | ---: | ---: |
-| XGBoost, 64 trees / 960 nodes | 83.93 | 60.06 | 44.18 | 53.00 |
-| XGBoost, 6,668 trees / 100,020 nodes | 11047.61 | 8310.76 | 6691.81 | 6511.95 |
-| Random forest, 6,668 trees / 100,020 nodes | 12789.53 | 9749.05 | 8028.39 | 8335.57 |
-| 4,096 one-node trees | 4286.52 | 2889.32 | 2732.32 | 4868.17 |
-| 4,096 unequal 1/255-node trees | 5792.09 | 3835.92 | 2818.66 | 3097.75 |
-| 128 trees of 1,023 nodes | 2705.38 | 1990.59 | 425.37 | 567.15 |
-| One 65,535-node tree + 4,095 leaves | 5601.60 | 3722.10 | 2799.20 | 3005.59 |
-
-The diagnostic parser is broadly competitive with native Treelite. In the
-128-large-tree case, full validation dominates: removing it diagnostically drops
-Balsa from about 1.99 ms to 0.43 ms, versus Treelite's 0.57 ms. This explains why
-full serial Balsa can still be slower even after much of the parser overhead is
-removed. Different binaries/code layout mean these measurements are not an exact
-additive decomposition. Production continues to reject malformed topology and
-field semantics. Further work on large individual trees should focus on validation.
+That diagnostic result subsequently led to the public per-call opt-out in
+`b2765e8`. It did not justify dropping validation from default decoding. The
+later 144-job opt-out sweep covers the real-framework/scaled corpus, not all
+these synthetic shapes; large individual trees remain a separate tuning question.
 
 ## Verification and reproduction
 
@@ -228,4 +197,5 @@ Final raw evidence lives in ignored `build/decode-confirmation/`. Isolated
 variants, ablations, supplemental shapes, RSS probes and differential/ASan logs
 remain in ignored `benchmarking/decode-investigation/`. The public implementation,
 regression tests, core benchmark/profiling tools and this report are tracked-source
-changes; no diagnostic validation bypass is part of the library.
+changes. The diagnostic source fork remains local; the subsequent supported
+opt-out is documented separately in the validation policy.

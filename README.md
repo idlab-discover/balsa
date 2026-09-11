@@ -160,9 +160,9 @@ pixi install -e benchmark --locked
 pixi run -e benchmark pyperf --help
 ```
 
-See [the latest measurements](docs/optimization-results.md),
-[the optimization explanation](docs/codec-optimization.md), and
-[the short performance history](docs/performance-plan.md). Local experimental
+See [the performance wrap-up](docs/performance-plan.md),
+[the latest validation-opt-out measurements](docs/validation-opt-out-results.md),
+and [the retained codec design](docs/codec-optimization.md). Local experimental
 runners, corpus copies and raw results live in the git-ignored `benchmarking/`
 directory and are not required to build or test Balsa.
 
@@ -198,6 +198,9 @@ The same option applies to encode/save, automatic-precision variants, and
 Explicit `validate` always runs, even with `enabled=False`. Callers must establish
 the invariants their consumers require when skipping automatic validation.
 See [the policy design](docs/validation-policy.md) for the exact scope.
+
+The [full opt-out benchmark](docs/validation-opt-out-results.md) compares all
+12 checkpoints with native and Python Treelite across 144 controlled runs.
 
 One worker forces serial validation. By default, validation uses at most four
 workers when there are at least 4,096 trees and 65,536 nodes, and no tree holds
