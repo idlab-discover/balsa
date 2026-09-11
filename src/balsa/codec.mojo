@@ -5,6 +5,7 @@ Sequence follows the pinned specification and serializer listed in
 """
 
 from std.utils import Variant
+from std.sys import size_of
 from .constants import type_tag, TypeInfo
 from .model import Model, Tree
 from .wire import Limits, Reader, Writer
@@ -75,6 +76,13 @@ def decode[
     model.attributes = reader.array[DType.uint8]()
     reader.field = "extensions"
     model.extensions = reader.extensions()
+    # Bound the capacity hint by actual input bytes, not just an untrusted count.
+    model.trees.reserve(
+        min(
+            Int(model.num_tree),
+            (len(reader.data) - reader.pos) // size_of[Tree[dtype]](),
+        )
+    )
     var total_nodes = 0
     for tree_id in range(Int(model.num_tree)):
         reader.tree_id = tree_id

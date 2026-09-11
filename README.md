@@ -202,3 +202,9 @@ The locked `max-core` dependency supplies the CPU executor without the MAX Pytho
 package. It adds approximately 294 MiB installed on linux-64 and uses Modular's
 proprietary license. See [the threading evaluation](docs/threading-results.md)
 for measurements, packaging details and reproduction commands.
+
+
+Serial decoding also uses bounded unaligned scalar loads and bounded tree-list
+reservation; validation reuses the array-length proofs when checking node fields.
+See [the decode profiling report](docs/decode-optimization.md) for the native
+Treelite comparison, allocation/free measurements and reproduction commands.

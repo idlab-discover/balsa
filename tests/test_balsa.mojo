@@ -672,3 +672,81 @@ def test_parallel_validation_simultaneous_callers() raises:
     parallelize(work, 4, 4)
     for error in errors:
         assert_equal(error, "")
+
+
+def check_scalar_reads[dtype: DType]() raises:
+    from balsa.wire import width
+
+    comptime n = width[dtype]()
+    # Includes signed extrema, negative zero and NaN payload bit patterns.
+    var patterns: List[UInt64] = [
+        0,
+        0xFFFFFFFFFFFFFFFF,
+        0x8000000080000000,
+        0x7FF800007FC01234,
+        0x7FF000007F800001,
+    ]
+    for bits in patterns:
+        var value: SIMD[dtype, 1]
+        comptime if n == 1:
+            value = SIMD[dtype, 1](from_bits=UInt8(bits))
+        elif n == 4:
+            value = SIMD[dtype, 1](from_bits=UInt32(bits))
+        else:
+            value = SIMD[dtype, 1](from_bits=bits)
+        for offset in range(16):
+            var writer = Writer(Limits())
+            for _ in range(offset):
+                writer.scalar[DType.uint8](0xA5)
+            writer.scalar[dtype](value)
+            var bytes = writer^.finish()
+            var reader = Reader(bytes.copy(), Limits())
+            reader.pos = offset
+            var restored = reader.scalar[dtype]()
+            assert_equal(reader.pos, offset + n)
+            var output = Writer(Limits())
+            for _ in range(offset):
+                output.scalar[DType.uint8](0xA5)
+            output.scalar[dtype](restored)
+            assert_equal(output^.finish(), bytes)
+            for available in range(n):
+                var short = bytes.copy()
+                short.resize(offset + available, 0)
+                var truncated = Reader(short^, Limits())
+                truncated.pos = offset
+                truncated.field = "threshold"
+                truncated.tree_id = 3
+                var failed = False
+                try:
+                    _ = truncated.scalar[dtype]()
+                except err:
+                    failed = True
+                    assert_equal(
+                        String(err),
+                        "Malformed checkpoint at byte "
+                        + String(offset)
+                        + " (tree[3].threshold): truncated payload",
+                    )
+                assert_equal(failed, True)
+                assert_equal(truncated.pos, offset)
+
+
+def test_scalar_reads_alignment_bits_and_truncation() raises:
+    check_scalar_reads[DType.uint8]()
+    check_scalar_reads[DType.int8]()
+    check_scalar_reads[DType.uint32]()
+    check_scalar_reads[DType.int32]()
+    check_scalar_reads[DType.uint64]()
+    check_scalar_reads[DType.float32]()
+    check_scalar_reads[DType.float64]()
+
+
+def test_reader_rejects_invalid_cursor() raises:
+    for position in [-1, 2]:
+        var bytes: List[UInt8] = [0]
+        var reader = Reader(bytes^, Limits())
+        reader.pos = position
+        with assert_raises():
+            reader.require(1)
+        with assert_raises():
+            _ = reader.scalar[DType.uint8]()

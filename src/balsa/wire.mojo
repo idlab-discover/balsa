@@ -91,12 +91,26 @@ struct Reader(Movable):
         )
 
     def require(self, count: Int) raises:
-        if count < 0 or count > len(self.data) - self.pos:
+        if (
+            self.pos < 0
+            or self.pos > len(self.data)
+            or count < 0
+            or count > len(self.data) - self.pos
+        ):
             self.fail("truncated payload")
 
     def scalar[dtype: DType](mut self) raises -> SIMD[dtype, 1]:
         comptime n = width[dtype]()
         self.require(n)
+        comptime if is_little_endian() or n == 1:
+            var value = (
+                self.data.unsafe_ptr()
+                .unsafe_offset(self.pos)
+                .unsafe_bitcast[SIMD[dtype, 1]]()
+                .unsafe_load[alignment=1]()
+            )
+            self.pos += n
+            return value
         var bits = UInt64(0)
         for i in range(n):
             bits |= UInt64(self.data[self.pos + i]) << UInt64(i * 8)

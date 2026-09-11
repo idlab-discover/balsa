@@ -296,16 +296,19 @@ def _validate_tree[
     var vector_size = UInt64(model.leaf_vector_shape[0]) * UInt64(
         model.leaf_vector_shape[1]
     )
+    # Every node array has length n, and i stays in [0, n). The immutable
+    # borrow keeps these allocations stable. Dynamic topology indices below
+    # retain checked access.
     for i in range(n):
-        var kind = tree.node_type[i]
+        var kind = tree.node_type.unsafe_ptr()[unsafe_offset=i]
         require(
             kind >= NodeType.LEAF and kind <= NodeType.CATEGORICAL,
             "node_type value",
         )
-        var lb = tree.leaf_vector_begin[i]
-        var le = tree.leaf_vector_end[i]
-        var cb = tree.category_list_begin[i]
-        var ce = tree.category_list_end[i]
+        var lb = tree.leaf_vector_begin.unsafe_ptr()[unsafe_offset=i]
+        var le = tree.leaf_vector_end.unsafe_ptr()[unsafe_offset=i]
+        var cb = tree.category_list_begin.unsafe_ptr()[unsafe_offset=i]
+        var ce = tree.category_list_end.unsafe_ptr()[unsafe_offset=i]
         require(
             lb <= le and le <= UInt64(len(tree.leaf_vector)), "leaf offsets"
         )
@@ -315,9 +318,14 @@ def _validate_tree[
         )
         if kind == NodeType.LEAF:
             require(
-                tree.cleft[i] == -1 and tree.cright[i] == -1, "leaf children"
+                tree.cleft.unsafe_ptr()[unsafe_offset=i] == -1
+                and tree.cright.unsafe_ptr()[unsafe_offset=i] == -1,
+                "leaf children",
             )
-            require(tree.split_index[i] == -1, "leaf split_index")
+            require(
+                tree.split_index.unsafe_ptr()[unsafe_offset=i] == -1,
+                "leaf split_index",
+            )
             if le > lb:
                 require(le - lb == vector_size, "leaf vector shape")
             else:
@@ -328,18 +336,26 @@ def _validate_tree[
                 )
         else:
             require(lb == le, "internal node leaf vector")
-            require(tree.cleft[i] >= 0 and Int(tree.cleft[i]) < n, "left child")
             require(
-                tree.cright[i] >= 0 and Int(tree.cright[i]) < n, "right child"
+                tree.cleft.unsafe_ptr()[unsafe_offset=i] >= 0
+                and Int(tree.cleft.unsafe_ptr()[unsafe_offset=i]) < n,
+                "left child",
             )
             require(
-                tree.split_index[i] >= 0
-                and tree.split_index[i] < model.num_feature,
+                tree.cright.unsafe_ptr()[unsafe_offset=i] >= 0
+                and Int(tree.cright.unsafe_ptr()[unsafe_offset=i]) < n,
+                "right child",
+            )
+            require(
+                tree.split_index.unsafe_ptr()[unsafe_offset=i] >= 0
+                and tree.split_index.unsafe_ptr()[unsafe_offset=i]
+                < model.num_feature,
                 "feature index",
             )
         if kind == NodeType.NUMERICAL:
             require(
-                tree.cmp[i] >= Operator.EQ and tree.cmp[i] <= Operator.GE,
+                tree.cmp.unsafe_ptr()[unsafe_offset=i] >= Operator.EQ
+                and tree.cmp.unsafe_ptr()[unsafe_offset=i] <= Operator.GE,
                 "numerical operator",
             )
         if kind == NodeType.CATEGORICAL:
