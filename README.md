@@ -23,6 +23,7 @@ pixi run check
 | `pixi run build` | Compile the CLI to `build/balsa` |
 | `pixi run package` | Precompile the library to `build/balsa.mojoc` |
 | `pixi run test` | Run native format tests |
+| `pixi run example` | Construct, save and automatically load a float64 stump |
 | `pixi run check` | Build, inspect, precompile and test |
 | `pixi run fmt` | Format Mojo sources |
 
@@ -37,13 +38,24 @@ def main() raises:
     save(model, "copy.tl")
 ```
 
-Use `load[DType.float64](path)` for double-precision checkpoints. The interface
-also exports `decode[dtype](bytes^)`, `encode(model)`, `validate(model)`,
-`Model[dtype]`, `Tree[dtype]`, `Extension`, and `Limits`.
+Use `load_auto(path)` to discover precision from the checkpoint. It returns
+`AnyModel`, a variant of the float32 and float64 model types; `save` and `encode`
+accept it directly. `decode_auto(bytes^)` does the same for in-memory bytes.
+For known precision, use `load[DType.float64](path)` or `decode[dtype](bytes^)`;
+plain `load` and `decode` retain their float32 default.
+
+`ModelBuilder` and `TreeBuilder` construct models without manual parallel-array
+bookkeeping. `Operator`, `NodeType`, `TaskType`, and `TypeInfo` provide named
+wire constants. Models expose postprocessor/attribute text accessors, and trees
+provide checked borrowed category and vector-leaf spans. See the
+[usage guide](docs/usage.md) and [runnable example](examples/construction.mojo).
+
+The interface also exports `validate(model)`, `Model[dtype]`, `Tree[dtype]`,
+`Extension`, and `Limits`.
 
 Model and tree fields are mutable. Loading, decoding and encoding validate
-structure; call `validate` explicitly after editing when useful. Callers creating
-models must keep counts, metadata and arrays consistent.
+structure; call `validate` explicitly after editing when useful. Builders maintain counts,
+arrays and offsets; callers editing raw fields must keep them consistent.
 
 ## Format scope
 
@@ -59,7 +71,7 @@ Only producer **4.6.1** is verified. Other v4 minor/patch versions are accepted
 when they follow the same layout, but are not claimed as tested. Newly constructed
 models use checkpoint version 4.6.1 independently of Balsa's version.
 
-Strings are stored as byte lists. Attribute JSON and extension contents are
+Strings are stored as byte lists with optional strict UTF-8 text accessors. Attribute JSON and extension contents are
 opaque; callers must supply valid attribute JSON (an object or an empty string).
 Postprocessor settings are preserved as metadata, never executed.
 
@@ -92,7 +104,8 @@ pixi run -e oracle interop
 ```
 
 The suite checks **14 byte-exact roundtrips and field comparisons**, upstream
-loading of Mojo-created checkpoints, extension retention, floating-point bit
+loading of raw- and builder-created Mojo checkpoints, precision discovery,
+borrowed slices, UTF-8 access, construction errors, extension retention, floating-point bit
 preservation, malformed models, truncated prefixes and deterministic mutations.
 Fixture generation and verification perform no inference.
 

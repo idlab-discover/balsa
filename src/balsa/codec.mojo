@@ -4,6 +4,8 @@ Sequence follows the pinned specification and serializer listed in
  docs/mvp-plan.md. No Python or libtreelite runtime dependency.
 """
 
+from std.utils import Variant
+from .constants import type_tag, TypeInfo
 from .model import Model, Tree
 from .wire import Limits, Reader, Writer
 from .validation import validate
@@ -32,7 +34,7 @@ def decode[
     model.leaf_output_type = reader.scalar[DType.uint8]()
     if (
         model.threshold_type != model.leaf_output_type
-        or model.threshold_type != UInt8(2 if dtype == DType.float32 else 3)
+        or model.threshold_type != type_tag[dtype]()
     ):
         raise Error(
             "Unsupported checkpoint precision or mismatched decode dtype"
@@ -218,3 +220,69 @@ def save[
     var bytes = encode(model, limits)
     with open(path, "w") as file:
         file.write_all(Span(bytes))
+
+
+comptime AnyModel = Variant[Model[DType.float32], Model[DType.float64]]
+
+
+def checkpoint_dtype(
+    data: List[UInt8], limits: Limits = Limits()
+) raises -> DType:
+    """Inspect the v4 header and both dtype tags; does not validate the body."""
+    limits.validate()
+    if len(data) > limits.max_bytes:
+        raise Error("Checkpoint exceeds byte limit")
+    if len(data) < 14:
+        raise Error("Truncated checkpoint header")
+    # Reuse bounded version decoding, copying only the fixed-size header.
+    var header = List[UInt8]()
+    for i in range(14):
+        header.append(data[i])
+    var reader = Reader(header^, limits)
+    var major = reader.scalar[DType.int32]()
+    var minor = reader.scalar[DType.int32]()
+    var patch = reader.scalar[DType.int32]()
+    if major != 4 or minor < 0 or patch < 0:
+        raise Error(
+            "Unsupported checkpoint version: expected v4 with nonnegative"
+            " minor/patch"
+        )
+    if data[12] != data[13]:
+        raise Error(
+            "Unsupported checkpoint precision: threshold and leaf tags must"
+            " match"
+        )
+    if data[12] == TypeInfo.FLOAT32:
+        return DType.float32
+    if data[12] == TypeInfo.FLOAT64:
+        return DType.float64
+    raise Error("Unsupported checkpoint precision: expected float32 or float64")
+
+
+def decode_auto(
+    var data: List[UInt8], limits: Limits = Limits()
+) raises -> AnyModel:
+    """Discover precision from the checkpoint, preserving its typed storage."""
+    if checkpoint_dtype(data, limits) == DType.float32:
+        return AnyModel(decode[DType.float32](data^, limits))
+    return AnyModel(decode[DType.float64](data^, limits))
+
+
+def load_auto(path: String, limits: Limits = Limits()) raises -> AnyModel:
+    """Load either supported precision without converting its values."""
+    return decode_auto(read_file(path, limits), limits)
+
+
+def encode(model: AnyModel, limits: Limits = Limits()) raises -> List[UInt8]:
+    """Encode an automatically loaded model in its original precision."""
+    if model.isa[Model[DType.float32]]():
+        return encode(model[Model[DType.float32]], limits)
+    return encode(model[Model[DType.float64]], limits)
+
+
+def save(model: AnyModel, path: String, limits: Limits = Limits()) raises:
+    """Save an automatically loaded model without changing precision."""
+    if model.isa[Model[DType.float32]]():
+        save(model[Model[DType.float32]], path, limits)
+    else:
+        save(model[Model[DType.float64]], path, limits)

@@ -5,6 +5,9 @@ Only float32/float32 and float64/float64 are supported.
 """
 
 
+from .constants import type_tag
+
+
 @fieldwise_init
 struct Extension(Copyable, Movable):
     """Opaque optional field retained in its original extension slot."""
@@ -75,6 +78,36 @@ struct Tree[dtype: DType](Copyable, Movable):
         self.tree_extensions = List[Extension]()
         self.node_extensions = List[Extension]()
 
+    def leaf_values(
+        self, node: Int
+    ) raises -> Span[Self.Scalar, origin_of(self.leaf_vector)]:
+        """Borrow a node's vector leaf payload (empty for a scalar leaf).
+
+        Checks node and offset bounds even after raw field edits. The view is
+        immutable and cannot outlive the tree or coexist with its mutation.
+        """
+        return _segment(
+            self.leaf_vector,
+            self.leaf_vector_begin,
+            self.leaf_vector_end,
+            node,
+            Int(self.num_nodes),
+            "leaf_vector",
+        )
+
+    def categories(
+        self, node: Int
+    ) raises -> Span[UInt32, origin_of(self.category_list)]:
+        """Borrow a node's category payload, checking node and offset bounds."""
+        return _segment(
+            self.category_list,
+            self.category_list_begin,
+            self.category_list_end,
+            node,
+            Int(self.num_nodes),
+            "category_list",
+        )
+
 
 struct Model[dtype: DType](Copyable, Movable):
     """Owned model fields, validated by the codec."""
@@ -109,8 +142,8 @@ struct Model[dtype: DType](Copyable, Movable):
         self.major = 4
         self.minor = 6
         self.patch = 1
-        self.threshold_type = UInt8(2 if Self.dtype == DType.float32 else 3)
-        self.leaf_output_type = UInt8(2 if Self.dtype == DType.float32 else 3)
+        self.threshold_type = type_tag[Self.dtype]()
+        self.leaf_output_type = type_tag[Self.dtype]()
         self.num_tree = 0
         self.num_feature = 0
         self.task_type = 0
@@ -127,3 +160,40 @@ struct Model[dtype: DType](Copyable, Movable):
         self.attributes = List[UInt8]()
         self.extensions = List[Extension]()
         self.trees = List[Tree[Self.dtype]]()
+
+    def postprocessor_name(self) raises -> String:
+        """Decode UTF-8 strictly; unknown names are allowed and bytes untouched.
+        """
+        return String(from_utf8=Span(self.postprocessor))
+
+    def set_postprocessor_name(mut self, name: String):
+        """Store UTF-8 text without restricting postprocessor names."""
+        self.postprocessor = List(name.as_bytes())
+
+    def attributes_text(self) raises -> String:
+        """Decode UTF-8 strictly; does not parse or validate attribute JSON."""
+        return String(from_utf8=Span(self.attributes))
+
+    def set_attributes_text(mut self, text: String):
+        """Store text; the caller remains responsible for valid attribute JSON.
+        """
+        self.attributes = List(text.as_bytes())
+
+
+def _segment[
+    T: Copyable
+](
+    values: List[T],
+    begins: List[UInt64],
+    ends: List[UInt64],
+    node: Int,
+    nodes: Int,
+    field: String,
+) raises -> Span[T, origin_of(values)]:
+    if node < 0 or node >= nodes or node >= len(begins) or node >= len(ends):
+        raise Error(field + " node index out of bounds: " + String(node))
+    var begin = begins[node]
+    var end = ends[node]
+    if begin > end or end > UInt64(len(values)):
+        raise Error(field + " offsets out of bounds at node " + String(node))
+    return Span(values)[Int(begin) : Int(end)]

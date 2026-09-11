@@ -32,7 +32,7 @@ def main():
 
     # These checkpoints are constructed in Mojo, not copied from the oracle.
     native_models = []
-    for name in ("native-stump", "native-extensions"):
+    for name in ("native-stump", "native-extensions", "builder-stump"):
         model = treelite.Model.deserialize(ROOT / f"build/{name}.tl")
         fields = json.loads(model.dump_as_json(pretty_print=False))
         assert fields["num_feature"] == 1
@@ -45,9 +45,25 @@ def main():
         assert [node["leaf_value"] for node in nodes[1:]] == [-1.25, 2.75]
         native_models.append(fields)
     # Upstream skips the extensions; all recognized model fields must survive.
-    assert native_models[0] == native_models[1]
+    assert native_models[0] == native_models[1] == native_models[2]
+    vector = treelite.Model.deserialize(ROOT / "build/builder-vector.tl")
+    fields = json.loads(vector.dump_as_json(pretty_print=False))
+    assert fields["threshold_type"] == fields["leaf_output_type"] == "float64"
+    assert fields["num_target"] == 2
+    assert fields["num_class"] == [2, 2]
+    assert fields["leaf_vector_shape"] == [2, 2]
+    assert fields["target_id"] == fields["class_id"] == [-1]
+    assert fields["base_scores"] == [0.0] * 4
+    assert fields["postprocessor"] == "softmax"
+    assert fields["average_tree_output"] is True
+    nodes = fields["trees"][0]["nodes"]
+    assert nodes[0]["category_list"] == [1, 7, 42]
+    assert nodes[0]["category_list_right_child"] is True
+    assert nodes[0]["default_left"] is True
+    assert nodes[1]["leaf_value"] == [0.1, 0.2, 0.3, 0.4]
+    assert nodes[2]["leaf_value"] == [0.5, 0.6, 0.7, 0.8]
     print(f"PASS: {len(manifest['cases'])} byte-exact roundtrips and field comparisons; "
-          "native-created model and extension records")
+          "native-created models, builders and extension records")
 
 
 if __name__ == "__main__":

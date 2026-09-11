@@ -1,7 +1,7 @@
 """Native checkpoint inspection and roundtrip tool."""
 
 from std.sys import argv
-from balsa import decode, save
+from balsa import decode, save, checkpoint_dtype
 from balsa.codec import read_file
 
 
@@ -31,11 +31,8 @@ def main() raises:
     ):
         raise Error("Invalid command or argument count")
     var bytes = read_file(args[2])
-    if len(bytes) < 14:
-        raise Error("Truncated checkpoint header")
-    if bytes[12] == 2:
+    var dtype = checkpoint_dtype(bytes)
+    if dtype == DType.float32:
         execute[DType.float32](bytes^, args)
-    elif bytes[12] == 3:
-        execute[DType.float64](bytes^, args)
     else:
-        raise Error("Unsupported checkpoint precision")
+        execute[DType.float64](bytes^, args)

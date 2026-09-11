@@ -1,6 +1,7 @@
 """Structural validation of Treelite checkpoint fields."""
 
 from .model import Model, Tree, Extension
+from .constants import NodeType, Operator, TaskType, type_tag
 from .wire import Limits
 
 
@@ -50,7 +51,7 @@ def validate[
     require(
         model.major == 4 and model.minor >= 0 and model.patch >= 0, "version"
     )
-    var tag = UInt8(2 if dtype == DType.float32 else 3)
+    var tag = type_tag[dtype]()
     require(
         model.threshold_type == tag and model.leaf_output_type == tag,
         "dtype tags",
@@ -59,7 +60,7 @@ def validate[
     require(len(model.trees) <= limits.max_trees, "tree limit")
     require(model.num_feature >= 0, "num_feature")
     require(model.num_target > 0, "num_target")
-    require(model.task_type <= 4, "task_type")
+    require(model.task_type <= TaskType.ISOLATION_FOREST, "task_type")
     require(model.average_tree_output <= 1, "average_tree_output")
     require(len(model.num_class) == Int(model.num_target), "num_class length")
     var max_class = 0
@@ -152,7 +153,10 @@ def validate_tree[
     )
     for i in range(n):
         var kind = tree.node_type[i]
-        require(kind >= 0 and kind <= 2, "node_type value")
+        require(
+            kind >= NodeType.LEAF and kind <= NodeType.CATEGORICAL,
+            "node_type value",
+        )
         var lb = tree.leaf_vector_begin[i]
         var le = tree.leaf_vector_end[i]
         var cb = tree.category_list_begin[i]
@@ -164,7 +168,7 @@ def validate_tree[
             cb <= ce and ce <= UInt64(len(tree.category_list)),
             "category offsets",
         )
-        if kind == 0:
+        if kind == NodeType.LEAF:
             require(
                 tree.cleft[i] == -1 and tree.cright[i] == -1, "leaf children"
             )
@@ -188,9 +192,12 @@ def validate_tree[
                 and tree.split_index[i] < model.num_feature,
                 "feature index",
             )
-        if kind == 1:
-            require(tree.cmp[i] >= 1 and tree.cmp[i] <= 5, "numerical operator")
-        if kind == 2:
+        if kind == NodeType.NUMERICAL:
+            require(
+                tree.cmp[i] >= Operator.EQ and tree.cmp[i] <= Operator.GE,
+                "numerical operator",
+            )
+        if kind == NodeType.CATEGORICAL:
             has_categories = True
         else:
             require(cb == ce, "noncategorical category segment")
@@ -209,7 +216,7 @@ def validate_tree[
         require(seen[node] == 0, "cycle or shared child")
         seen[node] = 1
         visited += 1
-        if tree.node_type[node] != 0:
+        if tree.node_type[node] != NodeType.LEAF:
             stack.append(Int(tree.cleft[node]))
             stack.append(Int(tree.cright[node]))
     require(visited == n, "unreachable node")

@@ -5,21 +5,25 @@ Its scope is model field storage, loading, inspection, editing, structural
 validation and serialization. Inference is out of scope, including reference
 prediction and future CPU/GPU execution work.
 
-Keep this first version small: plain typed models and codec functions, without
-builders, execution abstractions or a general transport framework.
+The original MVP used plain typed models and codec functions. The current
+interface adds construction and inspection conveniences described in
+[the usage guide](usage.md), while retaining this compatibility contract.
 
 ## Current implementation
 
 | Module | Responsibility |
 | --- | --- |
-| `model.mojo` | Owned model/tree fields and opaque extensions |
+| `model.mojo` | Owned fields, text access and borrowed payload spans |
+| `constants.mojo` | Named wire operators, node/task types and precision tags |
+| `builder.mojo` | Node construction, metadata defaults and count/offset bookkeeping |
 | `wire.mojo` | Bounded little-endian scalar/array encoding and decoding |
 | `codec.mojo` | Exact v4 field order and file I/O |
 | `validation.mojo` | Field relationships, dimensions and tree structure |
 
-The public operations are `load`, `decode`, `save`, `encode` and `validate`.
-Precision is explicit for library callers; the small CLI detects it for
-`inspect` and `roundtrip`. Raw fields remain mutable, so encoding validates them.
+The core operations are `load`, `decode`, `save`, `encode` and `validate`.
+`load_auto` and `decode_auto` discover precision from the header; typed loading
+remains available. The CLI shares library header inspection for `inspect` and
+`roundtrip`. Raw fields remain mutable, so encoding validates them.
 
 ## Compatibility contract
 
@@ -60,7 +64,8 @@ little-endian order even though upstream stream primitives use native-memory I/O
 
 Add format compatibility fixtures for other producer versions when needed.
 Python buffer interoperability, other checkpoint versions, native framework
-importers and portable packaging are outside this first version. Do not add
+importers and portable packaging remain unimplemented. The intended frontend
+direction is documented in [the API comparison](api-comparison.md). Do not add
 architecture abstractions without a concrete caller need.
 
 ## Sources

@@ -13,7 +13,8 @@ build = { cmd = "mojo build -I src examples/checkpoint.mojo -o build/balsa", dep
 package = { cmd = "mojo precompile src/balsa -o build/balsa.mojoc", depends-on = ["prepare"] }
 smoke = { cmd = "./build/balsa inspect tests/fixtures/float32_op2_missing0.tl", depends-on = ["build"] }
 test = { cmd = "mojo run -I src tests/test_balsa.mojo", depends-on = ["prepare"] }
-check = { depends-on = ["smoke", "package", "test"] }
+example = { cmd = "mojo run -I src examples/construction.mojo", depends-on = ["prepare"] }
+check = { depends-on = ["smoke", "package", "test", "example"] }
 fmt = "mojo format src examples tests/test_balsa.mojo"
 
 [dependencies]

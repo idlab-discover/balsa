@@ -2,6 +2,17 @@
 
 from std.testing import assert_equal, assert_raises, TestSuite
 from balsa.codec import load, decode, encode, read_file, save
+from balsa import (
+    ModelBuilder,
+    TreeBuilder,
+    Operator,
+    NodeType,
+    TaskType,
+    TypeInfo,
+    load_auto,
+    decode_auto,
+    checkpoint_dtype,
+)
 from balsa.model import Model, Tree, Extension
 from balsa.validation import validate
 from balsa.wire import Reader, Writer, Limits
@@ -205,6 +216,194 @@ def test_mutated_checkpoints_are_bounded() raises:
         except:
             continue
         _ = encode(model)
+
+
+def test_builder_matches_raw_stump() raises:
+    var builder = ModelBuilder(num_feature=1, base_scores=[0.5])
+    var tree = TreeBuilder(num_nodes=3)
+    # Forward references and out-of-order definitions retain node IDs.
+    tree.leaf(2, 2.75)
+    tree.numerical_split(
+        0,
+        feature=0,
+        threshold=0.5,
+        left=1,
+        right=2,
+        op=Operator.LT,
+        default_left=True,
+    )
+    tree.leaf(1, -1.25)
+    builder.add_tree(tree^.build())
+    var model = builder^.build()
+    assert_equal(encode(model), encode(make_stump()))
+    assert_equal(model.task_type, TaskType.REGRESSOR)
+    assert_equal(model.trees[0].node_type[0], NodeType.NUMERICAL)
+    save(model, "build/builder-stump.tl")
+
+
+def test_builder_vector_categories_and_borrowed_fields() raises:
+    var builder = ModelBuilder[DType.float64](
+        num_feature=2,
+        task_type=TaskType.MULTI_CLF,
+        num_class=[2, 2],
+        leaf_vector_shape=[2, 2],
+        postprocessor="softmax",
+        average_tree_output=True,
+    )
+    var tree = TreeBuilder[DType.float64](3)
+    tree.categorical_split(
+        0,
+        feature=1,
+        categories=[1, 7, 42],
+        left=1,
+        right=2,
+        categories_right=True,
+        default_left=True,
+    )
+    tree.leaf_vector(1, [0.1, 0.2, 0.3, 0.4])
+    tree.leaf_vector(2, [0.5, 0.6, 0.7, 0.8])
+    builder.add_tree(tree^.build(), target_id=-1, class_id=-1)
+    var model = builder^.build()
+    assert_equal(model.num_target, Int32(2))
+    assert_equal(len(model.base_scores), 4)
+    assert_equal(model.threshold_type, TypeInfo.FLOAT64)
+    # Function arguments and for iteration borrow without copying trees.
+    for tree in model.trees:
+        var categories = tree.categories(0)
+        assert_equal(len(categories), 3)
+        assert_equal(categories[2], UInt32(42))
+        var values = tree.leaf_values(2)
+        assert_equal(values[3], Float64(0.8))
+        assert_equal(len(tree.leaf_values(0)), 0)
+    var model2 = decode_auto(encode(model))
+    assert_equal(encode(model2), encode(model))
+    save(model2, "build/builder-vector.tl")
+    # Views also work safely after direct field edits, with checked errors.
+    with assert_raises():
+        _ = model.trees[0].categories(-1)
+    with assert_raises():
+        _ = model.trees[0].leaf_values(3)
+    model.trees[0].category_list_end[0] = UInt64(0xFFFFFFFFFFFFFFFF)
+    with assert_raises():
+        _ = model.trees[0].categories(0)
+    model.trees[0].leaf_vector_begin[1] = 5
+    with assert_raises():
+        _ = model.trees[0].leaf_values(1)
+    model.trees[0].leaf_vector_end = []
+    with assert_raises():
+        _ = model.trees[0].leaf_values(0)
+
+
+def test_text_access_preserves_bytes() raises:
+    var model = make_stump()
+    assert_equal(model.postprocessor_name(), "identity")
+    model.set_postprocessor_name("future_é🔥")
+    model.set_attributes_text('{"name":"é🔥"}')
+    var restored = decode(encode(model))
+    assert_equal(restored.postprocessor_name(), "future_é🔥")
+    assert_equal(restored.attributes_text(), '{"name":"é🔥"}')
+    model.postprocessor = [255]
+    model.attributes = [192, 128]
+    with assert_raises():
+        _ = model.postprocessor_name()
+    with assert_raises():
+        _ = model.attributes_text()
+    # Text errors never prevent lossless raw-byte transport.
+    var bytes = encode(model)
+    var raw = decode(bytes.copy())
+    assert_equal(encode(raw), bytes)
+    model.set_postprocessor_name("")
+    assert_equal(model.postprocessor_name(), "")
+
+
+def test_auto_precision_and_limits() raises:
+    for precision in ["float32", "float64"]:
+        for fixture in [
+            "op2_missing0",
+            "leaf",
+            "category",
+            "vector",
+            "deep",
+            "sigmoid",
+            "multi_target",
+        ]:
+            var path = "tests/fixtures/" + precision + "_" + fixture + ".tl"
+            var bytes = read_file(path)
+            var model = load_auto(path)
+            assert_equal(encode(model), bytes)
+            assert_equal(
+                model.isa[Model[DType.float32]](), precision == "float32"
+            )
+            assert_equal(
+                checkpoint_dtype(bytes) == DType.float64, precision == "float64"
+            )
+    var bytes = read_file("tests/fixtures/float32_leaf.tl")
+    with assert_raises():
+        _ = decode_auto(bytes.copy(), Limits(max_bytes=14))
+    with assert_raises():
+        _ = load_auto("tests/fixtures/float32_leaf.tl", Limits(max_bytes=14))
+    with assert_raises():
+        _ = decode_auto(bytes.copy(), Limits(max_nodes=0))
+    var prefix = List[UInt8]()
+    for i in range(14):
+        with assert_raises():
+            _ = decode_auto(prefix.copy())
+        prefix.append(bytes[i])
+    bytes[13] = TypeInfo.FLOAT64
+    with assert_raises():
+        _ = decode_auto(bytes.copy())
+    bytes[12] = TypeInfo.UINT32
+    bytes[13] = TypeInfo.UINT32
+    with assert_raises():
+        _ = decode_auto(bytes.copy())
+    bytes[12] = TypeInfo.FLOAT32
+    bytes[13] = TypeInfo.FLOAT32
+    bytes[0] = 3
+    with assert_raises():
+        _ = decode_auto(bytes.copy())
+    with assert_raises():
+        _ = load[DType.float32]("tests/fixtures/float64_leaf.tl")
+
+
+def test_builder_rejects_invalid_construction() raises:
+    with assert_raises():
+        _ = TreeBuilder(0)
+    with assert_raises():
+        _ = TreeBuilder(3, Limits(max_nodes=2))
+    with assert_raises():
+        _ = ModelBuilder(1, num_class=[0])
+    with assert_raises():
+        _ = ModelBuilder(1, num_class=[2], base_scores=[1.0])
+    with assert_raises():
+        _ = ModelBuilder(1, num_class=[3], limits=Limits(max_elements=2))
+    var tree = TreeBuilder(3)
+    with assert_raises():
+        tree.leaf(-1, 1.0)
+    with assert_raises():
+        tree.numerical_split(
+            0, feature=0, threshold=1, left=1, right=2, op=Operator.NONE
+        )
+    with assert_raises():
+        tree.numerical_split(0, feature=0, threshold=1, left=0, right=2)
+    tree.leaf(1, 1)
+    with assert_raises():
+        tree.leaf(1, 2)
+    with assert_raises():
+        _ = tree^.build()
+    # All slots defined, but disconnected nodes still fail final validation.
+    var builder = ModelBuilder(1)
+    var disconnected = TreeBuilder(2)
+    disconnected.leaf(0, 1)
+    disconnected.leaf(1, 2)
+    builder.add_tree(disconnected^.build())
+    with assert_raises():
+        _ = builder^.build()
+    var vector_model = ModelBuilder(1, num_class=[2], leaf_vector_shape=[1, 2])
+    var vector_tree = TreeBuilder(1)
+    vector_tree.leaf_vector(0, [1.0])
+    vector_model.add_tree(vector_tree^.build(), class_id=-1)
+    with assert_raises():
+        _ = vector_model^.build()
 
 
 def main() raises:
