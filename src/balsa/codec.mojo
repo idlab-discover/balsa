@@ -19,7 +19,11 @@ def decode[
     limits: Limits = Limits(),
     options: ValidationOptions = ValidationOptions(),
 ) raises -> Model[dtype]:
-    """Decode and validate a checkpoint; precision must match the file tags."""
+    """Decode a checkpoint, validating its model unless options disables it.
+
+    Wire bounds, format checks and parser limits always apply. Precision must
+    match the file tags. A skipped validation pass can be run with validate().
+    """
     var reader = Reader(data^, limits)
     var model = Model[dtype]()
     reader.field = "major"
@@ -146,7 +150,8 @@ def decode[
         model.trees.append(tree^)
     if reader.pos != len(reader.data):
         reader.fail("trailing bytes")
-    validate(model, limits, options)
+    if options.enabled:
+        validate(model, limits, options)
     return model^
 
 
@@ -157,8 +162,12 @@ def encode[
     limits: Limits = Limits(),
     options: ValidationOptions = ValidationOptions(),
 ) raises -> List[UInt8]:
-    """Encode owned fields, retaining version, extensions and floating bits."""
-    validate(model, limits, options)
+    """Encode owned fields, retaining version, extensions and floating bits.
+
+    options.enabled=False skips model validation; writer bounds still apply.
+    """
+    if options.enabled:
+        validate(model, limits, options)
     # One shared field traversal, specialized to count or emit at compile time.
     var counter = Writer[True](limits)
     write_model(model, counter)
@@ -252,7 +261,7 @@ def save[
     limits: Limits = Limits(),
     options: ValidationOptions = ValidationOptions(),
 ) raises:
-    """Validate and encode before opening the destination for replacement."""
+    """Encode (and by default validate) before replacing the destination."""
     var bytes = encode(model, limits, options)
     with open(path, "w") as file:
         file.write_all(Span(bytes))

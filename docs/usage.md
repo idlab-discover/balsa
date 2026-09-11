@@ -29,8 +29,8 @@ vector payload and maintains its offsets. It rejects empty vectors.
 
 `TreeBuilder.build()` consumes the builder and checks that every node is
 assigned. Its resulting tree can still be structurally invalid (for example,
-unreachable nodes); `ModelBuilder.build()` performs full validation with model
-metadata. `add_tree` transfers an owned tree and maintains tree counts and
+unreachable nodes); `ModelBuilder.build()` performs full validation by default
+with model metadata. `add_tree` transfers an owned tree and maintains tree counts and
 annotations. Both `build()` calls consume their builders, so use `^`.
 
 `ModelBuilder` defaults to regression, one target/class, scalar leaves, identity
@@ -49,6 +49,10 @@ well as codec operations; final encoding also enforces serialized byte limits.
 The returned model/tree fields remain editable. Add statistics or opaque
 extensions through their raw fields, then validate or save. Raw constructors
 remain available for bulk import and exact format editing.
+
+Pass `options=ValidationOptions(enabled=False)` to codec calls or
+`ModelBuilder.build` to defer automatic model validation. See
+[validation policy](validation-policy.md) for the checks that remain.
 
 ## Discovering precision
 

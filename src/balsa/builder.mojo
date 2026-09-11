@@ -235,7 +235,8 @@ struct ModelBuilder[dtype: DType = DType.float32](Movable):
     def build(
         deinit self, options: ValidationOptions = ValidationOptions()
     ) raises -> Model[Self.dtype]:
-        """Consume the builder and return a structurally validated owned model.
+        """Consume the builder, validating the model unless options disables it.
         """
-        validate(self._model, self._limits, options)
+        if options.enabled:
+            validate(self._model, self._limits, options)
         return self._model^

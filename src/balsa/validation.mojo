@@ -8,11 +8,14 @@ from .wire import Limits
 
 
 struct ValidationOptions(Copyable, Movable):
-    """Bound validation concurrency per call; one worker forces serial execution.
+    """Control automatic model validation and its concurrency per call.
 
+    enabled=False skips automatic validation in codec calls and ModelBuilder.
+    Explicit validate() always checks the model, regardless of enabled.
     Thresholds apply together. The shared runtime may use fewer workers.
     """
 
+    var enabled: Bool
     var max_workers: Int
     var min_trees: Int
     var min_nodes: Int
@@ -22,7 +25,10 @@ struct ValidationOptions(Copyable, Movable):
         max_workers: Int = 4,
         min_trees: Int = 4096,
         min_nodes: Int = 65536,
+        *,
+        enabled: Bool = True,
     ):
+        self.enabled = enabled
         self.max_workers = max_workers
         self.min_trees = min_trees
         self.min_nodes = min_nodes
@@ -77,7 +83,10 @@ def validate[
     limits: Limits = Limits(),
     options: ValidationOptions = ValidationOptions(),
 ) raises:
-    """Reject malformed metadata, lengths, topology and segment offsets."""
+    """Reject malformed metadata, lengths, topology and segment offsets.
+
+    Always validates, including when options.enabled is False.
+    """
     limits.validate()
     require(
         model.major == 4 and model.minor >= 0 and model.patch >= 0, "version"

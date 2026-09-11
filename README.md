@@ -174,7 +174,7 @@ See [the API comparison](docs/api-comparison.md), [the format plan](docs/mvp-pla
 and [upstream attribution](THIRD_PARTY_NOTICES.md).
 
 
-### Validation concurrency
+### Validation policy and concurrency
 
 `validate`, `encode`, `decode`, `load`, `save`, and the automatic-precision
 variants accept an optional `ValidationOptions` argument after `Limits`.
@@ -185,10 +185,24 @@ from balsa import load, Limits, ValidationOptions
 var model = load("forest.tl", Limits(), ValidationOptions(max_workers=1))
 ```
 
+For trusted checkpoints, skip automatic model validation per call:
+
+```mojo
+from balsa import validate
+var trusted = load("forest.tl", options=ValidationOptions(enabled=False))
+validate(trusted)  # Deferred validation always checks the model.
+```
+
+The same option applies to encode/save, automatic-precision variants, and
+`ModelBuilder.build`. Parsing retains bounds, format and resource checks.
+Explicit `validate` always runs, even with `enabled=False`. Callers must establish
+the invariants their consumers require when skipping automatic validation.
+See [the policy design](docs/validation-policy.md) for the exact scope.
+
 One worker forces serial validation. By default, validation uses at most four
 workers when there are at least 4,096 trees and 65,536 nodes, and no tree holds
 more than half the nodes. Both thresholds can be tuned with `min_trees` and
-`min_nodes`; the imbalance guard still applies. All checks run on every call.
+`min_nodes`; the imbalance guard still applies. Full validation runs by default.
 Metadata, encoding and parsing remain serial. Batches borrow the immutable model,
 reuse private traversal scratch, and join before returning the earliest error.
 

@@ -750,3 +750,93 @@ def test_reader_rejects_invalid_cursor() raises:
             reader.require(1)
         with assert_raises():
             _ = reader.scalar[DType.uint8]()
+
+
+def test_validation_opt_out_and_deferred_validation() raises:
+    from balsa import ValidationOptions
+
+    var unchecked = ValidationOptions(enabled=False)
+    # Metadata, array lengths and topology are all part of the optional pass.
+    for fault in range(3):
+        var model = make_stump()
+        if fault == 0:
+            model.num_feature = -1
+        elif fault == 1:
+            model.trees[0].default_left.clear()
+        else:
+            model.trees[0].cleft[0] = 0
+        with assert_raises():
+            _ = encode(model)
+        var data = encode(model, options=unchecked)
+        with assert_raises():
+            _ = decode(data.copy())
+        var restored = decode(data.copy(), options=unchecked)
+        assert_equal(encode(restored, options=unchecked), data)
+        with assert_raises():
+            validate(restored, options=unchecked)
+        var automatic = decode_auto(data.copy(), options=unchecked)
+        assert_equal(encode(automatic, options=unchecked), data)
+        save(automatic, "build/unchecked.tl", options=unchecked)
+        with assert_raises():
+            _ = load_auto("build/unchecked.tl")
+        var loaded = load_auto("build/unchecked.tl", options=unchecked)
+        assert_equal(encode(loaded, options=unchecked), data)
+        var typed = load("build/unchecked.tl", options=unchecked)
+        assert_equal(encode(typed, options=unchecked), data)
+    var builder = ModelBuilder(1)
+    var tree = TreeBuilder(2)
+    tree.leaf(0, 1)
+    tree.leaf(1, 2)
+    builder.add_tree(tree^.build())
+    var disconnected = builder^.build(unchecked)
+    with assert_raises():
+        validate(disconnected)
+
+
+def test_validation_opt_out_preserves_wire_checks() raises:
+    from balsa import ValidationOptions
+
+    var unchecked = ValidationOptions(enabled=False)
+    var data = read_file("tests/fixtures/float32_op2_missing0.tl")
+    var prefix = List[UInt8]()
+    for byte in data:
+        with assert_raises():
+            _ = decode(prefix.copy(), options=unchecked)
+        prefix.append(byte)
+    for offset in [0, 12, 13]:
+        var bad = data.copy()
+        bad[offset] = 255
+        with assert_raises():
+            _ = decode_auto(bad^, options=unchecked)
+    var trailing = data.copy()
+    trailing.append(0)
+    with assert_raises():
+        _ = decode(trailing^, options=unchecked)
+    for limits in [
+        Limits(max_bytes=20),
+        Limits(max_elements=2),
+        Limits(max_nodes=2),
+        Limits(max_bytes=-1),
+    ]:
+        with assert_raises():
+            _ = decode(data.copy(), limits, unchecked)
+    var model = make_stump()
+    with assert_raises():
+        _ = encode(model, Limits(max_bytes=20), unchecked)
+    with assert_raises():
+        _ = encode(model, Limits(max_elements=2), unchecked)
+    var two = make_stump()
+    two.trees.append(two.trees[0].copy())
+    two.target_id.append(0)
+    two.class_id.append(0)
+    two.num_tree = 2
+    var two_bytes = encode(two)
+    with assert_raises():
+        _ = decode(two_bytes^, Limits(max_trees=1), unchecked)
+    var double_model = load[DType.float64]("tests/fixtures/float64_leaf.tl")
+    double_model.num_feature = -1
+    var double_bytes = encode(double_model, options=unchecked)
+    var restored = decode_auto(double_bytes.copy(), options=unchecked)
+    assert_equal(encode(restored, options=unchecked), double_bytes)
+    with assert_raises():
+        _ = decode[DType.float64](double_bytes^)
