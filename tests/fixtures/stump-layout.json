@@ -1,0 +1,444 @@
+{
+  "checkpoint": "float32_op2_missing0.tl",
+  "size": 487,
+  "fields": [
+    {
+      "field": "major",
+      "offset": 0,
+      "bytes": 4,
+      "value": 4
+    },
+    {
+      "field": "minor",
+      "offset": 4,
+      "bytes": 4,
+      "value": 6
+    },
+    {
+      "field": "patch",
+      "offset": 8,
+      "bytes": 4,
+      "value": 1
+    },
+    {
+      "field": "threshold_type",
+      "offset": 12,
+      "bytes": 1,
+      "value": 2
+    },
+    {
+      "field": "leaf_output_type",
+      "offset": 13,
+      "bytes": 1,
+      "value": 2
+    },
+    {
+      "field": "num_tree",
+      "offset": 14,
+      "bytes": 8,
+      "value": 1
+    },
+    {
+      "field": "num_feature",
+      "offset": 22,
+      "bytes": 4,
+      "value": 1
+    },
+    {
+      "field": "task_type",
+      "offset": 26,
+      "bytes": 1,
+      "value": 1
+    },
+    {
+      "field": "average_tree_output",
+      "offset": 27,
+      "bytes": 1,
+      "value": 0
+    },
+    {
+      "field": "num_target",
+      "offset": 28,
+      "bytes": 4,
+      "value": 1
+    },
+    {
+      "field": "num_class.count",
+      "offset": 32,
+      "bytes": 8,
+      "value": 1
+    },
+    {
+      "field": "num_class",
+      "offset": 40,
+      "bytes": 4,
+      "elements": 1
+    },
+    {
+      "field": "leaf_vector_shape.count",
+      "offset": 44,
+      "bytes": 8,
+      "value": 2
+    },
+    {
+      "field": "leaf_vector_shape",
+      "offset": 52,
+      "bytes": 8,
+      "elements": 2
+    },
+    {
+      "field": "target_id.count",
+      "offset": 60,
+      "bytes": 8,
+      "value": 1
+    },
+    {
+      "field": "target_id",
+      "offset": 68,
+      "bytes": 4,
+      "elements": 1
+    },
+    {
+      "field": "class_id.count",
+      "offset": 72,
+      "bytes": 8,
+      "value": 1
+    },
+    {
+      "field": "class_id",
+      "offset": 80,
+      "bytes": 4,
+      "elements": 1
+    },
+    {
+      "field": "postprocessor.count",
+      "offset": 84,
+      "bytes": 8,
+      "value": 8
+    },
+    {
+      "field": "postprocessor",
+      "offset": 92,
+      "bytes": 8,
+      "elements": 8
+    },
+    {
+      "field": "sigmoid_alpha",
+      "offset": 100,
+      "bytes": 4,
+      "value": 1.0
+    },
+    {
+      "field": "ratio_c",
+      "offset": 104,
+      "bytes": 4,
+      "value": 1.0
+    },
+    {
+      "field": "base_scores.count",
+      "offset": 108,
+      "bytes": 8,
+      "value": 1
+    },
+    {
+      "field": "base_scores",
+      "offset": 116,
+      "bytes": 8,
+      "elements": 1
+    },
+    {
+      "field": "attributes.count",
+      "offset": 124,
+      "bytes": 8,
+      "value": 2
+    },
+    {
+      "field": "attributes",
+      "offset": 132,
+      "bytes": 2,
+      "elements": 2
+    },
+    {
+      "field": "model_extensions",
+      "offset": 134,
+      "bytes": 4,
+      "value": 0
+    },
+    {
+      "field": "tree.num_nodes",
+      "offset": 138,
+      "bytes": 4,
+      "value": 3
+    },
+    {
+      "field": "tree.has_categorical_split",
+      "offset": 142,
+      "bytes": 1,
+      "value": 0
+    },
+    {
+      "field": "tree.node_type.count",
+      "offset": 143,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.node_type",
+      "offset": 151,
+      "bytes": 3,
+      "elements": 3
+    },
+    {
+      "field": "tree.cleft.count",
+      "offset": 154,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.cleft",
+      "offset": 162,
+      "bytes": 12,
+      "elements": 3
+    },
+    {
+      "field": "tree.cright.count",
+      "offset": 174,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.cright",
+      "offset": 182,
+      "bytes": 12,
+      "elements": 3
+    },
+    {
+      "field": "tree.split_index.count",
+      "offset": 194,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.split_index",
+      "offset": 202,
+      "bytes": 12,
+      "elements": 3
+    },
+    {
+      "field": "tree.default_left.count",
+      "offset": 214,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.default_left",
+      "offset": 222,
+      "bytes": 3,
+      "elements": 3
+    },
+    {
+      "field": "tree.leaf_value.count",
+      "offset": 225,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.leaf_value",
+      "offset": 233,
+      "bytes": 12,
+      "elements": 3
+    },
+    {
+      "field": "tree.threshold.count",
+      "offset": 245,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.threshold",
+      "offset": 253,
+      "bytes": 12,
+      "elements": 3
+    },
+    {
+      "field": "tree.cmp.count",
+      "offset": 265,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.cmp",
+      "offset": 273,
+      "bytes": 3,
+      "elements": 3
+    },
+    {
+      "field": "tree.category_list_right_child.count",
+      "offset": 276,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.category_list_right_child",
+      "offset": 284,
+      "bytes": 3,
+      "elements": 3
+    },
+    {
+      "field": "tree.leaf_vector.count",
+      "offset": 287,
+      "bytes": 8,
+      "value": 0
+    },
+    {
+      "field": "tree.leaf_vector",
+      "offset": 295,
+      "bytes": 0,
+      "elements": 0
+    },
+    {
+      "field": "tree.leaf_vector_begin.count",
+      "offset": 295,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.leaf_vector_begin",
+      "offset": 303,
+      "bytes": 24,
+      "elements": 3
+    },
+    {
+      "field": "tree.leaf_vector_end.count",
+      "offset": 327,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.leaf_vector_end",
+      "offset": 335,
+      "bytes": 24,
+      "elements": 3
+    },
+    {
+      "field": "tree.category_list.count",
+      "offset": 359,
+      "bytes": 8,
+      "value": 0
+    },
+    {
+      "field": "tree.category_list",
+      "offset": 367,
+      "bytes": 0,
+      "elements": 0
+    },
+    {
+      "field": "tree.category_list_begin.count",
+      "offset": 367,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.category_list_begin",
+      "offset": 375,
+      "bytes": 24,
+      "elements": 3
+    },
+    {
+      "field": "tree.category_list_end.count",
+      "offset": 399,
+      "bytes": 8,
+      "value": 3
+    },
+    {
+      "field": "tree.category_list_end",
+      "offset": 407,
+      "bytes": 24,
+      "elements": 3
+    },
+    {
+      "field": "tree.data_count.count",
+      "offset": 431,
+      "bytes": 8,
+      "value": 0
+    },
+    {
+      "field": "tree.data_count",
+      "offset": 439,
+      "bytes": 0,
+      "elements": 0
+    },
+    {
+      "field": "tree.data_count_present.count",
+      "offset": 439,
+      "bytes": 8,
+      "value": 0
+    },
+    {
+      "field": "tree.data_count_present",
+      "offset": 447,
+      "bytes": 0,
+      "elements": 0
+    },
+    {
+      "field": "tree.sum_hess.count",
+      "offset": 447,
+      "bytes": 8,
+      "value": 0
+    },
+    {
+      "field": "tree.sum_hess",
+      "offset": 455,
+      "bytes": 0,
+      "elements": 0
+    },
+    {
+      "field": "tree.sum_hess_present.count",
+      "offset": 455,
+      "bytes": 8,
+      "value": 0
+    },
+    {
+      "field": "tree.sum_hess_present",
+      "offset": 463,
+      "bytes": 0,
+      "elements": 0
+    },
+    {
+      "field": "tree.gain.count",
+      "offset": 463,
+      "bytes": 8,
+      "value": 0
+    },
+    {
+      "field": "tree.gain",
+      "offset": 471,
+      "bytes": 0,
+      "elements": 0
+    },
+    {
+      "field": "tree.gain_present.count",
+      "offset": 471,
+      "bytes": 8,
+      "value": 0
+    },
+    {
+      "field": "tree.gain_present",
+      "offset": 479,
+      "bytes": 0,
+      "elements": 0
+    },
+    {
+      "field": "tree.extensions",
+      "offset": 479,
+      "bytes": 4,
+      "value": 0
+    },
+    {
+      "field": "tree.node_extensions",
+      "offset": 483,
+      "bytes": 4,
+      "value": 0
+    }
+  ]
+}

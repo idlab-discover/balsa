@@ -1,0 +1,11 @@
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+# Generated Mojo artifacts
+build/
+.mojo_cache/
+*.mojopkg
+*.mojoc
+__pycache__/
+*.pyc

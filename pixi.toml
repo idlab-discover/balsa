@@ -1,0 +1,34 @@
+[workspace]
+authors = ["Str-Gen <20303842+Str-Gen@users.noreply.github.com>"]
+channels = ["https://conda.modular.com/max", "conda-forge"]
+name = "balsa"
+description = "A native Mojo implementation of the Treelite model format"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+prepare = "mkdir -p build"
+run = "mojo run -I src examples/checkpoint.mojo inspect tests/fixtures/float32_op2_missing0.tl"
+build = { cmd = "mojo build -I src examples/checkpoint.mojo -o build/balsa", depends-on = ["prepare"] }
+package = { cmd = "mojo precompile src/balsa -o build/balsa.mojoc", depends-on = ["prepare"] }
+smoke = { cmd = "./build/balsa inspect tests/fixtures/float32_op2_missing0.tl", depends-on = ["build"] }
+test = { cmd = "mojo run -I src tests/test_balsa.mojo", depends-on = ["prepare"] }
+check = { depends-on = ["smoke", "package", "test"] }
+fmt = "mojo format src examples tests/test_balsa.mojo"
+
+[dependencies]
+mojo = ">=1.0.0,<2"
+
+[feature.oracle.dependencies]
+python = "3.12.*"
+
+[feature.oracle.pypi-dependencies]
+treelite = "==4.6.1"
+
+[feature.oracle.tasks]
+fixtures = "python tools/fixtures.py"
+fixtures-check = "python tools/fixtures.py --check"
+interop = { cmd = "python tools/interop.py", depends-on = ["build", "test"] }
+
+[environments]
+oracle = ["oracle"]
