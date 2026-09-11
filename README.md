@@ -38,6 +38,35 @@ def main() raises:
     save(model, "copy.tl")
 ```
 
+Save the snippet above as `try_balsa.mojo` in the repository root, then import
+from source while developing:
+
+```sh
+pixi run mojo run -I src try_balsa.mojo
+pixi run mojo build -O3 -I src try_balsa.mojo -o build/try_balsa
+./build/try_balsa
+```
+
+To use the precompiled package instead:
+
+```sh
+pixi run package
+pixi run mojo run -I build try_balsa.mojo
+```
+
+`-I` names the directory containing the `balsa` source package or `balsa.mojoc`.
+For a consumer outside this repository, use an absolute include path and the
+same locked Mojo environment; relative checkpoint paths resolve from the
+process working directory. For example, run from this repository:
+
+```sh
+pixi run mojo run -I "$PWD/src" /absolute/path/to/consumer.mojo
+```
+
+Balsa is currently a Mojo library; there is no Python `pip install balsa` or
+Python `import balsa` interface. Start with source imports; precompiled packages
+must match the compiler version and should be rebuilt after library changes.
+
 Use `load_auto(path)` to discover precision from the checkpoint. It returns
 `AnyModel`, a variant of the float32 and float64 model types; `save` and `encode`
 accept it directly. `decode_auto(bytes^)` does the same for in-memory bytes.
@@ -123,8 +152,19 @@ The separate `frameworks` environment retrains and verifies their conversions
 against source-library predictions; see [framework testing](docs/framework-testing.md)
 for commands, pinned versions and the limited CatBoost adapter scope.
 
-A [performance measurement proposal](docs/performance-plan.md) separates
-in-memory codec, validation and file I/O costs for Balsa and Treelite.
+The optional `benchmark` environment adds **pyperf 2.10.0** alongside the pinned
+Treelite oracle, without adding Python dependencies to the native library:
+
+```sh
+pixi install -e benchmark --locked
+pixi run -e benchmark pyperf --help
+```
+
+See [the latest measurements](docs/optimization-results.md),
+[the optimization explanation](docs/codec-optimization.md), and
+[the short performance history](docs/performance-plan.md). Local experimental
+runners, corpus copies and raw results live in the git-ignored `benchmarking/`
+directory and are not required to build or test Balsa.
 
 The sibling Treelite checkout is not a build dependency. Precompiled packages
 are compiler-version-specific; executables link Mojo runtime libraries from

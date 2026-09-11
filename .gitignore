@@ -9,3 +9,7 @@ build/
 *.mojoc
 __pycache__/
 *.pyc
+
+# Local benchmark experiments
+/benchmarking/
+/benchmarks/

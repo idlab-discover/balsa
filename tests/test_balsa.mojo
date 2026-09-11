@@ -406,5 +406,121 @@ def test_builder_rejects_invalid_construction() raises:
         _ = vector_model^.build()
 
 
+def check_bulk_array[dtype: DType](values: List[SIMD[dtype, 1]]) raises:
+    # The scalar encoder is independent of the bulk copy path. A one-byte
+    # prefix deliberately makes every multi-byte payload unaligned.
+    var bulk = Writer(Limits())
+    var scalar = Writer(Limits())
+    bulk.scalar[DType.uint8](42)
+    scalar.scalar[DType.uint8](42)
+    bulk.array[dtype](values)
+    scalar.scalar[DType.uint64](UInt64(len(values)))
+    for value in values:
+        scalar.scalar[dtype](value)
+    var bytes = bulk^.finish()
+    assert_equal(bytes, scalar^.finish())
+    var reader = Reader(bytes.copy(), Limits())
+    assert_equal(reader.scalar[DType.uint8](), UInt8(42))
+    var restored = reader.array[dtype]()
+    var roundtrip = Writer(Limits())
+    roundtrip.scalar[DType.uint8](42)
+    roundtrip.array[dtype](restored)
+    assert_equal(roundtrip^.finish(), bytes)
+    assert_equal(reader.pos, len(bytes))
+
+
+def test_bulk_arrays_unaligned_and_bits() raises:
+    check_bulk_array[DType.uint8]([0, 255])
+    check_bulk_array[DType.int8]([-128, 127])
+    check_bulk_array[DType.int32]([-2147483648, 2147483647])
+    check_bulk_array[DType.uint32]([0, 0xFFFFFFFF])
+    check_bulk_array[DType.uint64]([0, 0xFFFFFFFFFFFFFFFF])
+    check_bulk_array[DType.float32](
+        [
+            Float32(from_bits=UInt32(0x7FC01234)),
+            Float32(from_bits=UInt32(0x80000000)),
+            Float32(from_bits=UInt32(0x7F800000)),
+        ]
+    )
+    check_bulk_array[DType.float64](
+        [
+            Float64(from_bits=UInt64(0x7FF8000000001234)),
+            Float64(from_bits=UInt64(0x8000000000000000)),
+            Float64(from_bits=UInt64(0xFFF0000000000000)),
+        ]
+    )
+    check_bulk_array[DType.float64]([])
+
+
+def test_bulk_limits_and_error_context() raises:
+    var writer = Writer(Limits(max_bytes=16, max_elements=2))
+    writer.array[DType.uint32]([1, 2])
+    assert_equal(len(writer.data), 16)
+    with assert_raises():
+        writer.scalar[DType.uint8](0)
+    var short_writer = Writer(Limits(max_bytes=15))
+    with assert_raises():
+        short_writer.array[DType.uint32]([1, 2])
+    var too_many = Writer(Limits(max_elements=1))
+    with assert_raises():
+        too_many.array[DType.uint8]([1, 2])
+    var bytes = writer^.finish()
+    _ = bytes.pop()
+    var reader = Reader(bytes^, Limits())
+    reader.tree_id = 7
+    reader.field = "threshold"
+    var failed = False
+    try:
+        _ = reader.array[DType.uint32]()
+    except err:
+        failed = True
+        assert_equal(
+            String(err),
+            (
+                "Malformed checkpoint at byte 8 (tree[7].threshold): truncated"
+                " array"
+            ),
+        )
+    assert_equal(failed, True)
+    var model = make_stump()
+    var encoded = encode(model)
+    assert_equal(encode(model, Limits(max_bytes=len(encoded))), encoded)
+    with assert_raises():
+        _ = encode(model, Limits(max_bytes=len(encoded) - 1))
+
+
+def test_validation_scratch_resets_between_trees_and_calls() raises:
+    var model = make_stump()
+    var leaf = load("tests/fixtures/float32_leaf.tl")
+    model.trees.append(leaf.trees[0].copy())
+    model.trees.append(model.trees[0].copy())
+    model.num_tree = 3
+    model.target_id = [0, 0, 0]
+    model.class_id = [0, 0, 0]
+    validate(model)
+    validate(model)
+    # A later tree must still reject shared children after scratch reuse.
+    model.trees[2].cleft[0] = 2
+    with assert_raises():
+        validate(model)
+    model.trees[2].cleft[0] = 0
+    with assert_raises():
+        validate(model)
+    model.trees[2].cleft[0] = 1
+    validate(model)
+
+
+def test_zero_sized_extensions() raises:
+    var model = make_stump()
+    model.extensions.append(Extension([], 0, 7, []))
+    model.trees[0].node_extensions.append(
+        Extension(bytes_of("empty"), 8, 0, [])
+    )
+    var bytes = encode(model)
+    var restored = decode(bytes.copy())
+    assert_equal(encode(restored), bytes)
+    assert_equal(restored.extensions[0].count, UInt64(7))
+
+
 def main() raises:
     TestSuite.discover_tests[__functions_in_module()]().run()

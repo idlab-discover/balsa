@@ -1,4 +1,7 @@
-"""Bounded little-endian checkpoint primitives; no pointer reinterpretation."""
+"""Bounded little-endian primitives with byte-aligned bulk transfers."""
+
+from std.memory import unsafe_memcpy
+from std.sys.info import is_little_endian
 
 from .model import Extension
 
@@ -60,7 +63,8 @@ struct Reader(Movable):
 
     var data: List[UInt8]
     var pos: Int
-    var field: String
+    var field: StaticString
+    var tree_id: Int
     var limits: Limits
 
     def __init__(out self, var data: List[UInt8], limits: Limits) raises:
@@ -70,14 +74,18 @@ struct Reader(Movable):
         self.data = data^
         self.pos = 0
         self.field = "header"
+        self.tree_id = -1
         self.limits = limits.copy()
 
     def fail(self, message: String) raises:
+        var context = String(self.field)
+        if self.tree_id >= 0:
+            context = "tree[" + String(self.tree_id) + "]." + context
         raise Error(
             "Malformed checkpoint at byte "
             + String(self.pos)
             + " ("
-            + self.field
+            + context
             + "): "
             + message
         )
@@ -107,10 +115,25 @@ struct Reader(Movable):
             self.fail("array element limit exceeded")
         if count > UInt64((len(self.data) - self.pos) // n):
             self.fail("truncated array")
-        var result = List[SIMD[dtype, 1]](capacity=Int(count))
-        for _ in range(Int(count)):
-            result.append(self.scalar[dtype]())
-        return result^
+        comptime if is_little_endian() or n == 1:
+            # Extent was proved by division before multiplication/allocation.
+            # Copy bytes: the wire payload need not have typed alignment.
+            var result = List[SIMD[dtype, 1]](unsafe_uninit_length=Int(count))
+            var byte_count = Int(count) * n
+            if byte_count > 0:
+                unsafe_memcpy(
+                    dest=result.unsafe_ptr().unsafe_bitcast[UInt8](),
+                    src=self.data.unsafe_ptr().unsafe_offset(self.pos),
+                    count=byte_count,
+                )
+            self.pos += byte_count
+            return result^
+        else:
+            # Portable explicit little-endian conversion on big-endian hosts.
+            var result = List[SIMD[dtype, 1]](capacity=Int(count))
+            for _ in range(Int(count)):
+                result.append(self.scalar[dtype]())
+            return result^
 
     def extensions(mut self) raises -> List[Extension]:
         var count = self.scalar[DType.int32]()
@@ -130,37 +153,63 @@ struct Reader(Movable):
                 and elements > UInt64(len(self.data) - self.pos) // size
             ):
                 self.fail("truncated extension or size overflow")
-            var payload = List[UInt8]()
-            for _ in range(Int(size * elements)):
-                payload.append(self.scalar[DType.uint8]())
+            var byte_count = Int(size * elements)
+            var payload = List[UInt8](unsafe_uninit_length=byte_count)
+            if byte_count > 0:
+                unsafe_memcpy(
+                    dest=payload.unsafe_ptr(),
+                    src=self.data.unsafe_ptr().unsafe_offset(self.pos),
+                    count=byte_count,
+                )
+            self.pos += byte_count
             result.append(Extension(name^, size, elements, payload^))
         return result^
 
 
-struct Writer(Movable):
+struct Writer[count_only: Bool = False](Movable):
     """Builds a bounded checkpoint byte stream."""
 
     var data: List[UInt8]
     var limits: Limits
+    var counted: Int
 
     def __init__(out self, limits: Limits) raises:
         limits.validate()
         self.data = List[UInt8]()
+        self.counted = 0
         self.limits = limits.copy()
+
+    def size(self) -> Int:
+        comptime if Self.count_only:
+            return self.counted
+        else:
+            return len(self.data)
+
+    def grow(mut self, count: Int) raises:
+        # Subtract before adding, so an untrusted size cannot overflow.
+        if count < 0 or count > self.limits.max_bytes - self.size():
+            raise Error("Encoded checkpoint exceeds byte limit")
+        comptime if Self.count_only:
+            self.counted += count
+        else:
+            self.data.resize(unsafe_uninit_length=len(self.data) + count)
 
     def scalar[dtype: DType](mut self, value: SIMD[dtype, 1]) raises:
         comptime n = width[dtype]()
-        if len(self.data) > self.limits.max_bytes - n:
-            raise Error("Encoded checkpoint exceeds byte limit")
-        var bits: UInt64
-        comptime if n == 1:
-            bits = UInt64(value.to_bits[DType.uint8]())
-        elif n == 4:
-            bits = UInt64(value.to_bits[DType.uint32]())
-        else:
-            bits = value.to_bits[DType.uint64]()
-        for i in range(n):
-            self.data.append(UInt8((bits >> UInt64(i * 8)) & 255))
+        var start = self.size()
+        self.grow(n)
+        comptime if not Self.count_only:
+            var bits: UInt64
+            comptime if n == 1:
+                bits = UInt64(value.to_bits[DType.uint8]())
+            elif n == 4:
+                bits = UInt64(value.to_bits[DType.uint32]())
+            else:
+                bits = value.to_bits[DType.uint64]()
+            comptime for i in range(n):
+                self.data.unsafe_ptr().unsafe_offset(start + i).unsafe_write(
+                    UInt8((bits >> UInt64(i * 8)) & 255)
+                )
 
     def finish(deinit self) -> List[UInt8]:
         return self.data^
@@ -169,8 +218,24 @@ struct Writer(Movable):
         if len(values) > self.limits.max_elements:
             raise Error("Encoded array exceeds element limit")
         self.scalar[DType.uint64](UInt64(len(values)))
-        for value in values:
-            self.scalar[dtype](value)
+        comptime n = width[dtype]()
+        if len(values) > (self.limits.max_bytes - self.size()) // n:
+            raise Error("Encoded checkpoint exceeds byte limit")
+        comptime if Self.count_only:
+            self.grow(len(values) * n)
+        elif is_little_endian() or n == 1:
+            var start = len(self.data)
+            var byte_count = len(values) * n
+            self.grow(byte_count)
+            if byte_count > 0:
+                unsafe_memcpy(
+                    dest=self.data.unsafe_ptr().unsafe_offset(start),
+                    src=values.unsafe_ptr().unsafe_bitcast[UInt8](),
+                    count=byte_count,
+                )
+        else:
+            for value in values:
+                self.scalar[dtype](value)
 
     def extensions(mut self, values: List[Extension]) raises:
         if len(values) > self.limits.max_extensions:
@@ -180,5 +245,12 @@ struct Writer(Movable):
             self.array[DType.uint8](value.name)
             self.scalar[DType.uint64](value.element_size)
             self.scalar[DType.uint64](value.count)
-            for byte in value.payload:
-                self.scalar[DType.uint8](byte)
+            var start = self.size()
+            self.grow(len(value.payload))
+            comptime if not Self.count_only:
+                if len(value.payload) > 0:
+                    unsafe_memcpy(
+                        dest=self.data.unsafe_ptr().unsafe_offset(start),
+                        src=value.payload.unsafe_ptr(),
+                        count=len(value.payload),
+                    )

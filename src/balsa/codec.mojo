@@ -73,8 +73,9 @@ def decode[
     model.extensions = reader.extensions()
     var total_nodes = 0
     for tree_id in range(Int(model.num_tree)):
+        reader.tree_id = tree_id
         var tree = Tree[dtype]()
-        reader.field = "tree[" + String(tree_id) + "].num_nodes"
+        reader.field = "num_nodes"
         tree.num_nodes = reader.scalar[DType.int32]()
         if (
             tree.num_nodes <= 0
@@ -82,53 +83,53 @@ def decode[
         ):
             reader.fail("invalid node count or total node limit exceeded")
         total_nodes += Int(tree.num_nodes)
-        reader.field = "tree[" + String(tree_id) + "].has_categorical_split"
+        reader.field = "has_categorical_split"
         tree.has_categorical_split = reader.scalar[DType.uint8]()
-        reader.field = "tree[" + String(tree_id) + "].node_type"
+        reader.field = "node_type"
         tree.node_type = reader.array[DType.int8]()
-        reader.field = "tree[" + String(tree_id) + "].cleft"
+        reader.field = "cleft"
         tree.cleft = reader.array[DType.int32]()
-        reader.field = "tree[" + String(tree_id) + "].cright"
+        reader.field = "cright"
         tree.cright = reader.array[DType.int32]()
-        reader.field = "tree[" + String(tree_id) + "].split_index"
+        reader.field = "split_index"
         tree.split_index = reader.array[DType.int32]()
-        reader.field = "tree[" + String(tree_id) + "].default_left"
+        reader.field = "default_left"
         tree.default_left = reader.array[DType.uint8]()
-        reader.field = "tree[" + String(tree_id) + "].leaf_value"
+        reader.field = "leaf_value"
         tree.leaf_value = reader.array[dtype]()
-        reader.field = "tree[" + String(tree_id) + "].threshold"
+        reader.field = "threshold"
         tree.threshold = reader.array[dtype]()
-        reader.field = "tree[" + String(tree_id) + "].cmp"
+        reader.field = "cmp"
         tree.cmp = reader.array[DType.int8]()
-        reader.field = "tree[" + String(tree_id) + "].category_list_right_child"
+        reader.field = "category_list_right_child"
         tree.category_list_right_child = reader.array[DType.uint8]()
-        reader.field = "tree[" + String(tree_id) + "].leaf_vector"
+        reader.field = "leaf_vector"
         tree.leaf_vector = reader.array[dtype]()
-        reader.field = "tree[" + String(tree_id) + "].leaf_vector_begin"
+        reader.field = "leaf_vector_begin"
         tree.leaf_vector_begin = reader.array[DType.uint64]()
-        reader.field = "tree[" + String(tree_id) + "].leaf_vector_end"
+        reader.field = "leaf_vector_end"
         tree.leaf_vector_end = reader.array[DType.uint64]()
-        reader.field = "tree[" + String(tree_id) + "].category_list"
+        reader.field = "category_list"
         tree.category_list = reader.array[DType.uint32]()
-        reader.field = "tree[" + String(tree_id) + "].category_list_begin"
+        reader.field = "category_list_begin"
         tree.category_list_begin = reader.array[DType.uint64]()
-        reader.field = "tree[" + String(tree_id) + "].category_list_end"
+        reader.field = "category_list_end"
         tree.category_list_end = reader.array[DType.uint64]()
-        reader.field = "tree[" + String(tree_id) + "].data_count"
+        reader.field = "data_count"
         tree.data_count = reader.array[DType.uint64]()
-        reader.field = "tree[" + String(tree_id) + "].data_count_present"
+        reader.field = "data_count_present"
         tree.data_count_present = reader.array[DType.uint8]()
-        reader.field = "tree[" + String(tree_id) + "].sum_hess"
+        reader.field = "sum_hess"
         tree.sum_hess = reader.array[DType.float64]()
-        reader.field = "tree[" + String(tree_id) + "].sum_hess_present"
+        reader.field = "sum_hess_present"
         tree.sum_hess_present = reader.array[DType.uint8]()
-        reader.field = "tree[" + String(tree_id) + "].gain"
+        reader.field = "gain"
         tree.gain = reader.array[DType.float64]()
-        reader.field = "tree[" + String(tree_id) + "].gain_present"
+        reader.field = "gain_present"
         tree.gain_present = reader.array[DType.uint8]()
-        reader.field = "tree[" + String(tree_id) + "].tree_extensions"
+        reader.field = "tree_extensions"
         tree.tree_extensions = reader.extensions()
-        reader.field = "tree[" + String(tree_id) + "].node_extensions"
+        reader.field = "node_extensions"
         tree.node_extensions = reader.extensions()
         model.trees.append(tree^)
     if reader.pos != len(reader.data):
@@ -142,7 +143,18 @@ def encode[
 ](model: Model[dtype], limits: Limits = Limits()) raises -> List[UInt8]:
     """Encode owned fields, retaining version, extensions and floating bits."""
     validate(model, limits)
+    # One shared field traversal, specialized to count or emit at compile time.
+    var counter = Writer[True](limits)
+    write_model(model, counter)
     var writer = Writer(limits)
+    writer.data.reserve(counter.size())
+    write_model(model, writer)
+    return writer^.finish()
+
+
+def write_model[
+    dtype: DType, count_only: Bool
+](model: Model[dtype], mut writer: Writer[count_only]) raises:
     writer.scalar[DType.int32](model.major)
     writer.scalar[DType.int32](model.minor)
     writer.scalar[DType.int32](model.patch)
@@ -189,7 +201,6 @@ def encode[
         writer.array[DType.uint8](tree.gain_present)
         writer.extensions(tree.tree_extensions)
         writer.extensions(tree.node_extensions)
-    return writer^.finish()
 
 
 def read_file(path: String, limits: Limits = Limits()) raises -> List[UInt8]:

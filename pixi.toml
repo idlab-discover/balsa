@@ -45,6 +45,13 @@ scikit-learn = "==1.6.1"
 framework-fixtures = "python tools/framework_fixtures.py"
 framework-fixtures-check = "python tools/framework_fixtures.py --check"
 
+[feature.benchmark.pypi-dependencies]
+pyperf = "==2.10.0"
+
+[feature.benchmark.tasks]
+pyperf = "python -m pyperf"
+
 [environments]
 oracle = ["oracle"]
 frameworks = ["oracle", "frameworks"]
+benchmark = ["oracle", "benchmark"]

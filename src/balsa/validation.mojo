@@ -5,9 +5,10 @@ from .constants import NodeType, Operator, TaskType, type_tag
 from .wire import Limits
 
 
-def require(condition: Bool, field: String) raises:
+@always_inline
+def require(condition: Bool, field: StringSlice) raises:
     if not condition:
-        raise Error("Malformed model: " + field)
+        raise Error("Malformed model: " + String(field))
 
 
 def check_extensions(values: List[Extension], limits: Limits) raises:
@@ -25,9 +26,10 @@ def check_extensions(values: List[Extension], limits: Limits) raises:
         )
 
 
-def check_bool(values: List[UInt8], field: String) raises:
+def check_bool(values: List[UInt8], field: StringSlice) raises:
     for value in values:
-        require(value <= 1, field + " boolean")
+        if value > 1:
+            raise Error("Malformed model: " + String(field) + " boolean")
 
 
 def check_stat[
@@ -36,10 +38,12 @@ def check_stat[
     values: List[SIMD[dtype, 1]],
     present: List[UInt8],
     nodes: Int,
-    field: String,
+    field: StringSlice,
 ) raises:
-    require(len(values) == len(present), field + " presence length")
-    require(len(values) == 0 or len(values) == nodes, field + " length")
+    if len(values) != len(present):
+        raise Error("Malformed model: " + String(field) + " presence length")
+    if len(values) != 0 and len(values) != nodes:
+        raise Error("Malformed model: " + String(field) + " length")
     check_bool(present, field)
 
 
@@ -91,6 +95,8 @@ def validate[
     require(len(model.class_id) == len(model.trees), "class_id length")
     check_extensions(model.extensions, limits)
     var total_nodes = 0
+    var seen = List[UInt8]()
+    var stack = List[Int]()
     for tree_id in range(len(model.trees)):
         var target = Int(model.target_id[tree_id])
         var cls = Int(model.class_id[tree_id])
@@ -110,7 +116,9 @@ def validate[
         )
         total_nodes += nodes
         try:
-            validate_tree(model.trees[tree_id], model, tree_id, limits)
+            _validate_tree(
+                model.trees[tree_id], model, tree_id, limits, seen, stack
+            )
         except err:
             raise Error("tree[" + String(tree_id) + "]: " + String(err))
 
@@ -118,6 +126,21 @@ def validate[
 def validate_tree[
     dtype: DType
 ](tree: Tree[dtype], model: Model[dtype], tree_id: Int, limits: Limits) raises:
+    var seen = List[UInt8]()
+    var stack = List[Int]()
+    _validate_tree(tree, model, tree_id, limits, seen, stack)
+
+
+def _validate_tree[
+    dtype: DType
+](
+    tree: Tree[dtype],
+    model: Model[dtype],
+    tree_id: Int,
+    limits: Limits,
+    mut seen: List[UInt8],
+    mut stack: List[Int],
+) raises:
     var n = Int(tree.num_nodes)
     require(len(tree.node_type) == n, "node_type length")
     require(len(tree.cleft) == n and len(tree.cright) == n, "children lengths")
@@ -206,10 +229,12 @@ def validate_tree[
         "categorical flag mismatch",
     )
     # Iterative traversal rejects cycles, shared children and unreachable nodes.
-    var seen = List[UInt8]()
-    for _ in range(n):
-        seen.append(0)
-    var stack: List[Int] = [0]
+    # Reuse capacity across trees, but reset contents on every traversal.
+    # No validity state survives a public validate() call.
+    seen.clear()
+    seen.resize(n, 0)
+    stack.clear()
+    stack.append(0)
     var visited = 0
     while len(stack) > 0:
         var node = stack.pop()
