@@ -58,7 +58,10 @@ little-endian order even though upstream stream primitives use native-memory I/O
    truncated prefix of a stump, deterministic byte mutations and float bit
    preservation through native tests.
 5. Reproduce checks with `pixi run check`, `pixi run -e oracle fixtures-check`
-   and `pixi run -e oracle interop`. No check runs inference.
+   and `pixi run -e oracle interop`. These synthetic format checks run no inference.
+6. Parse and roundtrip the eight [trained-framework fixtures](framework-testing.md).
+   Their separate Python regeneration check uses source and Treelite predictions
+   to verify fixture conversion; native Balsa tests remain format-only.
 
 ## Remaining scope
 

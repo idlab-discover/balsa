@@ -103,17 +103,28 @@ pixi run -e oracle fixtures-check
 pixi run -e oracle interop
 ```
 
-The suite checks **14 byte-exact roundtrips and field comparisons**, upstream
+The synthetic suite checks **14 byte-exact roundtrips and field comparisons**, upstream
 loading of raw- and builder-created Mojo checkpoints, precision discovery,
 borrowed slices, UTF-8 access, construction errors, extension retention, floating-point bit
 preservation, malformed models, truncated prefixes and deterministic mutations.
-Fixture generation and verification perform no inference.
+Synthetic fixture generation and verification perform no inference.
 
 `fixtures-check` regenerates fixtures temporarily and compares every artifact.
 `pixi run -e oracle fixtures` intentionally regenerates the saved fixtures.
 [The manifest](tests/fixtures/manifest.json) records producer/wheel hashes and
 model fields; [the stump layout](tests/fixtures/stump-layout.json) independently
 annotates wire offsets.
+
+There are also **eight checkpoints from trained framework models**: XGBoost,
+LightGBM, a numeric CatBoost model, and five sklearn ensembles. `pixi run test`
+includes their native parsing and roundtrip checks without Python dependencies.
+`pixi run -e oracle framework-interop` compares the Balsa outputs with Treelite.
+The separate `frameworks` environment retrains and verifies their conversions
+against source-library predictions; see [framework testing](docs/framework-testing.md)
+for commands, pinned versions and the limited CatBoost adapter scope.
+
+A [performance measurement proposal](docs/performance-plan.md) separates
+in-memory codec, validation and file I/O costs for Balsa and Treelite.
 
 The sibling Treelite checkout is not a build dependency. Precompiled packages
 are compiler-version-specific; executables link Mojo runtime libraries from

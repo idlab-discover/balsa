@@ -81,7 +81,9 @@ For now, Treelite can convert its supported XGBoost, LightGBM and sklearn models
 to checkpoints that Balsa reads. Its documented frontend does not provide a
 CatBoost loader; do not assume CatBoost support through this route. CatBoost
 will need a separately verified importer and explicit handling of its feature
-and categorical semantics.
+and categorical semantics. A [test-only numeric symmetric-tree adapter](framework-testing.md)
+now supplies a verified CatBoost checkpoint fixture; it is not a native or
+general-purpose importer.
 
 Future importers should preserve source precision and model semantics, declare
 their supported source versions/model kinds, and verify their field conversion

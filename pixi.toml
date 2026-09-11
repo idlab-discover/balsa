@@ -12,10 +12,12 @@ run = "mojo run -I src examples/checkpoint.mojo inspect tests/fixtures/float32_o
 build = { cmd = "mojo build -I src examples/checkpoint.mojo -o build/balsa", depends-on = ["prepare"] }
 package = { cmd = "mojo precompile src/balsa -o build/balsa.mojoc", depends-on = ["prepare"] }
 smoke = { cmd = "./build/balsa inspect tests/fixtures/float32_op2_missing0.tl", depends-on = ["build"] }
-test = { cmd = "mojo run -I src tests/test_balsa.mojo", depends-on = ["prepare"] }
+test-core = { cmd = "mojo run -I src tests/test_balsa.mojo", depends-on = ["prepare"] }
+test-frameworks = { cmd = "mojo run -I src tests/test_frameworks.mojo", depends-on = ["prepare"] }
+test = { depends-on = ["test-core", "test-frameworks"] }
 example = { cmd = "mojo run -I src examples/construction.mojo", depends-on = ["prepare"] }
 check = { depends-on = ["smoke", "package", "test", "example"] }
-fmt = "mojo format src examples tests/test_balsa.mojo"
+fmt = "mojo format src examples tests"
 
 [dependencies]
 mojo = ">=1.0.0,<2"
@@ -30,6 +32,19 @@ treelite = "==4.6.1"
 fixtures = "python tools/fixtures.py"
 fixtures-check = "python tools/fixtures.py --check"
 interop = { cmd = "python tools/interop.py", depends-on = ["build", "test"] }
+framework-interop = { cmd = "python tools/framework_interop.py", depends-on = ["build", "test-frameworks"] }
+
+[feature.frameworks.pypi-dependencies]
+numpy = "==2.2.6"
+xgboost-cpu = "==2.1.4"
+lightgbm = "==4.6.0"
+catboost = "==1.2.8"
+scikit-learn = "==1.6.1"
+
+[feature.frameworks.tasks]
+framework-fixtures = "python tools/framework_fixtures.py"
+framework-fixtures-check = "python tools/framework_fixtures.py --check"
 
 [environments]
 oracle = ["oracle"]
+frameworks = ["oracle", "frameworks"]

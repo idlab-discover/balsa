@@ -1,0 +1,4681 @@
+{
+  "byteorder": "little",
+  "cases": [
+    {
+      "bytes": 5326,
+      "conversion": "treelite.frontend.from_xgboost",
+      "conversion_tolerance": 1e-06,
+      "framework_class": "xgboost.XGBRegressor",
+      "metadata": {
+        "attributes": "{}",
+        "average_tree_output": false,
+        "base_scores": [
+          0.3445158898830414
+        ],
+        "class_id": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leaf_output_type": "float32",
+        "leaf_vector_shape": [
+          1,
+          1
+        ],
+        "num_class": [
+          1
+        ],
+        "num_feature": 4,
+        "num_target": 1,
+        "postprocessor": "identity",
+        "ratio_c": 1.0,
+        "sigmoid_alpha": 1.0,
+        "target_id": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "task_type": "kRegressor",
+        "threshold_type": "float32",
+        "trees": [
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<",
+                "default_left": true,
+                "gain": 530.0990600585938,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 2,
+                "split_feature_id": 0,
+                "sum_hess": 256.0,
+                "threshold": -0.01968405395746231
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 114.10658264160156,
+                "left_child": 3,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 1,
+                "sum_hess": 150.0,
+                "threshold": 0.4166634976863861
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 106.98495483398438,
+                "left_child": 5,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 6,
+                "split_feature_id": 0,
+                "sum_hess": 106.0,
+                "threshold": 0.6700199246406555
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 73.57533264160156,
+                "left_child": 7,
+                "node_id": 3,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "sum_hess": 103.0,
+                "threshold": -1.015155553817749
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 27.793609619140625,
+                "left_child": 9,
+                "node_id": 4,
+                "node_type": "numerical_test_node",
+                "right_child": 10,
+                "split_feature_id": 1,
+                "sum_hess": 47.0,
+                "threshold": 1.579465389251709
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 29.29730224609375,
+                "left_child": 11,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 1,
+                "sum_hess": 59.0,
+                "threshold": -0.40964287519454956
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 25.856658935546875,
+                "left_child": 13,
+                "node_id": 6,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 1,
+                "sum_hess": 47.0,
+                "threshold": -0.298658549785614
+              },
+              {
+                "leaf_value": -0.42844000458717346,
+                "node_id": 7,
+                "sum_hess": 23.0
+              },
+              {
+                "leaf_value": -0.02875790372490883,
+                "node_id": 8,
+                "sum_hess": 80.0
+              },
+              {
+                "leaf_value": -0.412882536649704,
+                "node_id": 9,
+                "sum_hess": 40.0
+              },
+              {
+                "leaf_value": -0.8624901175498962,
+                "node_id": 10,
+                "sum_hess": 7.0
+              },
+              {
+                "leaf_value": 0.32828524708747864,
+                "node_id": 11,
+                "sum_hess": 23.0
+              },
+              {
+                "leaf_value": 0.04163757339119911,
+                "node_id": 12,
+                "sum_hess": 36.0
+              },
+              {
+                "leaf_value": 0.7205154299736023,
+                "node_id": 13,
+                "sum_hess": 23.0
+              },
+              {
+                "leaf_value": 0.38912996649742126,
+                "node_id": 14,
+                "sum_hess": 24.0
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<",
+                "default_left": true,
+                "gain": 350.77239990234375,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 2,
+                "split_feature_id": 0,
+                "sum_hess": 256.0,
+                "threshold": 0.05935411527752876
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 90.74740600585938,
+                "left_child": 3,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "sum_hess": 164.0,
+                "threshold": -0.748223602771759
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 60.09941101074219,
+                "left_child": 5,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 6,
+                "split_feature_id": 1,
+                "sum_hess": 92.0,
+                "threshold": -0.10102701932191849
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 31.327011108398438,
+                "left_child": 7,
+                "node_id": 3,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 1,
+                "sum_hess": 45.0,
+                "threshold": -0.2562344968318939
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 59.68890380859375,
+                "left_child": 9,
+                "node_id": 4,
+                "node_type": "numerical_test_node",
+                "right_child": 10,
+                "split_feature_id": 1,
+                "sum_hess": 119.0,
+                "threshold": -0.6350654363632202
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 19.73211669921875,
+                "left_child": 11,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "sum_hess": 49.0,
+                "threshold": 1.23215651512146
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 16.660667419433594,
+                "left_child": 13,
+                "node_id": 6,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 0,
+                "sum_hess": 43.0,
+                "threshold": 1.2078466415405273
+              },
+              {
+                "leaf_value": -0.20322906970977783,
+                "node_id": 7,
+                "sum_hess": 19.0
+              },
+              {
+                "leaf_value": -0.5548951625823975,
+                "node_id": 8,
+                "sum_hess": 26.0
+              },
+              {
+                "leaf_value": 0.14341691136360168,
+                "node_id": 9,
+                "sum_hess": 33.0
+              },
+              {
+                "leaf_value": -0.16953687369823456,
+                "node_id": 10,
+                "sum_hess": 86.0
+              },
+              {
+                "leaf_value": 0.36506912112236023,
+                "node_id": 11,
+                "sum_hess": 36.0
+              },
+              {
+                "leaf_value": 0.6783453226089478,
+                "node_id": 12,
+                "sum_hess": 13.0
+              },
+              {
+                "leaf_value": 0.06870459765195847,
+                "node_id": 13,
+                "sum_hess": 35.0
+              },
+              {
+                "leaf_value": 0.3768805265426636,
+                "node_id": 14,
+                "sum_hess": 8.0
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<",
+                "default_left": true,
+                "gain": 232.1318359375,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 2,
+                "split_feature_id": 0,
+                "sum_hess": 256.0,
+                "threshold": -0.014673066325485706
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 64.94678497314453,
+                "left_child": 3,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 1,
+                "sum_hess": 152.0,
+                "threshold": 0.2136823683977127
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 47.231536865234375,
+                "left_child": 5,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 6,
+                "split_feature_id": 0,
+                "sum_hess": 104.0,
+                "threshold": 0.6700199246406555
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 38.456451416015625,
+                "left_child": 7,
+                "node_id": 3,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "sum_hess": 95.0,
+                "threshold": -1.228332281112671
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 21.895263671875,
+                "left_child": 9,
+                "node_id": 4,
+                "node_type": "numerical_test_node",
+                "right_child": 10,
+                "split_feature_id": 1,
+                "sum_hess": 57.0,
+                "threshold": 1.579465389251709
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 15.843942642211914,
+                "left_child": 11,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 1,
+                "sum_hess": 57.0,
+                "threshold": 0.9071620106697083
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 12.199203491210938,
+                "left_child": 13,
+                "node_id": 6,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 1,
+                "sum_hess": 47.0,
+                "threshold": -1.0530006885528564
+              },
+              {
+                "leaf_value": -0.31783178448677063,
+                "node_id": 7,
+                "sum_hess": 17.0
+              },
+              {
+                "leaf_value": 0.00640522176399827,
+                "node_id": 8,
+                "sum_hess": 78.0
+              },
+              {
+                "leaf_value": -0.26713401079177856,
+                "node_id": 9,
+                "sum_hess": 50.0
+              },
+              {
+                "leaf_value": -0.6433495879173279,
+                "node_id": 10,
+                "sum_hess": 7.0
+              },
+              {
+                "leaf_value": 0.15237794816493988,
+                "node_id": 11,
+                "sum_hess": 47.0
+              },
+              {
+                "leaf_value": -0.11596568673849106,
+                "node_id": 12,
+                "sum_hess": 10.0
+              },
+              {
+                "leaf_value": 0.624289333820343,
+                "node_id": 13,
+                "sum_hess": 7.0
+              },
+              {
+                "leaf_value": 0.31837138533592224,
+                "node_id": 14,
+                "sum_hess": 40.0
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<",
+                "default_left": true,
+                "gain": 158.55238342285156,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 2,
+                "split_feature_id": 0,
+                "sum_hess": 256.0,
+                "threshold": 0.33752310276031494
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 56.06299591064453,
+                "left_child": 3,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 1,
+                "sum_hess": 182.0,
+                "threshold": 0.8518760204315186
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 26.247802734375,
+                "left_child": 5,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 6,
+                "split_feature_id": 1,
+                "sum_hess": 74.0,
+                "threshold": -0.10102701932191849
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 41.793792724609375,
+                "left_child": 7,
+                "node_id": 3,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "sum_hess": 152.0,
+                "threshold": -0.4531814754009247
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 7.755302429199219,
+                "left_child": 9,
+                "node_id": 4,
+                "node_type": "numerical_test_node",
+                "right_child": 10,
+                "split_feature_id": 1,
+                "sum_hess": 30.0,
+                "threshold": 1.7269195318222046
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 7.84893798828125,
+                "left_child": 11,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "sum_hess": 41.0,
+                "threshold": 1.5828882455825806
+              },
+              {
+                "comparison_op": "<",
+                "default_left": false,
+                "gain": 6.426843643188477,
+                "left_child": 13,
+                "node_id": 6,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 0,
+                "sum_hess": 33.0,
+                "threshold": 1.2078466415405273
+              },
+              {
+                "leaf_value": -0.18750829994678497,
+                "node_id": 7,
+                "sum_hess": 55.0
+              },
+              {
+                "leaf_value": 0.029242290183901787,
+                "node_id": 8,
+                "sum_hess": 97.0
+              },
+              {
+                "leaf_value": -0.26254802942276,
+                "node_id": 9,
+                "sum_hess": 22.0
+              },
+              {
+                "leaf_value": -0.5191275477409363,
+                "node_id": 10,
+                "sum_hess": 8.0
+              },
+              {
+                "leaf_value": 0.29432088136672974,
+                "node_id": 11,
+                "sum_hess": 34.0
+              },
+              {
+                "leaf_value": 0.5524728298187256,
+                "node_id": 12,
+                "sum_hess": 7.0
+              },
+              {
+                "leaf_value": 0.05295178294181824,
+                "node_id": 13,
+                "sum_hess": 25.0
+              },
+              {
+                "leaf_value": 0.2532802224159241,
+                "node_id": 14,
+                "sum_hess": 8.0
+              }
+            ],
+            "num_nodes": 15
+          }
+        ]
+      },
+      "name": "xgboost_regression",
+      "probe_rows": 64,
+      "sha256": "632ec0599c690c3e9c939f49670f2b85940fdf31c63cb3e1faad26fa0ab2399c"
+    },
+    {
+      "bytes": 3053,
+      "conversion": "treelite.frontend.from_lightgbm",
+      "conversion_tolerance": 1e-12,
+      "framework_class": "lightgbm.Booster",
+      "metadata": {
+        "attributes": "{}",
+        "average_tree_output": false,
+        "base_scores": [
+          0.0
+        ],
+        "class_id": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leaf_output_type": "float64",
+        "leaf_vector_shape": [
+          1,
+          1
+        ],
+        "num_class": [
+          1
+        ],
+        "num_feature": 4,
+        "num_target": 1,
+        "postprocessor": "sigmoid",
+        "ratio_c": 1.0,
+        "sigmoid_alpha": 1.0,
+        "target_id": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "task_type": "kBinaryClf",
+        "threshold_type": "float64",
+        "trees": [
+          {
+            "has_categorical_split": true,
+            "nodes": [
+              {
+                "category_list": [
+                  0,
+                  2
+                ],
+                "category_list_right_child": false,
+                "data_count": 256,
+                "default_left": false,
+                "gain": 256.0,
+                "left_child": 6,
+                "node_id": 0,
+                "node_type": "categorical_test_node",
+                "right_child": 1,
+                "split_feature_id": 0
+              },
+              {
+                "category_list": [
+                  3
+                ],
+                "category_list_right_child": false,
+                "data_count": 122,
+                "default_left": false,
+                "gain": 2.842169926600864e-14,
+                "left_child": 3,
+                "node_id": 1,
+                "node_type": "categorical_test_node",
+                "right_child": 2,
+                "split_feature_id": 0
+              },
+              {
+                "data_count": 65,
+                "leaf_value": -0.3258533759298861,
+                "node_id": 2
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 57,
+                "default_left": true,
+                "gain": 7.105429898699844e-15,
+                "left_child": 5,
+                "node_id": 3,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 1,
+                "threshold": 1.5716305971145632
+              },
+              {
+                "data_count": 7,
+                "leaf_value": -0.32585337592988567,
+                "node_id": 4
+              },
+              {
+                "data_count": 50,
+                "leaf_value": -0.3258533759298861,
+                "node_id": 5
+              },
+              {
+                "data_count": 134,
+                "leaf_value": 0.4759083074564609,
+                "node_id": 6
+              }
+            ],
+            "num_nodes": 7
+          },
+          {
+            "has_categorical_split": true,
+            "nodes": [
+              {
+                "category_list": [
+                  0,
+                  2
+                ],
+                "category_list_right_child": false,
+                "data_count": 256,
+                "default_left": false,
+                "gain": 171.32899475097656,
+                "left_child": 2,
+                "node_id": 0,
+                "node_type": "categorical_test_node",
+                "right_child": 1,
+                "split_feature_id": 0
+              },
+              {
+                "data_count": 122,
+                "leaf_value": -0.34438220652160545,
+                "node_id": 1
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 134,
+                "default_left": true,
+                "gain": 1.4210900454981155e-14,
+                "left_child": 4,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 3,
+                "split_feature_id": 1,
+                "threshold": 1.3846526741981509
+              },
+              {
+                "data_count": 9,
+                "leaf_value": 0.3242641042315295,
+                "node_id": 3
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 125,
+                "default_left": true,
+                "gain": 1.4210900454981155e-14,
+                "left_child": 6,
+                "node_id": 4,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "threshold": 0.19883000105619433
+              },
+              {
+                "data_count": 41,
+                "leaf_value": 0.3242641042315295,
+                "node_id": 5
+              },
+              {
+                "data_count": 84,
+                "leaf_value": 0.3242641042315294,
+                "node_id": 6
+              }
+            ],
+            "num_nodes": 7
+          },
+          {
+            "has_categorical_split": true,
+            "nodes": [
+              {
+                "category_list": [
+                  0,
+                  2
+                ],
+                "category_list_right_child": false,
+                "data_count": 256,
+                "default_left": false,
+                "gain": 122.61199951171875,
+                "left_child": 4,
+                "node_id": 0,
+                "node_type": "categorical_test_node",
+                "right_child": 1,
+                "split_feature_id": 0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 122,
+                "default_left": true,
+                "gain": 7.105429898699844e-15,
+                "left_child": 3,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 2,
+                "split_feature_id": 1,
+                "threshold": 0.8024840056896211
+              },
+              {
+                "data_count": 23,
+                "leaf_value": -0.30231759629231447,
+                "node_id": 2
+              },
+              {
+                "data_count": 99,
+                "leaf_value": -0.3023175962923144,
+                "node_id": 3
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 134,
+                "default_left": false,
+                "gain": 7.105429898699844e-15,
+                "left_child": 6,
+                "node_id": 4,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "threshold": -0.6960263848304747
+              },
+              {
+                "data_count": 99,
+                "leaf_value": 0.28985031380152676,
+                "node_id": 5
+              },
+              {
+                "data_count": 35,
+                "leaf_value": 0.28985031380152665,
+                "node_id": 6
+              }
+            ],
+            "num_nodes": 7
+          },
+          {
+            "has_categorical_split": true,
+            "nodes": [
+              {
+                "category_list": [
+                  0,
+                  2
+                ],
+                "category_list_right_child": false,
+                "data_count": 256,
+                "default_left": false,
+                "gain": 91.18099975585938,
+                "left_child": 2,
+                "node_id": 0,
+                "node_type": "categorical_test_node",
+                "right_child": 1,
+                "split_feature_id": 0
+              },
+              {
+                "data_count": 122,
+                "leaf_value": -0.275623282526878,
+                "node_id": 1
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 134,
+                "default_left": false,
+                "gain": 7.105429898699844e-15,
+                "left_child": 4,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 3,
+                "split_feature_id": 1,
+                "threshold": -0.812069147825241
+              },
+              {
+                "data_count": 102,
+                "leaf_value": 0.26724177634155993,
+                "node_id": 3
+              },
+              {
+                "data_count": 32,
+                "leaf_value": 0.2672417763415597,
+                "node_id": 4
+              }
+            ],
+            "num_nodes": 5
+          }
+        ]
+      },
+      "name": "lightgbm_categorical",
+      "probe_rows": 64,
+      "sha256": "20a3aca8cea515d922a90d1f4e40d1d735944a020c0ce2b81d5990e753cff5f0"
+    },
+    {
+      "bytes": 4726,
+      "conversion": "test-only numeric symmetric-tree adapter via treelite.model_builder",
+      "conversion_tolerance": 1e-12,
+      "framework_class": "catboost.CatBoostRegressor",
+      "metadata": {
+        "attributes": "{}",
+        "average_tree_output": false,
+        "base_scores": [
+          -0.75
+        ],
+        "class_id": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leaf_output_type": "float64",
+        "leaf_vector_shape": [
+          1,
+          1
+        ],
+        "num_class": [
+          1
+        ],
+        "num_feature": 4,
+        "num_target": 1,
+        "postprocessor": "identity",
+        "ratio_c": 1.0,
+        "sigmoid_alpha": 1.0,
+        "target_id": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "task_type": "kRegressor",
+        "threshold_type": "float64",
+        "trees": [
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "threshold": 0.4014032483100891
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 0,
+                "threshold": -0.7288678884506226
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 1,
+                "threshold": -0.5500087738037109
+              },
+              {
+                "leaf_value": 0.3976171278852113,
+                "node_id": 3
+              },
+              {
+                "leaf_value": 0.7638848721389133,
+                "node_id": 4
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 1,
+                "threshold": -0.5500087738037109
+              },
+              {
+                "leaf_value": 0.0,
+                "node_id": 6
+              },
+              {
+                "leaf_value": 0.0,
+                "node_id": 7
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "threshold": -0.7288678884506226
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 1,
+                "threshold": -0.5500087738037109
+              },
+              {
+                "leaf_value": -0.1372401632207303,
+                "node_id": 10
+              },
+              {
+                "leaf_value": 0.1839231266812678,
+                "node_id": 11
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 1,
+                "threshold": -0.5500087738037109
+              },
+              {
+                "leaf_value": -0.5351054248450665,
+                "node_id": 13
+              },
+              {
+                "leaf_value": -0.05650943172049362,
+                "node_id": 14
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "threshold": 0.011542534455657005
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 0,
+                "threshold": 0.6117334365844727
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 3,
+                "threshold": -0.25445353984832764
+              },
+              {
+                "leaf_value": 0.5455007259480386,
+                "node_id": 3
+              },
+              {
+                "leaf_value": 0.4602716657175618,
+                "node_id": 4
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 3,
+                "threshold": -0.25445353984832764
+              },
+              {
+                "leaf_value": 0.10939164605792308,
+                "node_id": 6
+              },
+              {
+                "leaf_value": 0.17407108316222855,
+                "node_id": 7
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "threshold": 0.6117334365844727
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 3,
+                "threshold": -0.25445353984832764
+              },
+              {
+                "leaf_value": 0.0,
+                "node_id": 10
+              },
+              {
+                "leaf_value": 0.0,
+                "node_id": 11
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 3,
+                "threshold": -0.25445353984832764
+              },
+              {
+                "leaf_value": -0.22580040743879484,
+                "node_id": 13
+              },
+              {
+                "leaf_value": -0.22417785928075118,
+                "node_id": 14
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "threshold": 0.3204648196697235
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "threshold": -1.0127365589141846
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 2,
+                "threshold": -1.0926449298858643
+              },
+              {
+                "leaf_value": 0.25815267857150637,
+                "node_id": 3
+              },
+              {
+                "leaf_value": 0.2543943793016866,
+                "node_id": 4
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 2,
+                "threshold": -1.0926449298858643
+              },
+              {
+                "leaf_value": 0.5596149074744168,
+                "node_id": 6
+              },
+              {
+                "leaf_value": 0.26295574720775877,
+                "node_id": 7
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 1,
+                "threshold": -1.0127365589141846
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 2,
+                "threshold": -1.0926449298858643
+              },
+              {
+                "leaf_value": -0.25039598511456934,
+                "node_id": 10
+              },
+              {
+                "leaf_value": -0.05662652108598464,
+                "node_id": 11
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 2,
+                "threshold": -1.0926449298858643
+              },
+              {
+                "leaf_value": 0.12954302226218653,
+                "node_id": 13
+              },
+              {
+                "leaf_value": 0.24300396382867226,
+                "node_id": 14
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "threshold": -0.04612177982926369
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "threshold": 0.31253302097320557
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 2,
+                "threshold": -0.2424333095550537
+              },
+              {
+                "leaf_value": 0.005976323496066407,
+                "node_id": 3
+              },
+              {
+                "leaf_value": 0.0835287448816021,
+                "node_id": 4
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 2,
+                "threshold": -0.2424333095550537
+              },
+              {
+                "leaf_value": 0.342261210626768,
+                "node_id": 6
+              },
+              {
+                "leaf_value": 0.30002189508371263,
+                "node_id": 7
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 1,
+                "threshold": 0.31253302097320557
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 2,
+                "threshold": -0.2424333095550537
+              },
+              {
+                "leaf_value": -0.4854254866468859,
+                "node_id": 10
+              },
+              {
+                "leaf_value": -0.29297755414161686,
+                "node_id": 11
+              },
+              {
+                "comparison_op": ">",
+                "default_left": false,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 2,
+                "threshold": -0.2424333095550537
+              },
+              {
+                "leaf_value": -0.017033066340130087,
+                "node_id": 13
+              },
+              {
+                "leaf_value": -0.0849470467407222,
+                "node_id": 14
+              }
+            ],
+            "num_nodes": 15
+          }
+        ]
+      },
+      "name": "catboost_numeric_regression",
+      "probe_rows": 100,
+      "sha256": "33603cd7a7bf6e597c88728b8d56934c8fe86e9e35afff0f7960ca1bdc68bba0"
+    },
+    {
+      "bytes": 6870,
+      "conversion": "treelite.sklearn.import_model",
+      "conversion_tolerance": 1e-12,
+      "framework_class": "sklearn.ensemble.RandomForestRegressor",
+      "metadata": {
+        "attributes": "{}",
+        "average_tree_output": true,
+        "base_scores": [
+          0.0,
+          0.0
+        ],
+        "class_id": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leaf_output_type": "float64",
+        "leaf_vector_shape": [
+          2,
+          1
+        ],
+        "num_class": [
+          1,
+          1
+        ],
+        "num_feature": 4,
+        "num_target": 2,
+        "postprocessor": "identity",
+        "ratio_c": 1.0,
+        "sigmoid_alpha": 1.0,
+        "target_id": [
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "task_type": "kRegressor",
+        "threshold_type": "float64",
+        "trees": [
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 166,
+                "default_left": true,
+                "gain": 3.131432272573829,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 3,
+                "sum_hess": 256.0,
+                "threshold": 0.20568173378705978
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 94,
+                "default_left": true,
+                "gain": 0.8130699312886656,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 3,
+                "sum_hess": 143.0,
+                "threshold": -1.0205235481262207
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 28,
+                "default_left": true,
+                "gain": 0.1797785953427778,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "sum_hess": 38.0,
+                "threshold": -0.7548103332519531
+              },
+              {
+                "data_count": 5,
+                "leaf_value": [
+                  -3.1806982278823854,
+                  5.784163284301758
+                ],
+                "node_id": 3,
+                "sum_hess": 5.0
+              },
+              {
+                "data_count": 23,
+                "leaf_value": [
+                  1.1456421342763035,
+                  4.823240547469168
+                ],
+                "node_id": 4,
+                "sum_hess": 33.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 66,
+                "default_left": true,
+                "gain": 0.42412640753581393,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 0,
+                "sum_hess": 105.0,
+                "threshold": 0.4723896086215973
+              },
+              {
+                "data_count": 46,
+                "leaf_value": [
+                  -0.5872256921870368,
+                  1.0598149550812586
+                ],
+                "node_id": 6,
+                "sum_hess": 70.0
+              },
+              {
+                "data_count": 20,
+                "leaf_value": [
+                  2.548559406825474,
+                  1.18591382758958
+                ],
+                "node_id": 7,
+                "sum_hess": 35.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 72,
+                "default_left": true,
+                "gain": 0.5259864889099877,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "sum_hess": 113.0,
+                "threshold": -0.029631296172738075
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 38,
+                "default_left": true,
+                "gain": 0.16751071299027856,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 3,
+                "sum_hess": 56.0,
+                "threshold": 1.0678673386573792
+              },
+              {
+                "data_count": 22,
+                "leaf_value": [
+                  -1.1415863767266274,
+                  -1.6652265182563237
+                ],
+                "node_id": 10,
+                "sum_hess": 35.0
+              },
+              {
+                "data_count": 16,
+                "leaf_value": [
+                  -0.6651452751386733,
+                  -4.2569806689307805
+                ],
+                "node_id": 11,
+                "sum_hess": 21.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 34,
+                "default_left": true,
+                "gain": 0.2686515732866045,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 3,
+                "sum_hess": 57.0,
+                "threshold": 0.9182927906513214
+              },
+              {
+                "data_count": 18,
+                "leaf_value": [
+                  1.5379817774801543,
+                  -1.9031392931938171
+                ],
+                "node_id": 13,
+                "sum_hess": 33.0
+              },
+              {
+                "data_count": 16,
+                "leaf_value": [
+                  2.866044484078884,
+                  -4.973901728789012
+                ],
+                "node_id": 14,
+                "sum_hess": 24.0
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 166,
+                "default_left": true,
+                "gain": 3.185757380830714,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 3,
+                "sum_hess": 256.0,
+                "threshold": 0.20568173378705978
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 95,
+                "default_left": true,
+                "gain": 0.6396950723912598,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 0,
+                "sum_hess": 144.0,
+                "threshold": 0.474301815032959
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 74,
+                "default_left": true,
+                "gain": 0.4040364074644631,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 3,
+                "sum_hess": 112.0,
+                "threshold": -1.11895090341568
+              },
+              {
+                "data_count": 23,
+                "leaf_value": [
+                  -0.4947429811581969,
+                  4.331661447882652
+                ],
+                "node_id": 3,
+                "sum_hess": 32.0
+              },
+              {
+                "data_count": 51,
+                "leaf_value": [
+                  -0.8039698725100607,
+                  1.2861777998507022
+                ],
+                "node_id": 4,
+                "sum_hess": 80.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 21,
+                "default_left": true,
+                "gain": 0.23634445549943744,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 1,
+                "sum_hess": 32.0,
+                "threshold": -1.692736029624939
+              },
+              {
+                "data_count": 1,
+                "leaf_value": [
+                  9.017282485961914,
+                  1.6597871780395508
+                ],
+                "node_id": 6,
+                "sum_hess": 3.0
+              },
+              {
+                "data_count": 20,
+                "leaf_value": [
+                  2.179369386927835,
+                  1.4968298570863132
+                ],
+                "node_id": 7,
+                "sum_hess": 29.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 71,
+                "default_left": true,
+                "gain": 0.5796279337087903,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "sum_hess": 112.0,
+                "threshold": 0.5345665812492371
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 52,
+                "default_left": true,
+                "gain": 0.3167425969829068,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 3,
+                "sum_hess": 80.0,
+                "threshold": 0.9871892035007477
+              },
+              {
+                "data_count": 31,
+                "leaf_value": [
+                  -0.38203346721517545,
+                  -1.8630271951357524
+                ],
+                "node_id": 10,
+                "sum_hess": 48.0
+              },
+              {
+                "data_count": 21,
+                "leaf_value": [
+                  -0.09945338685065508,
+                  -4.7559259459376335
+                ],
+                "node_id": 11,
+                "sum_hess": 32.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 19,
+                "default_left": true,
+                "gain": 0.15271099692593607,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 3,
+                "sum_hess": 32.0,
+                "threshold": 1.0158816576004028
+              },
+              {
+                "data_count": 13,
+                "leaf_value": [
+                  2.969180941581726,
+                  -2.12344090057456
+                ],
+                "node_id": 13,
+                "sum_hess": 23.0
+              },
+              {
+                "data_count": 6,
+                "leaf_value": [
+                  4.46681022644043,
+                  -5.424542533026801
+                ],
+                "node_id": 14,
+                "sum_hess": 9.0
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 161,
+                "default_left": true,
+                "gain": 2.765560025673724,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 3,
+                "sum_hess": 256.0,
+                "threshold": 0.14936788380146027
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 91,
+                "default_left": true,
+                "gain": 0.7288923946159842,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 3,
+                "sum_hess": 142.0,
+                "threshold": -1.0205235481262207
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 27,
+                "default_left": true,
+                "gain": 0.14002554942522233,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 1,
+                "sum_hess": 36.0,
+                "threshold": -0.04330247733741999
+              },
+              {
+                "data_count": 11,
+                "leaf_value": [
+                  1.4278216337164242,
+                  3.783021559317907
+                ],
+                "node_id": 3,
+                "sum_hess": 12.0
+              },
+              {
+                "data_count": 16,
+                "leaf_value": [
+                  -0.6844586127748092,
+                  5.54338922103246
+                ],
+                "node_id": 4,
+                "sum_hess": 24.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 64,
+                "default_left": true,
+                "gain": 0.43315967386608883,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 0,
+                "sum_hess": 106.0,
+                "threshold": 0.4723896086215973
+              },
+              {
+                "data_count": 42,
+                "leaf_value": [
+                  -0.6441829719891151,
+                  1.1907883832852046
+                ],
+                "node_id": 6,
+                "sum_hess": 72.0
+              },
+              {
+                "data_count": 22,
+                "leaf_value": [
+                  2.509939498761121,
+                  1.411930393646745
+                ],
+                "node_id": 7,
+                "sum_hess": 34.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 70,
+                "default_left": true,
+                "gain": 0.6307564314011415,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "sum_hess": 114.0,
+                "threshold": 0.5345665812492371
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 47,
+                "default_left": true,
+                "gain": 0.28379180212811617,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 3,
+                "sum_hess": 73.0,
+                "threshold": 0.8371358811855316
+              },
+              {
+                "data_count": 25,
+                "leaf_value": [
+                  -0.0756916349401345,
+                  -1.1424480136987325
+                ],
+                "node_id": 10,
+                "sum_hess": 37.0
+              },
+              {
+                "data_count": 22,
+                "leaf_value": [
+                  -0.782272977133592,
+                  -3.7932526800367565
+                ],
+                "node_id": 11,
+                "sum_hess": 36.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 23,
+                "default_left": true,
+                "gain": 0.18180928682932274,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 3,
+                "sum_hess": 41.0,
+                "threshold": 1.0891366004943848
+              },
+              {
+                "data_count": 17,
+                "leaf_value": [
+                  2.816697482019663,
+                  -1.7965862732380629
+                ],
+                "node_id": 13,
+                "sum_hess": 32.0
+              },
+              {
+                "data_count": 6,
+                "leaf_value": [
+                  4.325093083911472,
+                  -5.359985881381565
+                ],
+                "node_id": 14,
+                "sum_hess": 9.0
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 165,
+                "default_left": true,
+                "gain": 3.0029749042059413,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 3,
+                "sum_hess": 256.0,
+                "threshold": -0.10163120180368423
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 82,
+                "default_left": true,
+                "gain": 0.6360513989232385,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 3,
+                "sum_hess": 132.0,
+                "threshold": -1.0056715607643127
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 30,
+                "default_left": true,
+                "gain": 0.30496426468283927,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 1,
+                "sum_hess": 48.0,
+                "threshold": 1.7910535335540771
+              },
+              {
+                "data_count": 28,
+                "leaf_value": [
+                  0.44024934111671016,
+                  4.434002591805025
+                ],
+                "node_id": 3,
+                "sum_hess": 44.0
+              },
+              {
+                "data_count": 2,
+                "leaf_value": [
+                  -5.709822416305542,
+                  6.933422327041626
+                ],
+                "node_id": 4,
+                "sum_hess": 4.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 52,
+                "default_left": true,
+                "gain": 0.2226519748320552,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 0,
+                "sum_hess": 84.0,
+                "threshold": -0.38369229435920715
+              },
+              {
+                "data_count": 23,
+                "leaf_value": [
+                  -1.2756774052977562,
+                  1.259255087511106
+                ],
+                "node_id": 6,
+                "sum_hess": 44.0
+              },
+              {
+                "data_count": 29,
+                "leaf_value": [
+                  1.1388725232332946,
+                  1.3705053701996803
+                ],
+                "node_id": 7,
+                "sum_hess": 40.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 83,
+                "default_left": true,
+                "gain": 0.7404370018936163,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "sum_hess": 124.0,
+                "threshold": -0.0273213186301291
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 40,
+                "default_left": true,
+                "gain": 0.15231685331464784,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 3,
+                "sum_hess": 59.0,
+                "threshold": 0.8371358811855316
+              },
+              {
+                "data_count": 24,
+                "leaf_value": [
+                  -1.1244806710042452,
+                  -1.2493166735297756
+                ],
+                "node_id": 10,
+                "sum_hess": 38.0
+              },
+              {
+                "data_count": 16,
+                "leaf_value": [
+                  -1.2320785366353535,
+                  -3.5778444835117886
+                ],
+                "node_id": 11,
+                "sum_hess": 21.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 43,
+                "default_left": true,
+                "gain": 0.2668774782724594,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 3,
+                "sum_hess": 65.0,
+                "threshold": 1.0891366004943848
+              },
+              {
+                "data_count": 32,
+                "leaf_value": [
+                  2.029222277303537,
+                  -1.7337765029321115
+                ],
+                "node_id": 13,
+                "sum_hess": 48.0
+              },
+              {
+                "data_count": 11,
+                "leaf_value": [
+                  2.8121030260534847,
+                  -4.892217173295863
+                ],
+                "node_id": 14,
+                "sum_hess": 17.0
+              }
+            ],
+            "num_nodes": 15
+          }
+        ]
+      },
+      "name": "sklearn_rf_multioutput_regression",
+      "probe_rows": 64,
+      "sha256": "3adb9821c29a3ff43c88737b425b4495537bf35a60cdeb829a7124375bf263b1"
+    },
+    {
+      "bytes": 6111,
+      "conversion": "treelite.sklearn.import_model",
+      "conversion_tolerance": 1e-12,
+      "framework_class": "sklearn.ensemble.RandomForestClassifier",
+      "metadata": {
+        "attributes": "{}",
+        "average_tree_output": true,
+        "base_scores": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "class_id": [
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "leaf_output_type": "float64",
+        "leaf_vector_shape": [
+          1,
+          3
+        ],
+        "num_class": [
+          3
+        ],
+        "num_feature": 4,
+        "num_target": 1,
+        "postprocessor": "identity_multiclass",
+        "ratio_c": 1.0,
+        "sigmoid_alpha": 1.0,
+        "target_id": [
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "task_type": "kMultiClf",
+        "threshold_type": "float64",
+        "trees": [
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 166,
+                "default_left": true,
+                "gain": 0.026762794421229974,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 2,
+                "sum_hess": 256.0,
+                "threshold": 1.5585224032402039
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 157,
+                "default_left": true,
+                "gain": 0.06667587336015683,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "sum_hess": 243.0,
+                "threshold": 0.3696309030056
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 102,
+                "default_left": true,
+                "gain": 0.009484626005331767,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 1,
+                "sum_hess": 165.0,
+                "threshold": -1.042380928993225
+              },
+              {
+                "data_count": 28,
+                "leaf_value": [
+                  0.0,
+                  0.23214285714285715,
+                  0.7678571428571429
+                ],
+                "node_id": 3,
+                "sum_hess": 56.0
+              },
+              {
+                "data_count": 74,
+                "leaf_value": [
+                  0.21100917431192662,
+                  0.3302752293577982,
+                  0.45871559633027525
+                ],
+                "node_id": 4,
+                "sum_hess": 109.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 55,
+                "default_left": true,
+                "gain": 0.027209742175991338,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 2,
+                "sum_hess": 78.0,
+                "threshold": -0.5049593597650528
+              },
+              {
+                "data_count": 18,
+                "leaf_value": [
+                  0.16,
+                  0.68,
+                  0.16
+                ],
+                "node_id": 6,
+                "sum_hess": 25.0
+              },
+              {
+                "data_count": 37,
+                "leaf_value": [
+                  0.6226415094339622,
+                  0.2830188679245283,
+                  0.09433962264150944
+                ],
+                "node_id": 7,
+                "sum_hess": 53.0
+              },
+              {
+                "data_count": 9,
+                "leaf_value": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 8,
+                "sum_hess": 13.0
+              }
+            ],
+            "num_nodes": 9
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 166,
+                "default_left": true,
+                "gain": 0.04393563460726682,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 2,
+                "sum_hess": 256.0,
+                "threshold": 1.1653120517730713
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 150,
+                "default_left": true,
+                "gain": 0.05406849286474234,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "sum_hess": 229.0,
+                "threshold": -0.46396593749523163
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 53,
+                "default_left": true,
+                "gain": 0.07842938911438171,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "sum_hess": 75.0,
+                "threshold": -0.30078327655792236
+              },
+              {
+                "data_count": 22,
+                "leaf_value": [
+                  0.3448275862068966,
+                  0.5862068965517241,
+                  0.06896551724137931
+                ],
+                "node_id": 3,
+                "sum_hess": 29.0
+              },
+              {
+                "data_count": 31,
+                "leaf_value": [
+                  0.0,
+                  0.08695652173913043,
+                  0.9130434782608695
+                ],
+                "node_id": 4,
+                "sum_hess": 46.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 97,
+                "default_left": true,
+                "gain": 0.024887686975297096,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 1,
+                "sum_hess": 154.0,
+                "threshold": 0.4200727045536041
+              },
+              {
+                "data_count": 51,
+                "leaf_value": [
+                  0.23255813953488372,
+                  0.5581395348837209,
+                  0.20930232558139536
+                ],
+                "node_id": 6,
+                "sum_hess": 86.0
+              },
+              {
+                "data_count": 46,
+                "leaf_value": [
+                  0.5588235294117647,
+                  0.3235294117647059,
+                  0.11764705882352941
+                ],
+                "node_id": 7,
+                "sum_hess": 68.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 16,
+                "default_left": true,
+                "gain": 0.0009668302840993594,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "sum_hess": 27.0,
+                "threshold": -0.1656380295753479
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 6,
+                "default_left": true,
+                "gain": 0.018072289156626505,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 1,
+                "sum_hess": 6.0,
+                "threshold": -0.3499741554260254
+              },
+              {
+                "data_count": 3,
+                "leaf_value": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 10,
+                "sum_hess": 3.0
+              },
+              {
+                "data_count": 3,
+                "leaf_value": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "node_id": 11,
+                "sum_hess": 3.0
+              },
+              {
+                "data_count": 10,
+                "leaf_value": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 12,
+                "sum_hess": 21.0
+              }
+            ],
+            "num_nodes": 13
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 161,
+                "default_left": true,
+                "gain": 0.2219803991815071,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "sum_hess": 256.0,
+                "threshold": 0.4722740948200226
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 107,
+                "default_left": true,
+                "gain": 0.02283456229734683,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 2,
+                "sum_hess": 170.0,
+                "threshold": 0.1668565273284912
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 63,
+                "default_left": true,
+                "gain": 0.04008548089847459,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "sum_hess": 99.0,
+                "threshold": -0.7399369776248932
+              },
+              {
+                "data_count": 15,
+                "leaf_value": [
+                  0.6956521739130435,
+                  0.30434782608695654,
+                  0.0
+                ],
+                "node_id": 3,
+                "sum_hess": 23.0
+              },
+              {
+                "data_count": 48,
+                "leaf_value": [
+                  0.09210526315789473,
+                  0.7236842105263158,
+                  0.18421052631578946
+                ],
+                "node_id": 4,
+                "sum_hess": 76.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 44,
+                "default_left": true,
+                "gain": 0.029783829701207874,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 0,
+                "sum_hess": 71.0,
+                "threshold": -0.539475679397583
+              },
+              {
+                "data_count": 25,
+                "leaf_value": [
+                  0.723404255319149,
+                  0.2765957446808511,
+                  0.0
+                ],
+                "node_id": 6,
+                "sum_hess": 47.0
+              },
+              {
+                "data_count": 19,
+                "leaf_value": [
+                  0.125,
+                  0.625,
+                  0.25
+                ],
+                "node_id": 7,
+                "sum_hess": 24.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 54,
+                "default_left": true,
+                "gain": 0.03592984076451241,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 10,
+                "split_feature_id": 1,
+                "sum_hess": 86.0,
+                "threshold": 1.3873120546340942
+              },
+              {
+                "data_count": 49,
+                "leaf_value": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 9,
+                "sum_hess": 79.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 5,
+                "default_left": true,
+                "gain": 0.00760552668272278,
+                "left_child": 11,
+                "node_id": 10,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "sum_hess": 7.0,
+                "threshold": 1.521748125553131
+              },
+              {
+                "data_count": 4,
+                "leaf_value": [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "node_id": 11,
+                "sum_hess": 6.0
+              },
+              {
+                "data_count": 1,
+                "leaf_value": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 12,
+                "sum_hess": 1.0
+              }
+            ],
+            "num_nodes": 13
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 165,
+                "default_left": true,
+                "gain": 0.04797174174443908,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 1,
+                "sum_hess": 256.0,
+                "threshold": -0.4932589828968048
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 57,
+                "default_left": true,
+                "gain": 0.11519405651607882,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 0,
+                "sum_hess": 87.0,
+                "threshold": -0.2661524936556816
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 24,
+                "default_left": true,
+                "gain": 0.01204752977606163,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 3,
+                "sum_hess": 38.0,
+                "threshold": -2.0599607825279236
+              },
+              {
+                "data_count": 1,
+                "leaf_value": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 3,
+                "sum_hess": 2.0
+              },
+              {
+                "data_count": 23,
+                "leaf_value": [
+                  0.16666666666666666,
+                  0.8333333333333334,
+                  0.0
+                ],
+                "node_id": 4,
+                "sum_hess": 36.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 33,
+                "default_left": true,
+                "gain": 0.009522407190045674,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 3,
+                "sum_hess": 49.0,
+                "threshold": -0.9326776564121246
+              },
+              {
+                "data_count": 5,
+                "leaf_value": [
+                  0.0,
+                  0.3333333333333333,
+                  0.6666666666666666
+                ],
+                "node_id": 6,
+                "sum_hess": 9.0
+              },
+              {
+                "data_count": 28,
+                "leaf_value": [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 7,
+                "sum_hess": 40.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 108,
+                "default_left": true,
+                "gain": 0.12444900903229648,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "sum_hess": 169.0,
+                "threshold": -0.4865756332874298
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 33,
+                "default_left": true,
+                "gain": 0.011199657027316227,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 2,
+                "sum_hess": 53.0,
+                "threshold": 1.2843038439750671
+              },
+              {
+                "data_count": 28,
+                "leaf_value": [
+                  0.9565217391304348,
+                  0.043478260869565216,
+                  0.0
+                ],
+                "node_id": 10,
+                "sum_hess": 46.0
+              },
+              {
+                "data_count": 5,
+                "leaf_value": [
+                  0.42857142857142855,
+                  0.5714285714285714,
+                  0.0
+                ],
+                "node_id": 11,
+                "sum_hess": 7.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 75,
+                "default_left": true,
+                "gain": 0.09131309171464538,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 0,
+                "sum_hess": 116.0,
+                "threshold": 0.6251237094402313
+              },
+              {
+                "data_count": 54,
+                "leaf_value": [
+                  0.1590909090909091,
+                  0.7386363636363636,
+                  0.10227272727272728
+                ],
+                "node_id": 13,
+                "sum_hess": 88.0
+              },
+              {
+                "data_count": 21,
+                "leaf_value": [
+                  0.0,
+                  0.10714285714285714,
+                  0.8928571428571429
+                ],
+                "node_id": 14,
+                "sum_hess": 28.0
+              }
+            ],
+            "num_nodes": 15
+          }
+        ]
+      },
+      "name": "sklearn_rf_multiclass",
+      "probe_rows": 64,
+      "sha256": "5b21f24616524aad1f6e7b8830a9ee7f92f274000e1d7bfc14076af61b98f200"
+    },
+    {
+      "bytes": 7247,
+      "conversion": "treelite.sklearn.import_model",
+      "conversion_tolerance": 1e-12,
+      "framework_class": "sklearn.ensemble.ExtraTreesClassifier",
+      "metadata": {
+        "attributes": "{}",
+        "average_tree_output": true,
+        "base_scores": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "class_id": [
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "leaf_output_type": "float64",
+        "leaf_vector_shape": [
+          2,
+          3
+        ],
+        "num_class": [
+          2,
+          3
+        ],
+        "num_feature": 4,
+        "num_target": 2,
+        "postprocessor": "identity_multiclass",
+        "ratio_c": 1.0,
+        "sigmoid_alpha": 1.0,
+        "target_id": [
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "task_type": "kMultiClf",
+        "threshold_type": "float64",
+        "trees": [
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 0.046031889790946634,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 1,
+                "sum_hess": 256.0,
+                "threshold": -0.69313689189902
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 70,
+                "default_left": true,
+                "gain": 0.0022755456349206403,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 3,
+                "sum_hess": 70.0,
+                "threshold": -1.2986933917592547
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 7,
+                "default_left": true,
+                "gain": 0.0007440476190476199,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 3,
+                "sum_hess": 7.0,
+                "threshold": -1.814372584348693
+              },
+              {
+                "data_count": 3,
+                "leaf_value": [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.3333333333333333,
+                  0.6666666666666666
+                ],
+                "node_id": 3,
+                "sum_hess": 3.0
+              },
+              {
+                "data_count": 4,
+                "leaf_value": [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 4,
+                "sum_hess": 4.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 63,
+                "default_left": true,
+                "gain": 0.0007064333236208146,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 2,
+                "sum_hess": 63.0,
+                "threshold": -0.9397701467642938
+              },
+              {
+                "data_count": 11,
+                "leaf_value": [
+                  0.2727272727272727,
+                  0.7272727272727273,
+                  0.0,
+                  0.0,
+                  0.36363636363636365,
+                  0.6363636363636364
+                ],
+                "node_id": 6,
+                "sum_hess": 11.0
+              },
+              {
+                "data_count": 52,
+                "leaf_value": [
+                  0.17307692307692307,
+                  0.8269230769230769,
+                  0.0,
+                  0.11538461538461539,
+                  0.3076923076923077,
+                  0.5769230769230769
+                ],
+                "node_id": 7,
+                "sum_hess": 52.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 186,
+                "default_left": true,
+                "gain": 0.12739929431371008,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "sum_hess": 186.0,
+                "threshold": -0.509174054597572
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 57,
+                "default_left": true,
+                "gain": 0.0010652054729214403,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 0,
+                "sum_hess": 57.0,
+                "threshold": -1.5150688474800527
+              },
+              {
+                "data_count": 11,
+                "leaf_value": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "node_id": 10,
+                "sum_hess": 11.0
+              },
+              {
+                "data_count": 46,
+                "leaf_value": [
+                  0.9782608695652174,
+                  0.021739130434782608,
+                  0.0,
+                  0.8260869565217391,
+                  0.17391304347826086,
+                  0.0
+                ],
+                "node_id": 11,
+                "sum_hess": 46.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 129,
+                "default_left": true,
+                "gain": 0.0014096166758224547,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 3,
+                "sum_hess": 129.0,
+                "threshold": 2.0150407875330725
+              },
+              {
+                "data_count": 127,
+                "leaf_value": [
+                  0.3464566929133858,
+                  0.6535433070866141,
+                  0.0,
+                  0.10236220472440945,
+                  0.49606299212598426,
+                  0.4015748031496063
+                ],
+                "node_id": 13,
+                "sum_hess": 127.0
+              },
+              {
+                "data_count": 2,
+                "leaf_value": [
+                  0.5,
+                  0.5,
+                  0.0,
+                  0.5,
+                  0.5,
+                  0.0
+                ],
+                "node_id": 14,
+                "sum_hess": 2.0
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 0.007085748057547803,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 1,
+                "sum_hess": 256.0,
+                "threshold": -1.6941359379992245
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 12,
+                "default_left": true,
+                "gain": 0.009700520833333337,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "sum_hess": 12.0,
+                "threshold": -1.7760435837588269
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 10,
+                "default_left": true,
+                "gain": 0.00039062499999999926,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 3,
+                "sum_hess": 10.0,
+                "threshold": -2.0036611017074923
+              },
+              {
+                "data_count": 2,
+                "leaf_value": [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 3,
+                "sum_hess": 2.0
+              },
+              {
+                "data_count": 8,
+                "leaf_value": [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.25,
+                  0.75
+                ],
+                "node_id": 4,
+                "sum_hess": 8.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 2,
+                "default_left": true,
+                "gain": 0.001953125,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 0,
+                "sum_hess": 2.0,
+                "threshold": -1.9392086368385046
+              },
+              {
+                "data_count": 1,
+                "leaf_value": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "node_id": 6,
+                "sum_hess": 1.0
+              },
+              {
+                "data_count": 1,
+                "leaf_value": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                "node_id": 7,
+                "sum_hess": 1.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 244,
+                "default_left": true,
+                "gain": 0.14600402026689321,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "sum_hess": 244.0,
+                "threshold": 0.23089403960764354
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 164,
+                "default_left": true,
+                "gain": 0.0041858036290089015,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 2,
+                "sum_hess": 164.0,
+                "threshold": 1.2933527439873167
+              },
+              {
+                "data_count": 153,
+                "leaf_value": [
+                  0.6535947712418301,
+                  0.3464052287581699,
+                  0.0,
+                  0.41830065359477125,
+                  0.477124183006536,
+                  0.10457516339869281
+                ],
+                "node_id": 10,
+                "sum_hess": 153.0
+              },
+              {
+                "data_count": 11,
+                "leaf_value": [
+                  0.5454545454545454,
+                  0.45454545454545453,
+                  0.0,
+                  0.2727272727272727,
+                  0.2727272727272727,
+                  0.45454545454545453
+                ],
+                "node_id": 11,
+                "sum_hess": 11.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 80,
+                "default_left": true,
+                "gain": 0.0024443655303030276,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 0,
+                "sum_hess": 80.0,
+                "threshold": 1.3490510619759104
+              },
+              {
+                "data_count": 66,
+                "leaf_value": [
+                  0.07575757575757576,
+                  0.9242424242424242,
+                  0.0,
+                  0.015151515151515152,
+                  0.21212121212121213,
+                  0.7727272727272727
+                ],
+                "node_id": 13,
+                "sum_hess": 66.0
+              },
+              {
+                "data_count": 14,
+                "leaf_value": [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 14,
+                "sum_hess": 14.0
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 0.011795325371471519,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 6,
+                "split_feature_id": 2,
+                "sum_hess": 256.0,
+                "threshold": 1.7769349393242164
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 247,
+                "default_left": true,
+                "gain": 0.004149410270180979,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 3,
+                "split_feature_id": 1,
+                "sum_hess": 247.0,
+                "threshold": -2.6412236644962723
+              },
+              {
+                "data_count": 2,
+                "leaf_value": [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 2,
+                "sum_hess": 2.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 245,
+                "default_left": true,
+                "gain": 0.021550828566023594,
+                "left_child": 4,
+                "node_id": 3,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "sum_hess": 245.0,
+                "threshold": 0.9889781369264106
+              },
+              {
+                "data_count": 211,
+                "leaf_value": [
+                  0.41232227488151657,
+                  0.5876777251184834,
+                  0.0,
+                  0.23222748815165878,
+                  0.3933649289099526,
+                  0.3744075829383886
+                ],
+                "node_id": 4,
+                "sum_hess": 211.0
+              },
+              {
+                "data_count": 34,
+                "leaf_value": [
+                  0.7352941176470589,
+                  0.2647058823529412,
+                  0.0,
+                  0.5588235294117647,
+                  0.29411764705882354,
+                  0.14705882352941177
+                ],
+                "node_id": 5,
+                "sum_hess": 34.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 9,
+                "default_left": true,
+                "gain": 0.001736111111111111,
+                "left_child": 7,
+                "node_id": 6,
+                "node_type": "numerical_test_node",
+                "right_child": 10,
+                "split_feature_id": 2,
+                "sum_hess": 9.0,
+                "threshold": 1.9217331529762949
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 3,
+                "default_left": true,
+                "gain": 0.0013020833333333333,
+                "left_child": 8,
+                "node_id": 7,
+                "node_type": "numerical_test_node",
+                "right_child": 9,
+                "split_feature_id": 0,
+                "sum_hess": 3.0,
+                "threshold": 0.004275350221228047
+              },
+              {
+                "data_count": 2,
+                "leaf_value": [
+                  0.5,
+                  0.5,
+                  0.0,
+                  0.5,
+                  0.0,
+                  0.5
+                ],
+                "node_id": 8,
+                "sum_hess": 2.0
+              },
+              {
+                "data_count": 1,
+                "leaf_value": [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 9,
+                "sum_hess": 1.0
+              },
+              {
+                "data_count": 6,
+                "leaf_value": [
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                "node_id": 10,
+                "sum_hess": 6.0
+              }
+            ],
+            "num_nodes": 11
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 0.05095464695266813,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 6,
+                "split_feature_id": 1,
+                "sum_hess": 256.0,
+                "threshold": 0.38565927108985987
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 180,
+                "default_left": true,
+                "gain": 0.015556443339646443,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 3,
+                "split_feature_id": 0,
+                "sum_hess": 180.0,
+                "threshold": -1.9630776561163332
+              },
+              {
+                "data_count": 4,
+                "leaf_value": [
+                  1.0,
+                  0.0,
+                  0.0,
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                "node_id": 2,
+                "sum_hess": 4.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 176,
+                "default_left": true,
+                "gain": 0.006923726528949788,
+                "left_child": 4,
+                "node_id": 3,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 2,
+                "sum_hess": 176.0,
+                "threshold": 1.632747143674476
+              },
+              {
+                "data_count": 167,
+                "leaf_value": [
+                  0.32335329341317365,
+                  0.6766467065868264,
+                  0.0,
+                  0.15568862275449102,
+                  0.41317365269461076,
+                  0.4311377245508982
+                ],
+                "node_id": 4,
+                "sum_hess": 167.0
+              },
+              {
+                "data_count": 9,
+                "leaf_value": [
+                  0.1111111111111111,
+                  0.8888888888888888,
+                  0.0,
+                  0.0,
+                  0.1111111111111111,
+                  0.8888888888888888
+                ],
+                "node_id": 5,
+                "sum_hess": 9.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 76,
+                "default_left": true,
+                "gain": 0.0009575941807643826,
+                "left_child": 7,
+                "node_id": 6,
+                "node_type": "numerical_test_node",
+                "right_child": 10,
+                "split_feature_id": 1,
+                "sum_hess": 76.0,
+                "threshold": 0.7418000201392321
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 28,
+                "default_left": true,
+                "gain": 0.0010997545948203875,
+                "left_child": 8,
+                "node_id": 7,
+                "node_type": "numerical_test_node",
+                "right_child": 9,
+                "split_feature_id": 1,
+                "sum_hess": 28.0,
+                "threshold": 0.6132376099372484
+              },
+              {
+                "data_count": 19,
+                "leaf_value": [
+                  0.6842105263157895,
+                  0.3157894736842105,
+                  0.0,
+                  0.3684210526315789,
+                  0.42105263157894735,
+                  0.21052631578947367
+                ],
+                "node_id": 8,
+                "sum_hess": 19.0
+              },
+              {
+                "data_count": 9,
+                "leaf_value": [
+                  0.7777777777777778,
+                  0.2222222222222222,
+                  0.0,
+                  0.5555555555555556,
+                  0.2222222222222222,
+                  0.2222222222222222
+                ],
+                "node_id": 9,
+                "sum_hess": 9.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 48,
+                "default_left": true,
+                "gain": 0.0038963544029794323,
+                "left_child": 11,
+                "node_id": 10,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 3,
+                "sum_hess": 48.0,
+                "threshold": 0.14866730636651315
+              },
+              {
+                "data_count": 29,
+                "leaf_value": [
+                  0.6206896551724138,
+                  0.3793103448275862,
+                  0.0,
+                  0.4827586206896552,
+                  0.3448275862068966,
+                  0.1724137931034483
+                ],
+                "node_id": 11,
+                "sum_hess": 29.0
+              },
+              {
+                "data_count": 19,
+                "leaf_value": [
+                  0.8421052631578947,
+                  0.15789473684210525,
+                  0.0,
+                  0.6842105263157895,
+                  0.15789473684210525,
+                  0.15789473684210525
+                ],
+                "node_id": 12,
+                "sum_hess": 19.0
+              }
+            ],
+            "num_nodes": 13
+          }
+        ]
+      },
+      "name": "sklearn_extra_multioutput_classification",
+      "probe_rows": 64,
+      "sha256": "40cbad246a92ad4422d056e999bf621623eccf1d23ac27a0c3d69f5a85089326"
+    },
+    {
+      "bytes": 6345,
+      "conversion": "treelite.sklearn.import_model",
+      "conversion_tolerance": 1e-12,
+      "framework_class": "sklearn.ensemble.GradientBoostingClassifier",
+      "metadata": {
+        "attributes": "{}",
+        "average_tree_output": false,
+        "base_scores": [
+          0.2354568115475667
+        ],
+        "class_id": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leaf_output_type": "float64",
+        "leaf_vector_shape": [
+          1,
+          1
+        ],
+        "num_class": [
+          1
+        ],
+        "num_feature": 4,
+        "num_target": 1,
+        "postprocessor": "sigmoid",
+        "ratio_c": 1.0,
+        "sigmoid_alpha": 1.0,
+        "target_id": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "task_type": "kBinaryClf",
+        "threshold_type": "float64",
+        "trees": [
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 0.11614524086753092,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "sum_hess": 256.0,
+                "threshold": -0.08633752167224884
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 130,
+                "default_left": true,
+                "gain": 0.036634423157860654,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "sum_hess": 130.0,
+                "threshold": -1.149765968322754
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 22,
+                "default_left": true,
+                "gain": 0.009083433014354067,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "sum_hess": 22.0,
+                "threshold": -1.1320815086364746
+              },
+              {
+                "data_count": 3,
+                "leaf_value": -0.22654867256637168,
+                "node_id": 3,
+                "sum_hess": 3.0
+              },
+              {
+                "data_count": 19,
+                "leaf_value": 0.1576752078848027,
+                "node_id": 4,
+                "sum_hess": 19.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 108,
+                "default_left": true,
+                "gain": 0.009723255621693135,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 2,
+                "sum_hess": 108.0,
+                "threshold": 1.8766642212867737
+              },
+              {
+                "data_count": 105,
+                "leaf_value": -0.1956481276835259,
+                "node_id": 6,
+                "sum_hess": 105.0
+              },
+              {
+                "data_count": 3,
+                "leaf_value": 0.17902097902097902,
+                "node_id": 7,
+                "sum_hess": 3.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 126,
+                "default_left": true,
+                "gain": 0.012765444015443996,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 1,
+                "sum_hess": 126.0,
+                "threshold": 1.1749111413955688
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 111,
+                "default_left": true,
+                "gain": 0.0021811235538914224,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 1,
+                "sum_hess": 111.0,
+                "threshold": 0.564528614282608
+              },
+              {
+                "data_count": 98,
+                "leaf_value": 0.17488251318845505,
+                "node_id": 10,
+                "sum_hess": 98.0
+              },
+              {
+                "data_count": 13,
+                "leaf_value": 0.08542798250082118,
+                "node_id": 11,
+                "sum_hess": 13.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 15,
+                "default_left": true,
+                "gain": 0.007817150297619048,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 0,
+                "sum_hess": 15.0,
+                "threshold": 0.46262574195861816
+              },
+              {
+                "data_count": 8,
+                "leaf_value": -0.17585246611795285,
+                "node_id": 13,
+                "sum_hess": 8.0
+              },
+              {
+                "data_count": 7,
+                "leaf_value": 0.12108245736564321,
+                "node_id": 14,
+                "sum_hess": 7.0
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 0.09409521808988876,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "sum_hess": 256.0,
+                "threshold": -0.08633752167224884
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 130,
+                "default_left": true,
+                "gain": 0.029677322484021933,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "sum_hess": 130.0,
+                "threshold": -1.149765968322754
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 22,
+                "default_left": true,
+                "gain": 0.007356328185592808,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "sum_hess": 22.0,
+                "threshold": -1.1320815086364746
+              },
+              {
+                "data_count": 3,
+                "leaf_value": -0.2008947934531573,
+                "node_id": 3,
+                "sum_hess": 3.0
+              },
+              {
+                "data_count": 19,
+                "leaf_value": 0.14561736568294734,
+                "node_id": 4,
+                "sum_hess": 19.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 108,
+                "default_left": true,
+                "gain": 0.007879071877452574,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 2,
+                "sum_hess": 108.0,
+                "threshold": 1.8766642212867737
+              },
+              {
+                "data_count": 105,
+                "leaf_value": -0.17357290072022052,
+                "node_id": 6,
+                "sum_hess": 105.0
+              },
+              {
+                "data_count": 3,
+                "leaf_value": 0.16606852066814967,
+                "node_id": 7,
+                "sum_hess": 3.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 126,
+                "default_left": true,
+                "gain": 0.010349238378625118,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 1,
+                "sum_hess": 126.0,
+                "threshold": 1.1749111413955688
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 111,
+                "default_left": true,
+                "gain": 0.001774321336211678,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 1,
+                "sum_hess": 111.0,
+                "threshold": 0.564528614282608
+              },
+              {
+                "data_count": 98,
+                "leaf_value": 0.16208663783743485,
+                "node_id": 10,
+                "sum_hess": 98.0
+              },
+              {
+                "data_count": 13,
+                "leaf_value": 0.07784636888323665,
+                "node_id": 11,
+                "sum_hess": 13.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 15,
+                "default_left": true,
+                "gain": 0.006330133939658266,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 0,
+                "sum_hess": 15.0,
+                "threshold": 0.46262574195861816
+              },
+              {
+                "data_count": 8,
+                "leaf_value": -0.15609722929240422,
+                "node_id": 13,
+                "sum_hess": 8.0
+              },
+              {
+                "data_count": 7,
+                "leaf_value": 0.11103131790729961,
+                "node_id": 14,
+                "sum_hess": 7.0
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 0.07635923728489549,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "sum_hess": 256.0,
+                "threshold": -0.08633752167224884
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 130,
+                "default_left": true,
+                "gain": 0.02407722533030822,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "sum_hess": 130.0,
+                "threshold": -1.149765968322754
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 22,
+                "default_left": true,
+                "gain": 0.0059694109623415845,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "sum_hess": 22.0,
+                "threshold": -1.1320815086364746
+              },
+              {
+                "data_count": 3,
+                "leaf_value": -0.18253178827211305,
+                "node_id": 3,
+                "sum_hess": 3.0
+              },
+              {
+                "data_count": 19,
+                "leaf_value": 0.13573017313028843,
+                "node_id": 4,
+                "sum_hess": 19.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 108,
+                "default_left": true,
+                "gain": 0.006395456022608446,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 2,
+                "sum_hess": 108.0,
+                "threshold": 1.8766642212867737
+              },
+              {
+                "data_count": 105,
+                "leaf_value": -0.15686690978495677,
+                "node_id": 6,
+                "sum_hess": 105.0
+              },
+              {
+                "data_count": 3,
+                "leaf_value": 0.15595925713336312,
+                "node_id": 7,
+                "sum_hess": 3.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 126,
+                "default_left": true,
+                "gain": 0.008403713175597823,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 1,
+                "sum_hess": 126.0,
+                "threshold": 1.1749111413955688
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 111,
+                "default_left": true,
+                "gain": 0.0016363110869232031,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 0,
+                "sum_hess": 111.0,
+                "threshold": 0.12431516870856285
+              },
+              {
+                "data_count": 28,
+                "leaf_value": 0.09641746569115967,
+                "node_id": 10,
+                "sum_hess": 28.0
+              },
+              {
+                "data_count": 83,
+                "leaf_value": 0.15761939397665234,
+                "node_id": 11,
+                "sum_hess": 83.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 15,
+                "default_left": true,
+                "gain": 0.005199096411377733,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 2,
+                "sum_hess": 15.0,
+                "threshold": -0.9907226264476776
+              },
+              {
+                "data_count": 4,
+                "leaf_value": 0.17498915192946682,
+                "node_id": 13,
+                "sum_hess": 4.0
+              },
+              {
+                "data_count": 11,
+                "leaf_value": -0.10361256577023642,
+                "node_id": 14,
+                "sum_hess": 11.0
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 0.06204317344473968,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "sum_hess": 256.0,
+                "threshold": -0.08633752167224884
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 130,
+                "default_left": true,
+                "gain": 0.019554814154616806,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "sum_hess": 130.0,
+                "threshold": -1.149765968322754
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 22,
+                "default_left": true,
+                "gain": 0.0049546124722740035,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "sum_hess": 22.0,
+                "threshold": -0.9323233962059021
+              },
+              {
+                "data_count": 6,
+                "leaf_value": -0.08672377961104635,
+                "node_id": 3,
+                "sum_hess": 6.0
+              },
+              {
+                "data_count": 16,
+                "leaf_value": 0.15094214758352728,
+                "node_id": 4,
+                "sum_hess": 16.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 108,
+                "default_left": true,
+                "gain": 0.006186249607977217,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 2,
+                "sum_hess": 108.0,
+                "threshold": -1.2424688339233398
+              },
+              {
+                "data_count": 11,
+                "leaf_value": 0.010905520374410753,
+                "node_id": 6,
+                "sum_hess": 11.0
+              },
+              {
+                "data_count": 97,
+                "leaf_value": -0.15314903770357133,
+                "node_id": 7,
+                "sum_hess": 97.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 126,
+                "default_left": true,
+                "gain": 0.007145257040989541,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 1,
+                "sum_hess": 126.0,
+                "threshold": 0.564528614282608
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 98,
+                "default_left": true,
+                "gain": 0.00027636179418897156,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 3,
+                "sum_hess": 98.0,
+                "threshold": -1.25441312789917
+              },
+              {
+                "data_count": 12,
+                "leaf_value": 0.11150221105009772,
+                "node_id": 10,
+                "sum_hess": 12.0
+              },
+              {
+                "data_count": 86,
+                "leaf_value": 0.14890723373457881,
+                "node_id": 11,
+                "sum_hess": 86.0
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 28,
+                "default_left": true,
+                "gain": 0.010194908722695479,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 0,
+                "sum_hess": 28.0,
+                "threshold": 0.33392731845378876
+              },
+              {
+                "data_count": 9,
+                "leaf_value": -0.17147743090735798,
+                "node_id": 13,
+                "sum_hess": 9.0
+              },
+              {
+                "data_count": 19,
+                "leaf_value": 0.10132517065365908,
+                "node_id": 14,
+                "sum_hess": 19.0
+              }
+            ],
+            "num_nodes": 15
+          }
+        ]
+      },
+      "name": "sklearn_gradient_binary",
+      "probe_rows": 64,
+      "sha256": "d61a9d21e0ef5b64036f675efc7f5fb4d11c2ff1dfcf63e7cdabf7a228ff048b"
+    },
+    {
+      "bytes": 5806,
+      "conversion": "treelite.sklearn.import_model",
+      "conversion_tolerance": 1e-12,
+      "framework_class": "sklearn.ensemble.HistGradientBoostingRegressor",
+      "metadata": {
+        "attributes": "{}",
+        "average_tree_output": false,
+        "base_scores": [
+          0.34451588662341237
+        ],
+        "class_id": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "leaf_output_type": "float64",
+        "leaf_vector_shape": [
+          1,
+          1
+        ],
+        "num_class": [
+          1
+        ],
+        "num_feature": 4,
+        "num_target": 1,
+        "postprocessor": "identity",
+        "ratio_c": 1.0,
+        "sigmoid_alpha": 1.0,
+        "target_id": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "task_type": "kRegressor",
+        "threshold_type": "float64",
+        "trees": [
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 534.4916148733199,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "threshold": -0.028616735711693764
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 150,
+                "default_left": true,
+                "gain": 119.30404551269575,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "threshold": 0.4112444221973419
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 103,
+                "default_left": false,
+                "gain": 78.01358101788722,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "threshold": -1.0194599032402039
+              },
+              {
+                "data_count": 23,
+                "leaf_value": -0.22353391608466275,
+                "node_id": 3
+              },
+              {
+                "data_count": 80,
+                "leaf_value": -0.014558688136748972,
+                "node_id": 4
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 47,
+                "default_left": false,
+                "gain": 32.0752516348271,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 0,
+                "threshold": -0.7530839145183563
+              },
+              {
+                "data_count": 16,
+                "leaf_value": -0.36847964450716975,
+                "node_id": 6
+              },
+              {
+                "data_count": 31,
+                "leaf_value": -0.19414121604734852,
+                "node_id": 7
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 106,
+                "default_left": false,
+                "gain": 112.77542430942964,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "threshold": 0.6655095517635345
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 59,
+                "default_left": false,
+                "gain": 31.52667989975023,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 1,
+                "threshold": -0.4133337289094925
+              },
+              {
+                "data_count": 23,
+                "leaf_value": 0.17127925222334656,
+                "node_id": 10
+              },
+              {
+                "data_count": 36,
+                "leaf_value": 0.021397087795452942,
+                "node_id": 11
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 47,
+                "default_left": false,
+                "gain": 35.25201394494516,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 1,
+                "threshold": -0.2998146414756775
+              },
+              {
+                "data_count": 23,
+                "leaf_value": 0.3759211001188859,
+                "node_id": 13
+              },
+              {
+                "data_count": 24,
+                "leaf_value": 0.20267185270786287,
+                "node_id": 14
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 434.27649006927254,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "threshold": 0.05249486677348614
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 164,
+                "default_left": true,
+                "gain": 105.92961977509864,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "threshold": 0.22810973227024078
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 104,
+                "default_left": false,
+                "gain": 70.70151577266918,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "threshold": -1.0194599032402039
+              },
+              {
+                "data_count": 22,
+                "leaf_value": -0.19568913822824308,
+                "node_id": 3
+              },
+              {
+                "data_count": 82,
+                "leaf_value": 0.0061999122271450555,
+                "node_id": 4
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 60,
+                "default_left": true,
+                "gain": 37.92283529513497,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 1,
+                "threshold": 1.544319748878479
+              },
+              {
+                "data_count": 52,
+                "leaf_value": -0.1721790307129805,
+                "node_id": 6
+              },
+              {
+                "data_count": 8,
+                "leaf_value": -0.4060516393277793,
+                "node_id": 7
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 92,
+                "default_left": true,
+                "gain": 76.72747283673988,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 1,
+                "threshold": -0.10187675058841705
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 49,
+                "default_left": false,
+                "gain": 34.216790234827414,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 0,
+                "threshold": 1.2200015783309937
+              },
+              {
+                "data_count": 36,
+                "leaf_value": 0.20923019688990385,
+                "node_id": 10
+              },
+              {
+                "data_count": 13,
+                "leaf_value": 0.3985058472706721,
+                "node_id": 11
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 43,
+                "default_left": false,
+                "gain": 23.37947290262184,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 0,
+                "threshold": 1.1766200065612793
+              },
+              {
+                "data_count": 35,
+                "leaf_value": 0.041157103436333796,
+                "node_id": 13
+              },
+              {
+                "data_count": 8,
+                "leaf_value": 0.23064111471176144,
+                "node_id": 14
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 354.7208875397622,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "threshold": -0.028616735711693764
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 150,
+                "default_left": false,
+                "gain": 81.58822984514697,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "threshold": -0.6186610162258148
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 41,
+                "default_left": false,
+                "gain": 31.902915894710837,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "threshold": -1.2412921786308289
+              },
+              {
+                "data_count": 8,
+                "leaf_value": -0.15785978883504864,
+                "node_id": 3
+              },
+              {
+                "data_count": 33,
+                "leaf_value": 0.06472995742365266,
+                "node_id": 4
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 109,
+                "default_left": false,
+                "gain": 56.770648210501236,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 0,
+                "threshold": -0.7530839145183563
+              },
+              {
+                "data_count": 33,
+                "leaf_value": -0.2537067796244766,
+                "node_id": 6
+              },
+              {
+                "data_count": 76,
+                "leaf_value": -0.09663020955937866,
+                "node_id": 7
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 106,
+                "default_left": false,
+                "gain": 76.23617161227855,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "threshold": 0.6655095517635345
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 59,
+                "default_left": false,
+                "gain": 22.63813791536594,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 1,
+                "threshold": -1.1108119487762451
+              },
+              {
+                "data_count": 14,
+                "leaf_value": 0.1753909021615982,
+                "node_id": 10
+              },
+              {
+                "data_count": 45,
+                "leaf_value": 0.029785971525642607,
+                "node_id": 11
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 47,
+                "default_left": false,
+                "gain": 24.54080662320888,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 1,
+                "threshold": -0.998821496963501
+              },
+              {
+                "data_count": 8,
+                "leaf_value": 0.39459097981452934,
+                "node_id": 13
+              },
+              {
+                "data_count": 39,
+                "leaf_value": 0.20231897769830165,
+                "node_id": 14
+              }
+            ],
+            "num_nodes": 15
+          },
+          {
+            "has_categorical_split": false,
+            "nodes": [
+              {
+                "comparison_op": "<=",
+                "data_count": 256,
+                "default_left": true,
+                "gain": 287.3239187946163,
+                "left_child": 1,
+                "node_id": 0,
+                "node_type": "numerical_test_node",
+                "right_child": 8,
+                "split_feature_id": 0,
+                "threshold": -0.028616735711693764
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 150,
+                "default_left": true,
+                "gain": 72.6419372563566,
+                "left_child": 2,
+                "node_id": 1,
+                "node_type": "numerical_test_node",
+                "right_child": 5,
+                "split_feature_id": 1,
+                "threshold": 0.8050606846809387
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 123,
+                "default_left": false,
+                "gain": 52.35448133313434,
+                "left_child": 3,
+                "node_id": 2,
+                "node_type": "numerical_test_node",
+                "right_child": 4,
+                "split_feature_id": 0,
+                "threshold": -1.1430795192718506
+              },
+              {
+                "data_count": 23,
+                "leaf_value": -0.19249163451402085,
+                "node_id": 3
+              },
+              {
+                "data_count": 100,
+                "leaf_value": -0.025164810291957114,
+                "node_id": 4
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 27,
+                "default_left": false,
+                "gain": 14.70454950415153,
+                "left_child": 6,
+                "node_id": 5,
+                "node_type": "numerical_test_node",
+                "right_child": 7,
+                "split_feature_id": 2,
+                "threshold": -0.07759794592857361
+              },
+              {
+                "data_count": 12,
+                "leaf_value": -0.15508106326063473,
+                "node_id": 6
+              },
+              {
+                "data_count": 15,
+                "leaf_value": -0.30359646399815876,
+                "node_id": 7
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 106,
+                "default_left": false,
+                "gain": 61.75129804682854,
+                "left_child": 9,
+                "node_id": 8,
+                "node_type": "numerical_test_node",
+                "right_child": 12,
+                "split_feature_id": 0,
+                "threshold": 0.6655095517635345
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 59,
+                "default_left": false,
+                "gain": 18.730434573124725,
+                "left_child": 10,
+                "node_id": 9,
+                "node_type": "numerical_test_node",
+                "right_child": 11,
+                "split_feature_id": 1,
+                "threshold": -0.7129241228103638
+              },
+              {
+                "data_count": 18,
+                "leaf_value": 0.14293881720966764,
+                "node_id": 10
+              },
+              {
+                "data_count": 41,
+                "leaf_value": 0.020569721186851585,
+                "node_id": 11
+              },
+              {
+                "comparison_op": "<=",
+                "data_count": 47,
+                "default_left": false,
+                "gain": 21.487606554205257,
+                "left_child": 13,
+                "node_id": 12,
+                "node_type": "numerical_test_node",
+                "right_child": 14,
+                "split_feature_id": 1,
+                "threshold": -0.2998146414756775
+              },
+              {
+                "data_count": 23,
+                "leaf_value": 0.28061109107473625,
+                "node_id": 13
+              },
+              {
+                "data_count": 24,
+                "leaf_value": 0.1453498363494873,
+                "node_id": 14
+              }
+            ],
+            "num_nodes": 15
+          }
+        ]
+      },
+      "name": "sklearn_hist_missing_regression",
+      "probe_rows": 64,
+      "sha256": "b77c4b80228f49fc88f0a5f8d51bbb1a8008ff22a32dd40683b6868c5251d5ca"
+    }
+  ],
+  "command": "pixi run -e frameworks framework-fixtures",
+  "platform": "linux-64",
+  "seed": 1729,
+  "source_artifacts": {
+    "catboost-numeric-source.json": "07ac752b3f7221f4aab5d876ea2332e9067b0611ef8c194391e83884dbb679e5"
+  },
+  "versions": {
+    "catboost": "1.2.8",
+    "lightgbm": "4.6.0",
+    "numpy": "2.2.6",
+    "scikit-learn": "1.6.1",
+    "treelite": "4.6.1",
+    "xgboost-cpu": "2.1.4"
+  }
+}
