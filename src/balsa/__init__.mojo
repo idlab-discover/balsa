@@ -13,7 +13,7 @@ from .codec import (
 from .constants import Operator, NodeType, TaskType, TypeInfo
 from .model import Model, Tree, Extension
 from .builder import ModelBuilder, TreeBuilder
-from .validation import validate
+from .validation import validate, ValidationOptions
 from .wire import Limits
 
 

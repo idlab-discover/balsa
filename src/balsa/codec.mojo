@@ -8,12 +8,16 @@ from std.utils import Variant
 from .constants import type_tag, TypeInfo
 from .model import Model, Tree
 from .wire import Limits, Reader, Writer
-from .validation import validate
+from .validation import validate, ValidationOptions
 
 
 def decode[
     dtype: DType = DType.float32
-](var data: List[UInt8], limits: Limits = Limits()) raises -> Model[dtype]:
+](
+    var data: List[UInt8],
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises -> Model[dtype]:
     """Decode and validate a checkpoint; precision must match the file tags."""
     var reader = Reader(data^, limits)
     var model = Model[dtype]()
@@ -134,15 +138,19 @@ def decode[
         model.trees.append(tree^)
     if reader.pos != len(reader.data):
         reader.fail("trailing bytes")
-    validate(model, limits)
+    validate(model, limits, options)
     return model^
 
 
 def encode[
     dtype: DType
-](model: Model[dtype], limits: Limits = Limits()) raises -> List[UInt8]:
+](
+    model: Model[dtype],
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises -> List[UInt8]:
     """Encode owned fields, retaining version, extensions and floating bits."""
-    validate(model, limits)
+    validate(model, limits, options)
     # One shared field traversal, specialized to count or emit at compile time.
     var counter = Writer[True](limits)
     write_model(model, counter)
@@ -219,16 +227,25 @@ def read_file(path: String, limits: Limits = Limits()) raises -> List[UInt8]:
 
 def load[
     dtype: DType = DType.float32
-](path: String, limits: Limits = Limits()) raises -> Model[dtype]:
+](
+    path: String,
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises -> Model[dtype]:
     """Load a checkpoint of the specified precision (float32 by default)."""
-    return decode[dtype](read_file(path, limits), limits)
+    return decode[dtype](read_file(path, limits), limits, options)
 
 
 def save[
     dtype: DType
-](model: Model[dtype], path: String, limits: Limits = Limits()) raises:
+](
+    model: Model[dtype],
+    path: String,
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises:
     """Validate and encode before opening the destination for replacement."""
-    var bytes = encode(model, limits)
+    var bytes = encode(model, limits, options)
     with open(path, "w") as file:
         file.write_all(Span(bytes))
 
@@ -271,29 +288,44 @@ def checkpoint_dtype(
 
 
 def decode_auto(
-    var data: List[UInt8], limits: Limits = Limits()
+    var data: List[UInt8],
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
 ) raises -> AnyModel:
     """Discover precision from the checkpoint, preserving its typed storage."""
     if checkpoint_dtype(data, limits) == DType.float32:
-        return AnyModel(decode[DType.float32](data^, limits))
-    return AnyModel(decode[DType.float64](data^, limits))
+        return AnyModel(decode[DType.float32](data^, limits, options))
+    return AnyModel(decode[DType.float64](data^, limits, options))
 
 
-def load_auto(path: String, limits: Limits = Limits()) raises -> AnyModel:
+def load_auto(
+    path: String,
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises -> AnyModel:
     """Load either supported precision without converting its values."""
-    return decode_auto(read_file(path, limits), limits)
+    return decode_auto(read_file(path, limits), limits, options)
 
 
-def encode(model: AnyModel, limits: Limits = Limits()) raises -> List[UInt8]:
+def encode(
+    model: AnyModel,
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises -> List[UInt8]:
     """Encode an automatically loaded model in its original precision."""
     if model.isa[Model[DType.float32]]():
-        return encode(model[Model[DType.float32]], limits)
-    return encode(model[Model[DType.float64]], limits)
+        return encode(model[Model[DType.float32]], limits, options)
+    return encode(model[Model[DType.float64]], limits, options)
 
 
-def save(model: AnyModel, path: String, limits: Limits = Limits()) raises:
+def save(
+    model: AnyModel,
+    path: String,
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises:
     """Save an automatically loaded model without changing precision."""
     if model.isa[Model[DType.float32]]():
-        save(model[Model[DType.float32]], path, limits)
+        save(model[Model[DType.float32]], path, limits, options)
     else:
-        save(model[Model[DType.float64]], path, limits)
+        save(model[Model[DType.float64]], path, limits, options)

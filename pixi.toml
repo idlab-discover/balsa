@@ -21,6 +21,7 @@ fmt = "mojo format src examples tests"
 
 [dependencies]
 mojo = ">=1.0.0,<2"
+max-core = "==26.5.0"
 
 [feature.oracle.dependencies]
 python = "3.12.*"

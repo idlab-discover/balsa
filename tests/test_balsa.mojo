@@ -524,3 +524,151 @@ def test_zero_sized_extensions() raises:
 
 def main() raises:
     TestSuite.discover_tests[__functions_in_module()]().run()
+
+
+def validation_error(
+    model: Model[DType.float32], workers: Int, limits: Limits = Limits()
+) raises -> String:
+    from balsa import ValidationOptions
+
+    try:
+        validate(model, limits, ValidationOptions(workers, 0, 0))
+    except err:
+        return String(err)
+    return ""
+
+
+def test_parallel_validation_error_precedence() raises:
+    # Force the executor even for small forests, including incomplete last batches.
+    from balsa import ValidationOptions
+
+    for count in [2, 3, 7, 16]:
+        var valid = make_stump()
+        for _ in range(1, count):
+            valid.trees.append(valid.trees[0].copy())
+            valid.target_id.append(0)
+            valid.class_id.append(0)
+        valid.num_tree = UInt64(count)
+        for workers in [2, 4, 8]:
+            var options = ValidationOptions(workers, 0, 0)
+            validate(valid, Limits(), options)
+            var bytes = encode(valid, Limits(), options)
+            var decoded = decode(bytes.copy(), Limits(), options)
+            assert_equal(encode(decoded), bytes)
+            for scenario in range(9):
+                var model = valid.copy()
+                if scenario == 0:
+                    model.trees[0].cleft[0] = 0  # cycle
+                    model.target_id[count - 1] = 999
+                elif scenario == 1:
+                    model.trees[0].node_type.clear()
+                    model.trees[count - 1].num_nodes = 0
+                elif scenario == 2:
+                    model.target_id[0] = 999
+                    model.trees[count - 1].node_type.clear()
+                elif scenario == 3:
+                    model.trees[0].default_left[0] = 2
+                    model.trees[count - 1].node_type.clear()
+                elif scenario == 4:
+                    model.trees[count - 1].category_list_end[0] = 1
+                elif scenario == 5:
+                    model.trees[count - 1].cright[0] = 1  # shared child
+                elif scenario == 6:
+                    model.trees[0].node_type.clear()
+                    model.num_feature = -1  # global metadata always first
+                elif scenario == 7:
+                    model.class_id[count - 1] = 999
+                else:
+                    model.trees[count - 1].gain_present.append(1)
+                var expected = validation_error(model, 1)
+                assert_equal(expected.byte_length() > 0, True)
+                for _ in range(10):
+                    assert_equal(validation_error(model, workers), expected)
+            var limited = valid.copy()
+            limited.trees[0].node_type.clear()
+            var limits = Limits(max_nodes=3)
+            assert_equal(
+                validation_error(limited, workers, limits),
+                validation_error(limited, 1, limits),
+            )
+            assert_equal(
+                validation_error(valid, workers, limits),
+                validation_error(valid, 1, limits),
+            )
+            # No error or traversal state survives the previous invalid calls.
+            validate(valid, Limits(), options)
+
+
+def test_validation_options() raises:
+    from balsa import ValidationOptions
+
+    var model = make_stump()
+    with assert_raises():
+        validate(model, Limits(), ValidationOptions(0))
+    with assert_raises():
+        validate(model, Limits(), ValidationOptions(2, -1, 0))
+    with assert_raises():
+        validate(model, Limits(), ValidationOptions(2, 0, -1))
+
+    for workers in [1, 4]:
+        var builder = ModelBuilder(1)
+        builder.add_tree(model.trees[0].copy())
+        builder.add_tree(model.trees[0].copy())
+        var built = builder^.build(ValidationOptions(workers, 0, 0))
+        assert_equal(len(built.trees), 2)
+    var builder = ModelBuilder(1)
+    with assert_raises():
+        _ = builder^.build(ValidationOptions(0))
+
+
+def test_parallel_validation_precisions_and_shapes() raises:
+    from balsa import ValidationOptions
+
+    for path in [
+        "tests/fixtures/frameworks/xgboost_regression.tl",
+        "tests/fixtures/frameworks/sklearn_rf_multioutput_regression.tl",
+        "tests/fixtures/frameworks/sklearn_rf_multiclass.tl",
+        "tests/fixtures/frameworks/lightgbm_categorical.tl",
+    ]:
+        var data = read_file(path)
+        for workers in [2, 4, 8]:
+            var options = ValidationOptions(workers, 0, 0)
+            var model = decode_auto(data.copy(), Limits(), options)
+            assert_equal(encode(model, Limits(), options), data)
+            save(model, "build/parallel-roundtrip.tl", Limits(), options)
+            var loaded = load_auto(
+                "build/parallel-roundtrip.tl", Limits(), options
+            )
+            assert_equal(encode(loaded), data)
+
+
+def test_parallel_validation_simultaneous_callers() raises:
+    from max.algorithm import parallelize
+
+    var model = make_stump()
+    for _ in range(31):
+        model.trees.append(model.trees[0].copy())
+        model.target_id.append(0)
+        model.class_id.append(0)
+    model.num_tree = 32
+    model.trees[5].node_type.clear()
+    model.trees[20].default_left[0] = 2
+    var expected = validation_error(model, 1)
+    var errors = List[String](length=4, fill=String())
+    var error_ptr = errors.unsafe_ptr()
+
+    def work(caller: Int) {model, expected, error_ptr}:
+        try:
+            for _ in range(20):
+                var actual = validation_error(model, 2)
+                if actual != expected:
+                    error_ptr[unsafe_offset=caller] = (
+                        "Unexpected validation result: " + actual
+                    )
+                    return
+        except err:
+            error_ptr[unsafe_offset=caller] = String(err)
+
+    parallelize(work, 4, 4)
+    for error in errors:
+        assert_equal(error, "")

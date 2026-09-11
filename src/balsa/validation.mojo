@@ -1,8 +1,31 @@
 """Structural validation of Treelite checkpoint fields."""
 
+from max.algorithm import parallelize
+
 from .model import Model, Tree, Extension
 from .constants import NodeType, Operator, TaskType, type_tag
 from .wire import Limits
+
+
+struct ValidationOptions(Copyable, Movable):
+    """Bound validation concurrency per call; one worker forces serial execution.
+
+    Thresholds apply together. The shared runtime may use fewer workers.
+    """
+
+    var max_workers: Int
+    var min_trees: Int
+    var min_nodes: Int
+
+    def __init__(
+        out self,
+        max_workers: Int = 4,
+        min_trees: Int = 4096,
+        min_nodes: Int = 65536,
+    ):
+        self.max_workers = max_workers
+        self.min_trees = min_trees
+        self.min_nodes = min_nodes
 
 
 @always_inline
@@ -49,7 +72,11 @@ def check_stat[
 
 def validate[
     dtype: DType
-](model: Model[dtype], limits: Limits = Limits()) raises:
+](
+    model: Model[dtype],
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises:
     """Reject malformed metadata, lengths, topology and segment offsets."""
     limits.validate()
     require(
@@ -94,33 +121,128 @@ def validate[
     require(len(model.target_id) == len(model.trees), "target_id length")
     require(len(model.class_id) == len(model.trees), "class_id length")
     check_extensions(model.extensions, limits)
+    require(options.max_workers > 0, "validation max_workers")
+    require(
+        options.min_trees >= 0 and options.min_nodes >= 0,
+        "validation thresholds",
+    )
+    if options.max_workers > 1 and len(model.trees) >= options.min_trees:
+        var total_nodes = 0
+        var largest_tree = 0
+        for tree in model.trees:
+            var nodes = Int(tree.num_nodes)
+            if nodes <= 0 or nodes > limits.max_nodes - total_nodes:
+                _validate_serial(model, limits, max_class)
+                return
+            total_nodes += nodes
+            largest_tree = max(largest_tree, nodes)
+        # One dominant tree cannot benefit from tree-level parallelism.
+        if (
+            total_nodes >= options.min_nodes
+            and len(model.trees) > 1
+            and largest_tree <= total_nodes // 2
+        ):
+            var checked_nodes = 0
+            try:
+                for tree_id in range(len(model.trees)):
+                    _check_tree_metadata(
+                        model, tree_id, limits, max_class, checked_nodes
+                    )
+            except:
+                # Earlier structural errors outrank later metadata/limit errors.
+                _validate_serial(model, limits, max_class)
+                return
+            _validate_parallel(model, limits, total_nodes, options.max_workers)
+            return
+    _validate_serial(model, limits, max_class)
+
+
+def _check_tree_metadata[
+    dtype: DType
+](
+    model: Model[dtype],
+    tree_id: Int,
+    limits: Limits,
+    max_class: Int,
+    mut total_nodes: Int,
+) raises:
+    var target = Int(model.target_id[tree_id])
+    var cls = Int(model.class_id[tree_id])
+    require(target >= -1 and target < Int(model.num_target), "target_id value")
+    require(cls >= -1 and cls < max_class, "class_id value")
+    if target >= 0 and cls >= 0:
+        require(cls < Int(model.num_class[target]), "class_id for target")
+    if target < 0 and cls >= 0:
+        for classes in model.num_class:
+            require(cls < Int(classes), "class_id across targets")
+    var nodes = Int(model.trees[tree_id].num_nodes)
+    require(
+        nodes > 0 and nodes <= limits.max_nodes - total_nodes,
+        "node count/limit",
+    )
+    total_nodes += nodes
+
+
+def _validate_serial[
+    dtype: DType
+](model: Model[dtype], limits: Limits, max_class: Int,) raises:
     var total_nodes = 0
     var seen = List[UInt8]()
     var stack = List[Int]()
     for tree_id in range(len(model.trees)):
-        var target = Int(model.target_id[tree_id])
-        var cls = Int(model.class_id[tree_id])
-        require(
-            target >= -1 and target < Int(model.num_target), "target_id value"
-        )
-        require(cls >= -1 and cls < max_class, "class_id value")
-        if target >= 0 and cls >= 0:
-            require(cls < Int(model.num_class[target]), "class_id for target")
-        if target < 0 and cls >= 0:
-            for classes in model.num_class:
-                require(cls < Int(classes), "class_id across targets")
-        var nodes = Int(model.trees[tree_id].num_nodes)
-        require(
-            nodes > 0 and nodes <= limits.max_nodes - total_nodes,
-            "node count/limit",
-        )
-        total_nodes += nodes
+        _check_tree_metadata(model, tree_id, limits, max_class, total_nodes)
         try:
             _validate_tree(
                 model.trees[tree_id], model, tree_id, limits, seen, stack
             )
         except err:
             raise Error("tree[" + String(tree_id) + "]: " + String(err))
+
+
+def _validate_parallel[
+    dtype: DType
+](
+    model: Model[dtype],
+    limits: Limits,
+    total_nodes: Int,
+    max_workers: Int,
+) raises:
+    var workers = min(max_workers, len(model.trees))
+    # Contiguous ranges preserve ordering. A large tree is never split.
+    var boundaries = List[Int]()
+    boundaries.append(0)
+    var accumulated = 0
+    for i in range(len(model.trees)):
+        accumulated += Int(model.trees[i].num_nodes)
+        if len(boundaries) < workers and accumulated >= (
+            total_nodes // workers
+        ) * len(boundaries):
+            boundaries.append(i + 1)
+    if boundaries[len(boundaries) - 1] != len(model.trees):
+        boundaries.append(len(model.trees))
+    var batches = len(boundaries) - 1
+    var errors = List[String](length=batches, fill=String())
+    # Each task owns one error slot; lists stay allocated until the join.
+    var error_ptr = errors.unsafe_ptr()
+
+    def work(batch: Int) {model, limits, boundaries, error_ptr}:
+        var seen = List[UInt8]()
+        var stack = List[Int]()
+        for tree_id in range(boundaries[batch], boundaries[batch + 1]):
+            try:
+                _validate_tree(
+                    model.trees[tree_id], model, tree_id, limits, seen, stack
+                )
+            except err:
+                error_ptr[unsafe_offset=batch] = (
+                    "tree[" + String(tree_id) + "]: " + String(err)
+                )
+                return
+
+    parallelize(work, batches, workers)
+    for error in errors:
+        if error.byte_length() != 0:
+            raise Error(error)
 
 
 def validate_tree[

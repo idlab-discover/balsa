@@ -2,7 +2,7 @@
 
 from .constants import NodeType, Operator, TaskType
 from .model import Model, Tree
-from .validation import require, validate
+from .validation import require, validate, ValidationOptions
 from .wire import Limits
 
 
@@ -232,8 +232,10 @@ struct ModelBuilder[dtype: DType = DType.float32](Movable):
         self._model.class_id.append(class_id)
         self._model.num_tree = UInt64(len(self._model.trees))
 
-    def build(deinit self) raises -> Model[Self.dtype]:
+    def build(
+        deinit self, options: ValidationOptions = ValidationOptions()
+    ) raises -> Model[Self.dtype]:
         """Consume the builder and return a structurally validated owned model.
         """
-        validate(self._model, self._limits)
+        validate(self._model, self._limits, options)
         return self._model^

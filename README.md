@@ -3,7 +3,7 @@
 A small, format-only Mojo library for Treelite v4 binary checkpoints.
 Load, inspect, edit, validate and save model fields. Inference is out of scope.
 
-Uses **Mojo 1.0.0**, with **Treelite 4.6.1** as the test oracle on `linux-64`.
+Uses **Mojo 1.0.0** and **MAX core 26.5.0**, with **Treelite 4.6.1** as the test oracle on `linux-64`.
 The native library does not call Python or libtreelite.
 
 ## Getting started
@@ -172,3 +172,33 @@ their build environment. Portable distribution is outside this first version.
 
 See [the API comparison](docs/api-comparison.md), [the format plan](docs/mvp-plan.md)
 and [upstream attribution](THIRD_PARTY_NOTICES.md).
+
+
+### Validation concurrency
+
+`validate`, `encode`, `decode`, `load`, `save`, and the automatic-precision
+variants accept an optional `ValidationOptions` argument after `Limits`.
+`ModelBuilder.build` also accepts `ValidationOptions`:
+
+```mojo
+from balsa import load, Limits, ValidationOptions
+var model = load("forest.tl", Limits(), ValidationOptions(max_workers=1))
+```
+
+One worker forces serial validation. By default, validation uses at most four
+workers when there are at least 4,096 trees and 65,536 nodes, and no tree holds
+more than half the nodes. Both thresholds can be tuned with `min_trees` and
+`min_nodes`; the imbalance guard still applies. All checks run on every call.
+Metadata, encoding and parsing remain serial. Batches borrow the immutable model,
+reuse private traversal scratch, and join before returning the earliest error.
+
+The worker limit applies per validation call, not to the whole process. Concurrent
+callers share MAX's runtime pool; services already parallelizing requests should
+measure contention and can select one worker. Mojo executables initialize the
+runtime automatically. Non-Mojo hosts invoking a Mojo shared library must
+initialize the Mojo runtime explicitly before calling the library.
+
+The locked `max-core` dependency supplies the CPU executor without the MAX Python
+package. It adds approximately 294 MiB installed on linux-64 and uses Modular's
+proprietary license. See [the threading evaluation](docs/threading-results.md)
+for measurements, packaging details and reproduction commands.
