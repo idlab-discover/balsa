@@ -1,5 +1,7 @@
 # Balsa
 
+![Balsa: a flame mascot with a wooden decision tree](assets/branding/balsa-logo-169.png)
+
 A native Mojo library for reading, editing, validating and writing Treelite v4
 checkpoints. Supports float32 and float64 models; inference is out of scope.
 Tested against Treelite 4.6.1, with no Python or libtreelite runtime dependency.
@@ -56,3 +58,7 @@ For a quick CLI example:
 See [construction examples](examples/construction.mojo) and
 [third-party notices](THIRD_PARTY_NOTICES.md).
 Generate the API reference with `pixi run -e docs docs` (`docs/api.md`).
+
+<p align="center">
+  <img src="assets/branding/balsa-logo-square.png" alt="Balsa mascot" width="160">
+</p>
