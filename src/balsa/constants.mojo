@@ -2,6 +2,8 @@
 
 
 struct Operator:
+    """Numerical comparison codes; NONE is reserved for non-split nodes."""
+
     comptime NONE = Int8(0)
     comptime EQ = Int8(1)
     comptime LT = Int8(2)
@@ -11,12 +13,18 @@ struct Operator:
 
 
 struct NodeType:
+    """Node kind codes for scalar/vector leaves and numerical/categorical splits.
+    """
+
     comptime LEAF = Int8(0)
     comptime NUMERICAL = Int8(1)
     comptime CATEGORICAL = Int8(2)
 
 
 struct TaskType:
+    """Treelite task codes preserved as metadata; Balsa does not run inference.
+    """
+
     comptime BINARY_CLF = UInt8(0)
     comptime REGRESSOR = UInt8(1)
     comptime MULTI_CLF = UInt8(2)

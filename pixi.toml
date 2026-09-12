@@ -26,6 +26,13 @@ max-core = "==26.5.0"
 [feature.oracle.dependencies]
 python = "3.12.*"
 
+[feature.docs.dependencies]
+python = "3.12.*"
+
+[feature.docs.tasks]
+docs = "python tools/api_docs.py"
+docs-check = "python tools/api_docs.py --check"
+
 [feature.oracle.pypi-dependencies]
 treelite = "==4.6.1"
 
@@ -53,6 +60,7 @@ pyperf = "==2.10.0"
 pyperf = "python -m pyperf"
 
 [environments]
+docs = ["docs"]
 oracle = ["oracle"]
 frameworks = ["oracle", "frameworks"]
 benchmark = ["oracle", "benchmark"]

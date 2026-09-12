@@ -11,10 +11,15 @@ struct Limits(Copyable, Movable):
     """
 
     var max_bytes: Int
+    """Maximum checkpoint size in bytes; default 64 MiB."""
     var max_elements: Int
+    """Maximum elements in an individual array; default 8,388,608."""
     var max_trees: Int
+    """Maximum trees per model; default 100,000."""
     var max_nodes: Int
+    """Maximum total nodes per model; default 1,000,000."""
     var max_extensions: Int
+    """Maximum records in each extension slot; default 1,024."""
 
     def __init__(
         out self,
@@ -24,6 +29,7 @@ struct Limits(Copyable, Movable):
         max_nodes: Int = 1_000_000,
         max_extensions: Int = 1024,
     ):
+        """Set byte, per-array, tree, total-node and per-slot extension caps."""
         self.max_bytes = max_bytes
         self.max_elements = max_elements
         self.max_trees = max_trees
@@ -31,6 +37,7 @@ struct Limits(Copyable, Movable):
         self.max_extensions = max_extensions
 
     def validate(self) raises:
+        """Reject limits outside the inclusive range 1 through 2^30."""
         if (
             self.max_bytes <= 0
             or self.max_bytes > 1_073_741_824

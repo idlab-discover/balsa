@@ -17,6 +17,13 @@ from .validation import validate, ValidationOptions
 from .wire import Limits
 
 
+comptime __version__ = "0.1.0"
+"""Balsa library version, independent of the Treelite checkpoint version."""
+
+
 def version() -> String:
-    """Return the Balsa project version."""
-    return "0.1.0"
+    """Return the library version; prefer the compile-time __version__ constant.
+
+    Retained for compatibility with existing callers.
+    """
+    return String(__version__)

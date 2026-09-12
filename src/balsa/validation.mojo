@@ -16,9 +16,13 @@ struct ValidationOptions(Copyable, Movable):
     """
 
     var enabled: Bool
+    """Whether codec and builder calls validate automatically; default True."""
     var max_workers: Int
+    """Per-call worker cap; values <= 1 select serial validation."""
     var min_trees: Int
+    """Minimum tree count for parallel validation; default 4,096."""
     var min_nodes: Int
+    """Minimum total node count for parallel validation; default 65,536."""
 
     def __init__(
         out self,
@@ -28,6 +32,11 @@ struct ValidationOptions(Copyable, Movable):
         *,
         enabled: Bool = True,
     ):
+        """Set automatic validation policy and parallel execution thresholds.
+
+        max_workers <= 1 selects serial execution. Both thresholds must be met
+        and no tree may contain more than half the nodes to use parallelism.
+        """
         self.enabled = enabled
         self.max_workers = max_workers
         self.min_trees = min_trees

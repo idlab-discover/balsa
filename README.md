@@ -26,8 +26,15 @@ pixi run check
 | `pixi run example` | Construct, save and automatically load a float64 stump |
 | `pixi run check` | Build, inspect, precompile and test |
 | `pixi run fmt` | Format Mojo sources |
+| `pixi run -e docs docs` | Generate the Markdown API reference and compiler JSON |
+| `pixi run -e docs docs-check` | Check that the API reference and library version are current |
 
 ## Library
+
+See the [API reference](docs/api.md) for all public declarations and the
+[API conventions](docs/api-design.md) for the module/function design.
+Use `balsa.__version__` for the library version; `version()` remains available
+for compatibility. Treelite checkpoint version fields are independent.
 
 ```mojo
 from balsa import load, save

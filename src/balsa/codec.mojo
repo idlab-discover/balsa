@@ -268,6 +268,7 @@ def save[
 
 
 comptime AnyModel = Variant[Model[DType.float32], Model[DType.float64]]
+"""Owned model with discovered float32 or float64 precision; accepted by encode and save."""
 
 
 def checkpoint_dtype(

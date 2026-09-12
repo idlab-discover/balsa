@@ -19,6 +19,8 @@ struct TreeBuilder[dtype: DType = DType.float32](Movable):
     var _limits: Limits
 
     def __init__(out self, num_nodes: Int, limits: Limits = Limits()) raises:
+        """Allocate a tree with positive, bounded node count and undefined nodes.
+        """
         limits.validate()
         require(
             num_nodes > 0
@@ -103,6 +105,8 @@ struct TreeBuilder[dtype: DType = DType.float32](Movable):
         op: Int8 = Operator.LT,
         default_left: Bool = False,
     ) raises:
+        """Define a numerical split; default_left chooses the missing-value branch.
+        """
         self._check_split(node, feature, left, right)
         require(
             op >= Operator.EQ and op <= Operator.GE,
@@ -128,6 +132,11 @@ struct TreeBuilder[dtype: DType = DType.float32](Movable):
         default_left: Bool = False,
         categories_right: Bool = False,
     ) raises:
+        """Define a categorical split, copying category IDs into tree storage.
+
+        Membership selects the right child when categories_right is True,
+        otherwise the left child. default_left selects the missing-value branch.
+        """
         self._check_split(node, feature, left, right)
         require(
             len(categories)
@@ -182,6 +191,12 @@ struct ModelBuilder[dtype: DType = DType.float32](Movable):
         attributes: String = "",
         limits: Limits = Limits(),
     ) raises:
+        """Initialize and validate metadata for a model without trees.
+
+        num_class defines one entry per target. Empty base_scores become zeros
+        with num_target * max(num_class) entries. List arguments are consumed.
+        Postprocessor settings are stored as metadata and never executed.
+        """
         limits.validate()
         require(
             len(num_class) > 0 and len(num_class) <= limits.max_elements,

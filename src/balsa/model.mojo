@@ -13,9 +13,13 @@ struct Extension(Copyable, Movable):
     """Opaque optional field retained in its original extension slot."""
 
     var name: List[UInt8]
+    """Opaque field name bytes."""
     var element_size: UInt64
+    """Bytes per payload element."""
     var count: UInt64
+    """Number of payload elements; payload length must equal count * element_size."""
     var payload: List[UInt8]
+    """Opaque bytes preserved without interpretation."""
 
 
 struct Tree[dtype: DType](Copyable, Movable):
@@ -23,32 +27,58 @@ struct Tree[dtype: DType](Copyable, Movable):
 
     comptime Scalar = SIMD[Self.dtype, 1]
     var num_nodes: Int32
+    """Number of nodes; node zero is the root."""
     var has_categorical_split: UInt8
+    """Wire boolean indicating whether the tree contains categorical splits."""
     var node_type: List[Int8]
+    """Per-node NodeType code."""
     var cleft: List[Int32]
+    """Per-node left child index; -1 for leaves."""
     var cright: List[Int32]
+    """Per-node right child index; -1 for leaves."""
     var split_index: List[Int32]
+    """Per-node feature index for split nodes."""
     var default_left: List[UInt8]
+    """Per-node wire boolean selecting the left branch for missing values."""
     var leaf_value: List[Self.Scalar]
+    """Per-node scalar leaf value."""
     var threshold: List[Self.Scalar]
+    """Per-node numerical split threshold."""
     var cmp: List[Int8]
+    """Per-node Operator code for numerical splits."""
     var category_list_right_child: List[UInt8]
+    """Per-node wire boolean: category membership selects the right child."""
     var leaf_vector: List[Self.Scalar]
+    """Concatenated vector-leaf values."""
     var leaf_vector_begin: List[UInt64]
+    """Per-node inclusive offset into leaf_vector."""
     var leaf_vector_end: List[UInt64]
+    """Per-node exclusive offset into leaf_vector."""
     var category_list: List[UInt32]
+    """Concatenated categorical split IDs."""
     var category_list_begin: List[UInt64]
+    """Per-node inclusive offset into category_list."""
     var category_list_end: List[UInt64]
+    """Per-node exclusive offset into category_list."""
     var data_count: List[UInt64]
+    """Optional per-node sample counts, paired with data_count_present."""
     var data_count_present: List[UInt8]
+    """Presence flags for data_count; both arrays may be empty."""
     var sum_hess: List[Float64]
+    """Optional per-node Hessian sums, paired with sum_hess_present."""
     var sum_hess_present: List[UInt8]
+    """Presence flags for sum_hess; both arrays may be empty."""
     var gain: List[Float64]
+    """Optional per-node gains, paired with gain_present."""
     var gain_present: List[UInt8]
+    """Presence flags for gain; both arrays may be empty."""
     var tree_extensions: List[Extension]
+    """Opaque records in the tree extension slot."""
     var node_extensions: List[Extension]
+    """Opaque records in the node extension slot."""
 
     def __init__(out self):
+        """Create empty tree storage; use TreeBuilder for a complete tree."""
         comptime assert (
             Self.dtype == DType.float32 or Self.dtype == DType.float64
         ), "Unsupported model precision"
@@ -114,28 +144,53 @@ struct Model[dtype: DType](Copyable, Movable):
 
     comptime Scalar = SIMD[Self.dtype, 1]
     var major: Int32
+    """Treelite checkpoint major version, independent of Balsa version."""
     var minor: Int32
+    """Treelite checkpoint minor version."""
     var patch: Int32
+    """Treelite checkpoint patch version."""
     var threshold_type: UInt8
+    """TypeInfo tag matching the model dtype."""
     var leaf_output_type: UInt8
+    """TypeInfo tag matching the model dtype."""
     var num_tree: UInt64
+    """Number of trees; must equal the trees list length."""
     var num_feature: Int32
+    """Number of input features."""
     var task_type: UInt8
+    """TaskType code preserved as model metadata."""
     var average_tree_output: UInt8
+    """Wire boolean indicating averaged tree output."""
     var num_target: Int32
+    """Number of output targets."""
     var num_class: List[Int32]
+    """Class count for each target."""
     var leaf_vector_shape: List[Int32]
+    """Two dimensions describing a vector leaf output."""
     var target_id: List[Int32]
+    """Per-tree target annotation; -1 denotes all targets."""
     var class_id: List[Int32]
+    """Per-tree class annotation; -1 denotes all classes."""
     var postprocessor: List[UInt8]
+    """Postprocessor name bytes; Balsa never executes the postprocessor."""
     var sigmoid_alpha: Float32
+    """Stored postprocessor coefficient."""
     var ratio_c: Float32
+    """Stored postprocessor coefficient."""
     var base_scores: List[Float64]
+    """Base score array with num_target * max(num_class) entries."""
     var attributes: List[UInt8]
+    """Opaque attribute JSON bytes; not parsed or validated as JSON."""
     var extensions: List[Extension]
+    """Opaque records in the model extension slot."""
     var trees: List[Tree[Self.dtype]]
+    """Owned trees in serialization order."""
 
     def __init__(out self):
+        """Create raw storage with checkpoint version 4.6.1 and matching dtype tags.
+
+        The empty metadata is incomplete; use ModelBuilder for valid defaults.
+        """
         comptime assert (
             Self.dtype == DType.float32 or Self.dtype == DType.float64
         ), "Unsupported model precision"
