@@ -84,6 +84,30 @@ struct Reader(Movable):
         self.tree_id = -1
         self.limits = limits.copy()
 
+    @always_inline
+    def read[
+        dtype: DType, //, field: StaticString
+    ](mut self, mut value: SIMD[dtype, 1]) raises:
+        """Read a named scalar, inferring its wire dtype from the destination.
+        """
+        self.field = field
+        value = self.scalar[dtype]()
+
+    @always_inline
+    def read[
+        dtype: DType, //, field: StaticString
+    ](mut self, mut value: List[SIMD[dtype, 1]]) raises:
+        """Read a named array, inferring its wire dtype from the destination."""
+        self.field = field
+        value = self.array[dtype]()
+
+    @always_inline
+    def read[field: StaticString](mut self, mut value: List[Extension]) raises:
+        """Read a named extension slot with its dedicated wire representation.
+        """
+        self.field = field
+        value = self.extensions()
+
     def fail(self, message: String) raises:
         var context = String(self.field)
         if self.tree_id >= 0:

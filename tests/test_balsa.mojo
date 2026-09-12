@@ -468,10 +468,10 @@ def test_bulk_limits_and_error_context() raises:
     _ = bytes.pop()
     var reader = Reader(bytes^, Limits())
     reader.tree_id = 7
-    reader.field = "threshold"
+    var destination: List[UInt32] = [99]
     var failed = False
     try:
-        _ = reader.array[DType.uint32]()
+        reader.read["threshold"](destination)
     except err:
         failed = True
         assert_equal(
@@ -482,6 +482,8 @@ def test_bulk_limits_and_error_context() raises:
             ),
         )
     assert_equal(failed, True)
+    assert_equal(len(destination), 1)
+    assert_equal(destination[0], 99)
     var model = make_stump()
     var encoded = encode(model)
     assert_equal(encode(model, Limits(max_bytes=len(encoded))), encoded)
@@ -840,3 +842,42 @@ def test_validation_opt_out_preserves_wire_checks() raises:
     assert_equal(encode(restored, options=unchecked), double_bytes)
     with assert_raises():
         _ = decode[DType.float64](double_bytes^)
+
+
+def test_named_reader_scalar_and_extension_errors() raises:
+    # A failed named read retains the destination and identifies the wire field.
+    var reader = Reader(List[UInt8](), Limits())
+    var scalar = Int32(99)
+    var failed = False
+    try:
+        reader.read["num_nodes"](scalar)
+    except err:
+        failed = True
+        assert_equal(
+            String(err),
+            "Malformed checkpoint at byte 0 (num_nodes): truncated payload",
+        )
+    assert_equal(failed, True)
+    assert_equal(scalar, 99)
+
+    var writer = Writer(Limits())
+    writer.scalar(Int32(-1))
+    var extensions_reader = Reader(writer^.finish(), Limits())
+    extensions_reader.tree_id = 2
+    var extensions = List[Extension]()
+    extensions.append(Extension(bytes_of("kept"), 1, 1, bytes_of("x")))
+    failed = False
+    try:
+        extensions_reader.read["tree_extensions"](extensions)
+    except err:
+        failed = True
+        assert_equal(
+            String(err),
+            (
+                "Malformed checkpoint at byte 4 (tree[2].tree_extensions):"
+                " invalid extension count"
+            ),
+        )
+    assert_equal(failed, True)
+    assert_equal(len(extensions), 1)
+    assert_equal(extensions[0].name, bytes_of("kept"))

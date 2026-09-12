@@ -26,21 +26,16 @@ def decode[
     """
     var reader = Reader(data^, limits)
     var model = Model[dtype]()
-    reader.field = "major"
-    model.major = reader.scalar[DType.int32]()
-    reader.field = "minor"
-    model.minor = reader.scalar[DType.int32]()
-    reader.field = "patch"
-    model.patch = reader.scalar[DType.int32]()
+    reader.read["major"](model.major)
+    reader.read["minor"](model.minor)
+    reader.read["patch"](model.patch)
     if model.major != 4 or model.minor < 0 or model.patch < 0:
         raise Error(
             "Unsupported checkpoint version: expected v4 with nonnegative"
             " minor/patch"
         )
-    reader.field = "threshold_type"
-    model.threshold_type = reader.scalar[DType.uint8]()
-    reader.field = "leaf_output_type"
-    model.leaf_output_type = reader.scalar[DType.uint8]()
+    reader.read["threshold_type"](model.threshold_type)
+    reader.read["leaf_output_type"](model.leaf_output_type)
     if (
         model.threshold_type != model.leaf_output_type
         or model.threshold_type != type_tag[dtype]()
@@ -48,38 +43,23 @@ def decode[
         raise Error(
             "Unsupported checkpoint precision or mismatched decode dtype"
         )
-    reader.field = "num_tree"
-    model.num_tree = reader.scalar[DType.uint64]()
+    reader.read["num_tree"](model.num_tree)
     if model.num_tree > UInt64(limits.max_trees):
         reader.fail("tree count limit exceeded")
-    reader.field = "num_feature"
-    model.num_feature = reader.scalar[DType.int32]()
-    reader.field = "task_type"
-    model.task_type = reader.scalar[DType.uint8]()
-    reader.field = "average_tree_output"
-    model.average_tree_output = reader.scalar[DType.uint8]()
-    reader.field = "num_target"
-    model.num_target = reader.scalar[DType.int32]()
-    reader.field = "num_class"
-    model.num_class = reader.array[DType.int32]()
-    reader.field = "leaf_vector_shape"
-    model.leaf_vector_shape = reader.array[DType.int32]()
-    reader.field = "target_id"
-    model.target_id = reader.array[DType.int32]()
-    reader.field = "class_id"
-    model.class_id = reader.array[DType.int32]()
-    reader.field = "postprocessor"
-    model.postprocessor = reader.array[DType.uint8]()
-    reader.field = "sigmoid_alpha"
-    model.sigmoid_alpha = reader.scalar[DType.float32]()
-    reader.field = "ratio_c"
-    model.ratio_c = reader.scalar[DType.float32]()
-    reader.field = "base_scores"
-    model.base_scores = reader.array[DType.float64]()
-    reader.field = "attributes"
-    model.attributes = reader.array[DType.uint8]()
-    reader.field = "extensions"
-    model.extensions = reader.extensions()
+    reader.read["num_feature"](model.num_feature)
+    reader.read["task_type"](model.task_type)
+    reader.read["average_tree_output"](model.average_tree_output)
+    reader.read["num_target"](model.num_target)
+    reader.read["num_class"](model.num_class)
+    reader.read["leaf_vector_shape"](model.leaf_vector_shape)
+    reader.read["target_id"](model.target_id)
+    reader.read["class_id"](model.class_id)
+    reader.read["postprocessor"](model.postprocessor)
+    reader.read["sigmoid_alpha"](model.sigmoid_alpha)
+    reader.read["ratio_c"](model.ratio_c)
+    reader.read["base_scores"](model.base_scores)
+    reader.read["attributes"](model.attributes)
+    reader.read["extensions"](model.extensions)
     # Bound the capacity hint by actual input bytes, not just an untrusted count.
     model.trees.reserve(
         min(
@@ -91,62 +71,37 @@ def decode[
     for tree_id in range(Int(model.num_tree)):
         reader.tree_id = tree_id
         var tree = Tree[dtype]()
-        reader.field = "num_nodes"
-        tree.num_nodes = reader.scalar[DType.int32]()
+        reader.read["num_nodes"](tree.num_nodes)
         if (
             tree.num_nodes <= 0
             or Int(tree.num_nodes) > limits.max_nodes - total_nodes
         ):
             reader.fail("invalid node count or total node limit exceeded")
         total_nodes += Int(tree.num_nodes)
-        reader.field = "has_categorical_split"
-        tree.has_categorical_split = reader.scalar[DType.uint8]()
-        reader.field = "node_type"
-        tree.node_type = reader.array[DType.int8]()
-        reader.field = "cleft"
-        tree.cleft = reader.array[DType.int32]()
-        reader.field = "cright"
-        tree.cright = reader.array[DType.int32]()
-        reader.field = "split_index"
-        tree.split_index = reader.array[DType.int32]()
-        reader.field = "default_left"
-        tree.default_left = reader.array[DType.uint8]()
-        reader.field = "leaf_value"
-        tree.leaf_value = reader.array[dtype]()
-        reader.field = "threshold"
-        tree.threshold = reader.array[dtype]()
-        reader.field = "cmp"
-        tree.cmp = reader.array[DType.int8]()
-        reader.field = "category_list_right_child"
-        tree.category_list_right_child = reader.array[DType.uint8]()
-        reader.field = "leaf_vector"
-        tree.leaf_vector = reader.array[dtype]()
-        reader.field = "leaf_vector_begin"
-        tree.leaf_vector_begin = reader.array[DType.uint64]()
-        reader.field = "leaf_vector_end"
-        tree.leaf_vector_end = reader.array[DType.uint64]()
-        reader.field = "category_list"
-        tree.category_list = reader.array[DType.uint32]()
-        reader.field = "category_list_begin"
-        tree.category_list_begin = reader.array[DType.uint64]()
-        reader.field = "category_list_end"
-        tree.category_list_end = reader.array[DType.uint64]()
-        reader.field = "data_count"
-        tree.data_count = reader.array[DType.uint64]()
-        reader.field = "data_count_present"
-        tree.data_count_present = reader.array[DType.uint8]()
-        reader.field = "sum_hess"
-        tree.sum_hess = reader.array[DType.float64]()
-        reader.field = "sum_hess_present"
-        tree.sum_hess_present = reader.array[DType.uint8]()
-        reader.field = "gain"
-        tree.gain = reader.array[DType.float64]()
-        reader.field = "gain_present"
-        tree.gain_present = reader.array[DType.uint8]()
-        reader.field = "tree_extensions"
-        tree.tree_extensions = reader.extensions()
-        reader.field = "node_extensions"
-        tree.node_extensions = reader.extensions()
+        reader.read["has_categorical_split"](tree.has_categorical_split)
+        reader.read["node_type"](tree.node_type)
+        reader.read["cleft"](tree.cleft)
+        reader.read["cright"](tree.cright)
+        reader.read["split_index"](tree.split_index)
+        reader.read["default_left"](tree.default_left)
+        reader.read["leaf_value"](tree.leaf_value)
+        reader.read["threshold"](tree.threshold)
+        reader.read["cmp"](tree.cmp)
+        reader.read["category_list_right_child"](tree.category_list_right_child)
+        reader.read["leaf_vector"](tree.leaf_vector)
+        reader.read["leaf_vector_begin"](tree.leaf_vector_begin)
+        reader.read["leaf_vector_end"](tree.leaf_vector_end)
+        reader.read["category_list"](tree.category_list)
+        reader.read["category_list_begin"](tree.category_list_begin)
+        reader.read["category_list_end"](tree.category_list_end)
+        reader.read["data_count"](tree.data_count)
+        reader.read["data_count_present"](tree.data_count_present)
+        reader.read["sum_hess"](tree.sum_hess)
+        reader.read["sum_hess_present"](tree.sum_hess_present)
+        reader.read["gain"](tree.gain)
+        reader.read["gain_present"](tree.gain_present)
+        reader.read["tree_extensions"](tree.tree_extensions)
+        reader.read["node_extensions"](tree.node_extensions)
         model.trees.append(tree^)
     if reader.pos != len(reader.data):
         reader.fail("trailing bytes")
@@ -180,50 +135,50 @@ def encode[
 def write_model[
     dtype: DType, count_only: Bool
 ](model: Model[dtype], mut writer: Writer[count_only]) raises:
-    writer.scalar[DType.int32](model.major)
-    writer.scalar[DType.int32](model.minor)
-    writer.scalar[DType.int32](model.patch)
-    writer.scalar[DType.uint8](model.threshold_type)
-    writer.scalar[DType.uint8](model.leaf_output_type)
-    writer.scalar[DType.uint64](model.num_tree)
-    writer.scalar[DType.int32](model.num_feature)
-    writer.scalar[DType.uint8](model.task_type)
-    writer.scalar[DType.uint8](model.average_tree_output)
-    writer.scalar[DType.int32](model.num_target)
-    writer.array[DType.int32](model.num_class)
-    writer.array[DType.int32](model.leaf_vector_shape)
-    writer.array[DType.int32](model.target_id)
-    writer.array[DType.int32](model.class_id)
-    writer.array[DType.uint8](model.postprocessor)
-    writer.scalar[DType.float32](model.sigmoid_alpha)
-    writer.scalar[DType.float32](model.ratio_c)
-    writer.array[DType.float64](model.base_scores)
-    writer.array[DType.uint8](model.attributes)
+    writer.scalar(model.major)
+    writer.scalar(model.minor)
+    writer.scalar(model.patch)
+    writer.scalar(model.threshold_type)
+    writer.scalar(model.leaf_output_type)
+    writer.scalar(model.num_tree)
+    writer.scalar(model.num_feature)
+    writer.scalar(model.task_type)
+    writer.scalar(model.average_tree_output)
+    writer.scalar(model.num_target)
+    writer.array(model.num_class)
+    writer.array(model.leaf_vector_shape)
+    writer.array(model.target_id)
+    writer.array(model.class_id)
+    writer.array(model.postprocessor)
+    writer.scalar(model.sigmoid_alpha)
+    writer.scalar(model.ratio_c)
+    writer.array(model.base_scores)
+    writer.array(model.attributes)
     writer.extensions(model.extensions)
     for tree in model.trees:
-        writer.scalar[DType.int32](tree.num_nodes)
-        writer.scalar[DType.uint8](tree.has_categorical_split)
-        writer.array[DType.int8](tree.node_type)
-        writer.array[DType.int32](tree.cleft)
-        writer.array[DType.int32](tree.cright)
-        writer.array[DType.int32](tree.split_index)
-        writer.array[DType.uint8](tree.default_left)
-        writer.array[dtype](tree.leaf_value)
-        writer.array[dtype](tree.threshold)
-        writer.array[DType.int8](tree.cmp)
-        writer.array[DType.uint8](tree.category_list_right_child)
-        writer.array[dtype](tree.leaf_vector)
-        writer.array[DType.uint64](tree.leaf_vector_begin)
-        writer.array[DType.uint64](tree.leaf_vector_end)
-        writer.array[DType.uint32](tree.category_list)
-        writer.array[DType.uint64](tree.category_list_begin)
-        writer.array[DType.uint64](tree.category_list_end)
-        writer.array[DType.uint64](tree.data_count)
-        writer.array[DType.uint8](tree.data_count_present)
-        writer.array[DType.float64](tree.sum_hess)
-        writer.array[DType.uint8](tree.sum_hess_present)
-        writer.array[DType.float64](tree.gain)
-        writer.array[DType.uint8](tree.gain_present)
+        writer.scalar(tree.num_nodes)
+        writer.scalar(tree.has_categorical_split)
+        writer.array(tree.node_type)
+        writer.array(tree.cleft)
+        writer.array(tree.cright)
+        writer.array(tree.split_index)
+        writer.array(tree.default_left)
+        writer.array(tree.leaf_value)
+        writer.array(tree.threshold)
+        writer.array(tree.cmp)
+        writer.array(tree.category_list_right_child)
+        writer.array(tree.leaf_vector)
+        writer.array(tree.leaf_vector_begin)
+        writer.array(tree.leaf_vector_end)
+        writer.array(tree.category_list)
+        writer.array(tree.category_list_begin)
+        writer.array(tree.category_list_end)
+        writer.array(tree.data_count)
+        writer.array(tree.data_count_present)
+        writer.array(tree.sum_hess)
+        writer.array(tree.sum_hess_present)
+        writer.array(tree.gain)
+        writer.array(tree.gain_present)
         writer.extensions(tree.tree_extensions)
         writer.extensions(tree.node_extensions)
 
