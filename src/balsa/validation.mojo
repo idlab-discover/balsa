@@ -1,6 +1,7 @@
 """Structural validation of Treelite checkpoint fields."""
 
 from max.algorithm import parallelize
+from std.sys import simd_width_of
 
 from .model import Model, Tree, Extension
 from .constants import NodeType, Operator, TaskType, type_tag
@@ -65,8 +66,20 @@ def check_extensions(values: List[Extension], limits: Limits) raises:
 
 
 def check_bool(values: List[UInt8], field: StringSlice) raises:
-    for value in values:
-        if value > 1:
+    comptime lanes = simd_width_of[DType.uint8]()
+    var offset = 0
+    # Only load complete vectors. Byte-list storage need not be SIMD-aligned.
+    while len(values) - offset >= lanes:
+        var flags = (
+            values.unsafe_ptr()
+            .unsafe_offset(offset)
+            .unsafe_load[width=lanes, alignment=1]()
+        )
+        if flags.gt(1).reduce_or():
+            raise Error("Malformed model: " + String(field) + " boolean")
+        offset += lanes
+    for i in range(offset, len(values)):
+        if values[i] > 1:
             raise Error("Malformed model: " + String(field) + " boolean")
 
 

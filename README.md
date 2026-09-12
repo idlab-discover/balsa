@@ -167,6 +167,20 @@ pixi install -e benchmark --locked
 pixi run -e benchmark pyperf --help
 ```
 
+Compare current Balsa with a prior revision and native Treelite 4.6.1:
+
+```sh
+pixi run -e benchmark python tools/benchmark_decode.py \
+  --baseline f11fdcd --output build/simd-comparison --cpus 0-7 --repeats 7
+```
+
+This rebuilds the workers and prepares the corpus, then measures decode, encode
+and Balsa-only validation. Results are in `build/simd-comparison/summary.json`
+and raw samples in `timings.json`. The baseline above precedes SIMD boolean
+validation; current Balsa is measured with serial and default validation.
+Choose available CPUs and a fresh output directory for each experiment.
+Automatic validation stays enabled, so encode/decode include the changed path.
+
 See [the performance wrap-up](docs/performance-plan.md),
 [the latest validation-opt-out measurements](docs/validation-opt-out-results.md),
 and [the retained codec design](docs/codec-optimization.md). Local experimental

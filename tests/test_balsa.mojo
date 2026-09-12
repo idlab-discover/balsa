@@ -1,6 +1,7 @@
 """Native codec, malformed input and model behavior tests."""
 
 from std.testing import assert_equal, assert_raises, TestSuite
+from std.sys import simd_width_of
 from balsa.codec import load, decode, encode, read_file, save
 from balsa import (
     ModelBuilder,
@@ -14,7 +15,7 @@ from balsa import (
     checkpoint_dtype,
 )
 from balsa.model import Model, Tree, Extension
-from balsa.validation import validate
+from balsa.validation import validate, check_bool
 from balsa.wire import Reader, Writer, Limits
 
 
@@ -881,3 +882,26 @@ def test_named_reader_scalar_and_extension_errors() raises:
     assert_equal(failed, True)
     assert_equal(len(extensions), 1)
     assert_equal(extensions[0].name, bytes_of("kept"))
+
+
+def test_boolean_simd_boundaries() raises:
+    comptime lanes = simd_width_of[DType.uint8]()
+    # Empty, short, exact-vector, multiple-vector and remainder lengths.
+    for length in range(3 * lanes + 2):
+        var values = List[UInt8](length=length, fill=0)
+        for i in range(length):
+            values[i] = UInt8(i % 2)
+        check_bool(values, "flags")
+        # Exercise every lane and remainder position, including unsigned values
+        # that would pass an incorrect signed comparison.
+        for i in range(length):
+            for invalid in [2, 128, 255]:
+                values[i] = UInt8(invalid)
+                var failed = False
+                try:
+                    check_bool(values, "flags")
+                except err:
+                    failed = True
+                    assert_equal(String(err), "Malformed model: flags boolean")
+                assert_equal(failed, True)
+            values[i] = UInt8(i % 2)
