@@ -11,7 +11,9 @@ from the Treelite v4 specification and implementation:
 The Balsa implementation translates the format into Mojo, adds owned storage
 and bounds/structural validation, and preserves unknown extension records.
 The Python oracle uses Treelite 4.6.1 to produce and check synthetic fixtures.
-Detailed source links are recorded in [the MVP plan](docs/mvp-plan.md).
+The pinned [v4 field specification](https://github.com/dmlc/treelite/blob/a2cd458e2140052a2234402835bd02815d11458e/docs/serialization/v4.rst)
+and [serializer](https://github.com/dmlc/treelite/blob/a2cd458e2140052a2234402835bd02815d11458e/src/serializer.cc)
+record the source layout and field order.
 
 The original Balsa contributions are also licensed under the Apache License
 2.0, without LLVM exceptions; see [LICENSE](LICENSE). This notice preserves

@@ -5,10 +5,10 @@ It targets frequent loading/saving of trained models with uncommon editing.
 
 ## Interface
 
-Import `balsa.packed` as a module. It provides typed `decode`, `load`, `encode`
-and `save`, plus precision-discovering `decode_auto` and `load_auto`. The auto
-functions return `AnyPackedModel`, a variant of float32 and float64 owners;
-`encode` and `save` accept that variant directly.
+The root `balsa` API uses packed storage for `decode`, `load`, `decode_auto` and
+`load_auto`; the same operations are available from `balsa.packed`. Auto functions
+return `AnyPackedModel`, a variant of float32 and float64 owners. Root `encode`
+and `save` accept packed and editable models and their precision variants.
 
 Typed `PackedModel` provides:
 
@@ -16,11 +16,11 @@ Typed `PackedModel` provides:
 - `base_scores()`, `target_ids()`, `class_ids()` as immutable borrowed spans.
 - `tree(i)` for typed array and extension views. Arrays support `len`, checked
   indexing, and `to_list()` for independent storage.
-- `validate()` for explicit semantic validation, including after opt-out loads.
+- `validate()` for explicit semantic validation, including after unchecked loads.
 - `to_model()` for an independent editable model, validating by default.
 
 The fields beginning with `_` are implementation details and must not be changed.
-Builders and the ordinary codec continue to use the editable `Model`.
+Builders and the explicit editable codec continue to use `Model`.
 
 ## Storage and ownership
 
@@ -48,17 +48,16 @@ array-element, extension, tree-count and total-node limits. Truncations and
 trailing bytes are rejected even when semantic validation is disabled.
 
 Semantic validation is disabled by default; pass
-`ValidationOptions(enabled=True)` for safety-first loading. It shares the editable codec's
-metadata and topology rules, decoding one temporary tree at a time into reused
-capacities. It never constructs an editable forest, but it still copies tree
+`ValidationOptions(enabled=True)` for safety-first loading. It shares the editable
+codec's metadata and topology rules, decoding one temporary tree at a time into
+reused capacities. It never constructs an editable forest, but it still copies tree
 fields during this validation pass and needs scratch space for the largest
 tree seen. This implementation uses one validation worker; `max_workers` is
 treated as a cap. There is no inference or structural-editing implementation.
 
 `encode` and `save` emit preserved bytes without repeating semantic validation.
-If loading was unchecked (the default), that policy is
-also reflected in subsequent saving: structurally readable but semantically
-invalid input can be preserved. Explicit `model.validate()` always validates.
+Unchecked loading (the default) can therefore preserve semantically invalid
+input through saving. Explicit `model.validate()` always validates.
 
 ## Verification and measurement
 
@@ -83,7 +82,10 @@ Packed encoding copies a preserved serialization; ordinary encoding rebuilds
 it from editable fields. These operations have different capabilities, and the
 results must not be described as a general-purpose encoder speedup.
 
-### Initial local results
+### Historical experiment (`e7f11c0`)
+
+For the released public API, use the [0.2 results](benchmarks/release-0.2.0.md).
+The following figures describe the earlier packed-storage experiment.
 
 Median milliseconds per fresh decode, including destruction. The consuming
 columns both include an input copy; validation uses one worker when enabled.
@@ -101,9 +103,8 @@ All 16 validation-off medians improved. With validation on, 15 improved and the
 small RF multiclass case regressed. A targeted seven-batch repeat with 20,000
 calls per batch measured 4.60 microseconds for editable consuming, 4.45 for
 editable borrowed, and 4.79 for packed consuming: about 4% slower than editable
-consuming. These are historical experiment results; 0.2 adopts unchecked packed storage
-as the default based on the matched unchecked measurements. Raw repeat data is in
-`benchmarking/packed/multiclass-repeat.txt`.
+consuming. Version 0.2 adopts unchecked packed storage based on the matched
+unchecked measurements. Raw repeat data: `benchmarking/packed/multiclass-repeat.txt`.
 
 Without revalidation, rebuilding the large XGBoost/RF serializations took
 2.534/2.653 ms; copying their preserved packed serializations took 0.155/0.196 ms.

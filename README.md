@@ -114,9 +114,16 @@ For a quick CLI example:
 ./build/balsa inspect tests/fixtures/float32_op2_missing0.tl
 ```
 
-See [construction examples](examples/construction.mojo) and
-[third-party notices](THIRD_PARTY_NOTICES.md).
-Generate the API reference with `pixi run -e docs docs` (`docs/api.md`).
+## Documentation
+
+- [API reference](docs/api.md) — exported types, functions and options.
+- [Construction example](examples/construction.mojo) — build and save a model.
+- [Packed storage](docs/packed-storage.md) — ownership and validation details.
+- [0.2 migration guide](docs/release-0.2.0.md) — changed defaults and compatibility.
+- [Release benchmarks](docs/benchmarks/release-0.2.0.md) — measurements and limits.
+- [Packaging and CI](docs/distribution.md) — builds, checks and distribution.
+
+Regenerate the API reference with `pixi run -e docs docs`.
 
 <p align="center">
   <img src="assets/branding/balsa-logo-square.png" alt="Balsa mascot" width="160">
