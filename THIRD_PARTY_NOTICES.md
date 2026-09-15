@@ -13,5 +13,6 @@ and bounds/structural validation, and preserves unknown extension records.
 The Python oracle uses Treelite 4.6.1 to produce and check synthetic fixtures.
 Detailed source links are recorded in [the MVP plan](docs/mvp-plan.md).
 
-This notice preserves upstream attribution; it does not select a license for
-the original Balsa contributions.
+The original Balsa contributions are also licensed under the Apache License
+2.0, without LLVM exceptions; see [LICENSE](LICENSE). This notice preserves
+the separate upstream attribution.

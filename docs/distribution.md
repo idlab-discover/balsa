@@ -48,9 +48,11 @@ SHA inside the released repository's own build recipe.
 
 ## modular-community publication
 
-Balsa has not yet selected a license for its original contributions. Select one
-and add its metadata/license text before submitting a community recipe. The
-existing Treelite attribution does not license Balsa itself.
+Balsa uses Apache-2.0 without LLVM exceptions. The package includes its
+[license](../LICENSE) and the separate Treelite license and attribution.
+Conda build 1 adds this licensing metadata to version 0.2.0. The published
+`v0.2.0` tag predates the licensing commit; a community recipe must pin the
+subsequent licensed commit.
 
 The channel is community maintained; writing a local recipe does not publish
 Balsa there. The documented route is a pull request to

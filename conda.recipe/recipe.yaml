@@ -17,7 +17,7 @@ source:
     - THIRD_PARTY_NOTICES.md
 
 build:
-  number: 0
+  number: 1
   skip: not linux or not x86_64
   script:
     - mkdir -p "$PREFIX/lib/mojo"
@@ -47,6 +47,8 @@ about:
   homepage: https://github.com/idlab-discover/balsa
   repository: https://github.com/idlab-discover/balsa
   summary: Native Mojo storage and editing for Treelite v4 checkpoints
+  license: Apache-2.0
   license_file:
+    - LICENSE
     - LICENSES/Treelite.txt
     - THIRD_PARTY_NOTICES.md

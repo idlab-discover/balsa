@@ -6,6 +6,11 @@ A native Mojo library for reading, editing, validating and writing Treelite v4
 checkpoints. Supports float32 and float64 models; inference is out of scope.
 Tested against Treelite 4.6.1, with no Python or libtreelite runtime dependency.
 
+## License
+
+Balsa is licensed under [Apache-2.0](LICENSE), without LLVM exceptions.
+See [third-party notices](THIRD_PARTY_NOTICES.md) for Treelite attribution.
+
 ## Build
 
 Requires Linux x86-64, Pixi and a C linker such as GCC. The locked environment
