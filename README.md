@@ -125,6 +125,12 @@ For a quick CLI example:
 
 Regenerate the API reference with `pixi run -e docs docs`.
 
+See the [performance and completion report](docs/final-report.md) for the
+controlled Treelite comparison, validation-on/off results, experimental packed
+storage trade-offs, and remaining release decisions. The
+[pyperf harness](tools/pyperf_codec/README.md) documents reproduction and timing
+contracts.
+
 <p align="center">
   <img src="assets/branding/balsa-logo-square.png" alt="Balsa mascot" width="160">
 </p>
