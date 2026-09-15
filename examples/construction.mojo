@@ -1,20 +1,6 @@
-"""Build a stump, save it, and load it without specifying its precision."""
+"""Build, save, and reload a one-split tree. Run with `pixi run example`."""
 
-from balsa import (
-    Model,
-    ModelBuilder,
-    TreeBuilder,
-    Operator,
-    load_auto_editable as load_auto,
-    save,
-)
-
-
-def describe[dtype: DType](model: Model[dtype]) raises:
-    print("Postprocessor:", model.postprocessor_name())
-    for tree in model.trees:
-        var thresholds = Span(tree.threshold)
-        print("Root threshold:", thresholds[0])
+from balsa import ModelBuilder, TreeBuilder, Operator, load, save
 
 
 def main() raises:
@@ -34,9 +20,5 @@ def main() raises:
     builder.add_tree(tree^.build())
     var model = builder^.build()
     save(model, "build/example-stump.tl")
-    var loaded = load_auto("build/example-stump.tl")
-    if loaded.isa[Model[DType.float32]]():
-        describe(loaded[Model[DType.float32]])
-    else:
-        describe(loaded[Model[DType.float64]])
-    save(loaded, "build/example-copy.tl")
+    var loaded = load[DType.float64]("build/example-stump.tl")
+    print("Trees:", loaded.num_trees(), "Features:", loaded.num_features())
