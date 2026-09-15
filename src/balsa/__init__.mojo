@@ -1,13 +1,25 @@
-"""Native Treelite v4 checkpoint storage, serialization and validation."""
+"""Native Treelite v4 storage with performance-first, read-only packed loading.
 
-from .codec import (
+Automatic semantic validation is off. Pass ValidationOptions(enabled=True) for
+uncertain input; bounds and format checks remain active. Use load_editable or
+packed.to_model() for editing. Packed output never repeats semantic validation.
+"""
+
+from .packed import (
     decode,
-    decode_into,
-    encode,
     load,
-    save,
     decode_auto,
     load_auto,
+    PackedModel,
+    AnyPackedModel,
+)
+from .storage import encode, save
+from .codec import (
+    decode as decode_editable,
+    decode_into,
+    load as load_editable,
+    decode_auto as decode_auto_editable,
+    load_auto as load_auto_editable,
     checkpoint_dtype,
     AnyModel,
 )
@@ -18,7 +30,7 @@ from .validation import validate, ValidationOptions
 from .wire import Limits
 
 
-comptime __version__ = "0.1.0"
+comptime __version__ = "0.2.0"
 """Balsa library version, independent of the Treelite checkpoint version."""
 
 

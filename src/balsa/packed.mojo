@@ -2,7 +2,7 @@
 
 Tree payloads stay in wire layout with byte-aligned typed access. Model-header
 arrays are decoded once. Tree offsets share one index allocation. Use to_model()
-for editing. This module is an alternative to the ordinary editable codec.
+for editing. This is the default storage representation exported by balsa.
 """
 
 from std.utils import Variant
@@ -94,7 +94,7 @@ struct PackedModel[dtype: DType](Movable):
         return PackedTree[Self.dtype](reader, total_nodes)
 
     def to_model(
-        self, options: ValidationOptions = ValidationOptions()
+        self, options: ValidationOptions = ValidationOptions(enabled=True)
     ) raises -> Model[Self.dtype]:
         """Materialize independent editable fields, validating by default."""
         return decode_editable[Self.dtype](
@@ -143,7 +143,7 @@ def decode[
     limits: Limits = Limits(),
     options: ValidationOptions = ValidationOptions(),
 ) raises -> PackedModel[dtype]:
-    """Take ownership of checkpoint bytes; scan bounds and validate by default.
+    """Own checkpoint bytes with bounds checks; semantic validation is opt-in.
     """
     return PackedModel[dtype](data^, limits, options)
 
@@ -175,7 +175,7 @@ def load[
 
 
 def encode[dtype: DType](model: PackedModel[dtype]) -> List[UInt8]:
-    """Copy the preserved wire bytes. Validation is performed at load time.
+    """Copy the preserved wire bytes. No semantic validation is repeated.
 
     Models loaded with validation disabled are also emitted unchanged; call
     model.validate() explicitly when deferred semantic validation is wanted.
@@ -206,6 +206,19 @@ def decode_auto(
     if checkpoint_dtype(data, limits) == DType.float32:
         return AnyPackedModel(decode[DType.float32](data^, limits, options))
     return AnyPackedModel(decode[DType.float64](data^, limits, options))
+
+
+def decode_auto[
+    origin: Origin[mut=False], //
+](
+    data: Span[UInt8, origin],
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises -> AnyPackedModel:
+    """Discover precision and copy borrowed bytes into an independent owner."""
+    if checkpoint_dtype(data, limits) == DType.float32:
+        return AnyPackedModel(decode[DType.float32](data, limits, options))
+    return AnyPackedModel(decode[DType.float64](data, limits, options))
 
 
 def load_auto(

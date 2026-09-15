@@ -9,8 +9,8 @@ def execute[dtype: DType](var bytes: List[UInt8], args: List[String]) raises:
     var model = decode[dtype](bytes^)
     var command = args[1]
     if command == "inspect":
-        print("Treelite", model.major, model.minor, model.patch)
-        print("trees:", model.num_tree, "features:", model.num_feature)
+        print("Treelite v4 checkpoint")
+        print("trees:", model.num_trees(), "features:", model.num_features())
         print("precision:", "float32" if dtype == DType.float32 else "float64")
         return
     if command == "roundtrip":

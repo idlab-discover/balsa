@@ -18,55 +18,76 @@ pixi run package    # Library: build/balsa.mojoc
 pixi run check      # Build, package, tests and examples
 ```
 
-## Use
+## Use: performance-first storage
+
+**Balsa 0.2 skips automatic semantic validation by default.** Bounds, format,
+precision, truncation, trailing-byte and resource checks remain active, but they
+cannot establish valid metadata, field relationships or tree topology. Use
+`ValidationOptions(enabled=True)` for untrusted or uncertain checkpoints.
+Unchecked saving can preserve or emit semantic errors. Library calls are silent;
+there is no runtime warning or warning-suppression setting.
 
 Save as `app.mojo` in the repository root:
 
 ```mojo
-from balsa import load, save
+from balsa import load, save, ValidationOptions
 
 
 def main() raises:
     var model = load("tests/fixtures/float32_op2_missing0.tl")
-    print("Trees:", model.num_tree, "Features:", model.num_feature)
+    print("Trees:", model.num_trees(), "Features:", model.num_features())
     save(model, "build/copy.tl")
+
+    # Safety-first loading uses the same packed representation.
+    var checked = load(
+        "tests/fixtures/float32_op2_missing0.tl",
+        options=ValidationOptions(enabled=True),
+    )
+    checked.validate()  # Explicit validation always runs.
 ```
 
-`load` defaults to float32. Use `load[DType.float64](path)` for float64, or
-`load_auto(path)` to discover precision. Loading and saving validate by default.
+`load` and `decode` return a read-only `PackedModel`, with float32 precision by
+default. Use `load[DType.float64](path)` for float64, or `load_auto(path)` to
+return an `AnyPackedModel` precision variant. `save` and `encode` accept both
+packed and editable models and their precision variants.
 
-For an input buffer you want to retain, use `decode(Span(data))` or
-`decode_auto(Span(data))`. The result owns its fields independently of the input.
-The consuming `decode(data^)` and `decode_auto(data^)` APIs remain available.
+`decode(data^)` consumes and retains the input list. `decode(Span(data))` and
+`decode_auto(Span(data))` copy borrowed input once to own it. Packed `encode`
+copies retained bytes; packed `save` writes them directly. Neither repeats
+semantic validation: validate during loading or call `model.validate()` before
+saving when semantic safety matters.
 
-For repeated loads, `decode_into(model, Span(data))` reuses the destination's
-tree and field capacities. Its precision must match the checkpoint. On failure,
-the model may contain partially updated fields: decode into it again or discard
-it before using it as a model. Bounds, format and resource checks always apply;
-model validation is enabled by default for all decoding APIs.
+### Editing and migration from 0.1
 
-### Packed storage (experimental)
-
-For storage and occasional inspection, `balsa.packed` retains tree payloads in
-one owned checkpoint buffer. It provides read-only typed views and preserves
-the original bytes for saving. The ordinary editable model remains available.
+Root `load`, `decode`, `load_auto` and `decode_auto` now return packed owners.
+The editable `Model` type has not changed. Existing code that accesses mutable
+fields should import `load_editable`, `decode_editable`, `load_auto_editable`
+or `decode_auto_editable` from `balsa` (or use `balsa.codec`). For example:
 
 ```mojo
-import balsa.packed as packed
+from balsa import load_editable, save, validate
 
 
 def main() raises:
-    var model = packed.load_auto("tests/fixtures/float32_leaf.tl")
-    packed.save(model, "build/packed-copy.tl")
+    var model = load_editable("tests/fixtures/float32_op2_missing0.tl")
+    model.trees[0].threshold[0] = 0.75
+    validate(model)
+    save(model, "build/edited.tl")
 ```
 
-Use typed `packed.load(path)` or `packed.load[DType.float64](path)` to inspect
-`model.tree(i)` or call `model.to_model()` for an independent editable copy.
-Loading validates by default. Packed validation currently runs serially using
-one reusable tree; saving emits preserved bytes without repeating validation.
-If loading with validation disabled, explicitly call `model.validate()` before
-using it when semantic validation is required. See [packed storage](docs/packed-storage.md)
-for ownership, limitations and benchmark contracts.
+Alternatively, `packed_model.to_model()` makes an independent editable copy and
+validates by default. Builders also retain checked construction by default.
+Direct editable codec calls and `ValidationOptions()` now default to unchecked;
+pass `ValidationOptions(enabled=True)` to retain 0.1 codec validation behavior.
+Revalidate after edits when invariants matter.
+
+`decode_into(model, Span(data))` retains editable capacity reuse. On failure,
+its fields may be partially updated: decode into it again or discard it.
+See [packed storage](docs/packed-storage.md) and the
+[0.2 migration guide](docs/release-0.2.0.md) for the contracts and rationale.
+
+For the Conda recipe and GitHub Actions setup, see
+[packaging and CI](docs/distribution.md).
 
 ## Import and link
 

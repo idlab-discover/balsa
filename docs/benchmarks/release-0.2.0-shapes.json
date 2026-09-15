@@ -1,0 +1,231 @@
+{
+  "utc": "2026-09-15T12:31:32.849581+00:00",
+  "cpu": 0,
+  "platform": "Linux-7.2.4-arch1-2-x86_64-with-glibc2.44",
+  "compiler": "Mojo 1.0.0 (ed45d567)",
+  "source_sha256": {
+    "src/balsa/__init__.mojo": "469ee554e512a9bba9e65f780036364b2a062cc386cddd8728e4861f2e5bb9ef",
+    "src/balsa/builder.mojo": "6b8955944e7051538e943540b64556197bc5e7e1acebd9cc6e4045d2edf75410",
+    "src/balsa/codec.mojo": "24ea773d79f81eea0aa25857b86fc5f691cf1242b1ce369d44e2be72a7ee984b",
+    "src/balsa/constants.mojo": "e45d3051c7c9933b0ca0518513a95ace625a55b8be91c704864d15529449815f",
+    "src/balsa/model.mojo": "f8ee6b0f77d42d7dfd8952a188e017fb4dc2e184e4ccf5e6e42357a11947c4c5",
+    "src/balsa/packed.mojo": "d8c4e2ab58ffdb7c2b7f1c94acf0a4888c9b3f149a7a7f20fc5907e52b1ef1ef",
+    "src/balsa/packed_views.mojo": "82213f6e6aea1a545461b965e2ae7fa0097ea409678df1eebc1c98c87013f850",
+    "src/balsa/storage.mojo": "f37ffb4cb8e7b9be139a80067905e8b33e9ca91ba931eafd4a49d7262940a4fe",
+    "src/balsa/validation.mojo": "34a7cb5af832cfcf2faa8326f6b6b12ff30dd7b9cab0e06a4a203f1f619ac932",
+    "src/balsa/wire.mojo": "f2d1ef16f5baa44efc478681da8e9133d5a1d55fe31fe3fa18664600394dd3af"
+  },
+  "worker_sha256": "7d9e6d6f590a2e93200ed417f4ef5835a2a7692f506038a25fbf2bd337e786ae",
+  "input_sha256": {
+    "benchmarking/final-2026-09-15/corpus/leaves.tl": "c5175cb3a165e72281164a26bd0e62be02e047f85f43191a9450816bdc290051",
+    "benchmarking/final-2026-09-15/corpus/uneven.tl": "97e8dd6265a966208fae9dd6139c38584f0826eee314a32dcc2ab62fe3173309",
+    "benchmarking/final-2026-09-15/corpus/few-large.tl": "8dc8be9d70a8a6e1d5410397d6326aed94eee785b44c0525d68f7c0876b18c80",
+    "benchmarking/final-2026-09-15/corpus/dominant.tl": "764a29adf3e5f3e59e0edd12e854fbdfd0a588ef5761088601ebdcd9a37f030b"
+  },
+  "nanoseconds_per_call": {
+    "benchmarking/final-2026-09-15/corpus/leaves.tl": {
+      "default-decode": [
+        595412.54,
+        585558.13,
+        585498.03,
+        585603.33,
+        585300.64
+      ],
+      "packed-off": [
+        674683.52,
+        585582.53,
+        585348.03,
+        585966.24,
+        585526.14
+      ],
+      "packed-on": [
+        1711623.98,
+        1782755.89,
+        1721420.41,
+        1715111.94,
+        1715797.86
+      ],
+      "editable-off": [
+        2589912.99,
+        2650732.48,
+        2612724.06,
+        2987236.55,
+        2644225.72
+      ],
+      "editable-on": [
+        2786718.58,
+        2871428.83,
+        2835686.15,
+        2777721.11,
+        3211981.97
+      ],
+      "default-output": [
+        27653.51,
+        26767.2,
+        26063.2,
+        29031.12,
+        29324.43
+      ],
+      "editable-output": [
+        1206506.96,
+        1207611.87,
+        1191304.5,
+        1228939.22,
+        1187953.87
+      ]
+    },
+    "benchmarking/final-2026-09-15/corpus/uneven.tl": {
+      "default-decode": [
+        734073.79,
+        652651.78,
+        659306.25,
+        644600.19,
+        1171359.38
+      ],
+      "packed-off": [
+        737679.53,
+        674482.73,
+        654805.5,
+        646283.92,
+        643849.69
+      ],
+      "packed-on": [
+        2924544.92,
+        2772482.93,
+        2527757.21,
+        2678545.81,
+        2622874.69
+      ],
+      "editable-off": [
+        2732616.98,
+        3123692.45,
+        2739332.07,
+        2696715.5,
+        2704247.29
+      ],
+      "editable-on": [
+        3651975.22,
+        3664970.58,
+        3619298.9,
+        3632692.04,
+        3707614.89
+      ],
+      "default-output": [
+        121447.16,
+        81522.71,
+        76353.65,
+        75220.64,
+        76366.86
+      ],
+      "editable-output": [
+        1517377.02,
+        1306467.98,
+        1272017.0,
+        1313735.27,
+        1265843.83
+      ]
+    },
+    "benchmarking/final-2026-09-15/corpus/few-large.tl": {
+      "default-decode": [
+        132882.79,
+        142974.9,
+        135332.81,
+        152910.31,
+        138238.75
+      ],
+      "packed-off": [
+        153867.22,
+        136227.12,
+        134328.2,
+        135511.41,
+        156214.75
+      ],
+      "packed-on": [
+        2001301.82,
+        1788162.05,
+        1764813.3,
+        1743893.16,
+        1743740.37
+      ],
+      "editable-off": [
+        407474.74,
+        531410.13,
+        351088.42,
+        429649.5,
+        348337.49
+      ],
+      "editable-on": [
+        1814069.54,
+        1717624.36,
+        1817273.38,
+        1854079.7,
+        1676452.92
+      ],
+      "default-output": [
+        109635.53,
+        110552.44,
+        107236.1,
+        107514.0,
+        114038.28
+      ],
+      "editable-output": [
+        170123.7,
+        176597.47,
+        178791.19,
+        171456.22,
+        171117.91
+      ]
+    },
+    "benchmarking/final-2026-09-15/corpus/dominant.tl": {
+      "default-decode": [
+        735803.9,
+        637219.81,
+        638100.72,
+        630468.54,
+        1203093.34
+      ],
+      "packed-off": [
+        629353.12,
+        640324.24,
+        631103.04,
+        629795.13,
+        634358.58
+      ],
+      "packed-on": [
+        2604264.75,
+        2681755.42,
+        2600335.02,
+        2624705.2,
+        2560056.99
+      ],
+      "editable-off": [
+        2720641.64,
+        2746081.24,
+        2712707.57,
+        2676067.97,
+        2710635.87
+      ],
+      "editable-on": [
+        4087301.98,
+        3607062.94,
+        3633175.24,
+        3692478.72,
+        3775817.17
+      ],
+      "default-output": [
+        79023.58,
+        77102.86,
+        77345.46,
+        76022.45,
+        81821.02
+      ],
+      "editable-output": [
+        1449153.36,
+        1266872.44,
+        1323127.47,
+        1264496.02,
+        1267141.75
+      ]
+    }
+  }
+}

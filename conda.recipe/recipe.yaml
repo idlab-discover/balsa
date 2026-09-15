@@ -1,0 +1,52 @@
+context:
+  version: "0.2.0"
+
+package:
+  name: balsa
+  version: ${{ version }}
+
+# Build the checked-out revision in CI and the current source locally.
+# Community submission replaces this with git + a full release commit SHA.
+source:
+  path: ..
+  filter:
+    - src/**
+    - examples/**
+    - LICENSE*
+    - LICENSES/**
+    - THIRD_PARTY_NOTICES.md
+
+build:
+  number: 0
+  skip: not linux or not x86_64
+  script:
+    - mkdir -p "$PREFIX/lib/mojo"
+    - mojo precompile -I "$PREFIX/lib/mojo" src/balsa -o "$PREFIX/lib/mojo/balsa.mojoc"
+
+requirements:
+  build:
+    - mojo-compiler ==1.0.0
+  host:
+    - mojo-compiler ==1.0.0
+    - max-core ==26.5.0
+  run:
+    - mojo-compiler ==1.0.0
+    - max-core ==26.5.0
+
+tests:
+  - script:
+      - mojo run test.mojo
+    requirements:
+      run:
+        - gcc_linux-64
+    files:
+      recipe:
+        - test.mojo
+
+about:
+  homepage: https://github.com/idlab-discover/balsa
+  repository: https://github.com/idlab-discover/balsa
+  summary: Native Mojo storage and editing for Treelite v4 checkpoints
+  license_file:
+    - LICENSES/Treelite.txt
+    - THIRD_PARTY_NOTICES.md

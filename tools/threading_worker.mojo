@@ -5,7 +5,7 @@ from std.benchmark import keep
 from max.algorithm import parallelize
 from balsa import (
     Model,
-    decode,
+    decode_editable as decode,
     encode,
     validate,
     ValidationOptions,
@@ -18,8 +18,12 @@ from balsa.codec import read_file
 def execute[
     dtype: DType
 ](data: List[UInt8], args: List[String], limits: Limits) raises:
-    var model = decode[dtype](data.copy(), limits, ValidationOptions(1))
-    var options = ValidationOptions(Int(args[2]), Int(args[3]), Int(args[4]))
+    var model = decode[dtype](
+        data.copy(), limits, ValidationOptions(1, enabled=True)
+    )
+    var options = ValidationOptions(
+        Int(args[2]), Int(args[3]), Int(args[4]), enabled=True
+    )
     var loops = Int(args[5])
     var callers = Int(args[6])
     var operation = String(args[7])

@@ -10,13 +10,13 @@ from balsa import (
     NodeType,
     TaskType,
     TypeInfo,
-    load_auto,
-    decode_auto,
+    load_auto_editable as load_auto,
+    decode_auto_editable as decode_auto,
     decode_into,
     checkpoint_dtype,
 )
 from balsa.model import Model, Tree, Extension
-from balsa.validation import validate, check_bool
+from balsa.validation import validate, check_bool, ValidationOptions
 from balsa.wire import Reader, Writer, Limits
 
 
@@ -144,7 +144,7 @@ def test_malformed_models() raises:
     var model = make_stump()
     model.trees[0].cleft[0] = 0
     with assert_raises():
-        _ = encode(model)
+        _ = encode(model, options=ValidationOptions(enabled=True))
     model.trees[0].cleft[0] = 2
     with assert_raises():
         validate(model)
@@ -188,7 +188,7 @@ def test_extensions_survive_all_slots() raises:
     assert_equal(restored.trees[0].node_extensions[0].element_size, UInt64(2))
     model.extensions[0].count = 3
     with assert_raises():
-        _ = encode(model)
+        _ = encode(model, options=ValidationOptions(enabled=True))
 
 
 def test_extension_overflow_and_negative_count() raises:
@@ -215,10 +215,10 @@ def test_mutated_checkpoints_are_bounded() raises:
         mutated[offset] ^= 128
         var model: Model[DType.float32]
         try:
-            model = decode(mutated^)
+            model = decode(mutated^, options=ValidationOptions(enabled=True))
         except:
             continue
-        _ = encode(model)
+        _ = encode(model, options=ValidationOptions(enabled=True))
 
 
 def test_builder_matches_raw_stump() raises:
@@ -669,7 +669,9 @@ def test_reuse_failure_diagnostics_and_recovery() raises:
     model.num_feature = -1
     var invalid = encode(model, options=ValidationOptions(enabled=False))
     with assert_raises():
-        decode_into(destination, Span(invalid))
+        decode_into(
+            destination, Span(invalid), options=ValidationOptions(enabled=True)
+        )
     decode_into(destination, Span(data))
     assert_equal(encode(destination), data)
 
@@ -680,7 +682,7 @@ def validation_error(
     from balsa import ValidationOptions
 
     try:
-        validate(model, limits, ValidationOptions(workers, 0, 0))
+        validate(model, limits, ValidationOptions(workers, 0, 0, enabled=True))
     except err:
         return String(err)
     return ""
@@ -698,7 +700,7 @@ def test_parallel_validation_error_precedence() raises:
             valid.class_id.append(0)
         valid.num_tree = UInt64(count)
         for workers in [2, 4, 8]:
-            var options = ValidationOptions(workers, 0, 0)
+            var options = ValidationOptions(workers, 0, 0, enabled=True)
             validate(valid, Limits(), options)
             var bytes = encode(valid, Limits(), options)
             var decoded = decode(bytes.copy(), Limits(), options)
@@ -752,21 +754,23 @@ def test_validation_options() raises:
 
     var model = make_stump()
     with assert_raises():
-        validate(model, Limits(), ValidationOptions(0))
+        validate(model, Limits(), ValidationOptions(0, enabled=True))
     with assert_raises():
-        validate(model, Limits(), ValidationOptions(2, -1, 0))
+        validate(model, Limits(), ValidationOptions(2, -1, 0, enabled=True))
     with assert_raises():
-        validate(model, Limits(), ValidationOptions(2, 0, -1))
+        validate(model, Limits(), ValidationOptions(2, 0, -1, enabled=True))
 
     for workers in [1, 4]:
         var builder = ModelBuilder(1)
         builder.add_tree(model.trees[0].copy())
         builder.add_tree(model.trees[0].copy())
-        var built = builder^.build(ValidationOptions(workers, 0, 0))
+        var built = builder^.build(
+            ValidationOptions(workers, 0, 0, enabled=True)
+        )
         assert_equal(len(built.trees), 2)
     var builder = ModelBuilder(1)
     with assert_raises():
-        _ = builder^.build(ValidationOptions(0))
+        _ = builder^.build(ValidationOptions(0, enabled=True))
 
 
 def test_parallel_validation_precisions_and_shapes() raises:
@@ -780,7 +784,7 @@ def test_parallel_validation_precisions_and_shapes() raises:
     ]:
         var data = read_file(path)
         for workers in [2, 4, 8]:
-            var options = ValidationOptions(workers, 0, 0)
+            var options = ValidationOptions(workers, 0, 0, enabled=True)
             var model = decode_auto(data.copy(), Limits(), options)
             assert_equal(encode(model, Limits(), options), data)
             save(model, "build/parallel-roundtrip.tl", Limits(), options)
@@ -914,10 +918,10 @@ def test_validation_opt_out_and_deferred_validation() raises:
         else:
             model.trees[0].cleft[0] = 0
         with assert_raises():
-            _ = encode(model)
+            _ = encode(model, options=ValidationOptions(enabled=True))
         var data = encode(model, options=unchecked)
         with assert_raises():
-            _ = decode(data.copy())
+            _ = decode(data.copy(), options=ValidationOptions(enabled=True))
         var restored = decode(data.copy(), options=unchecked)
         assert_equal(encode(restored, options=unchecked), data)
         with assert_raises():
@@ -926,7 +930,9 @@ def test_validation_opt_out_and_deferred_validation() raises:
         assert_equal(encode(automatic, options=unchecked), data)
         save(automatic, "build/unchecked.tl", options=unchecked)
         with assert_raises():
-            _ = load_auto("build/unchecked.tl")
+            _ = load_auto(
+                "build/unchecked.tl", options=ValidationOptions(enabled=True)
+            )
         var loaded = load_auto("build/unchecked.tl", options=unchecked)
         assert_equal(encode(loaded, options=unchecked), data)
         var typed = load("build/unchecked.tl", options=unchecked)
@@ -987,7 +993,9 @@ def test_validation_opt_out_preserves_wire_checks() raises:
     var restored = decode_auto(double_bytes.copy(), options=unchecked)
     assert_equal(encode(restored, options=unchecked), double_bytes)
     with assert_raises():
-        _ = decode[DType.float64](double_bytes^)
+        _ = decode[DType.float64](
+            double_bytes^, options=ValidationOptions(enabled=True)
+        )
 
 
 def test_named_reader_scalar_and_extension_errors() raises:

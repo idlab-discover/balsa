@@ -5,7 +5,14 @@ These assertions inspect selected fields independently of Balsa's writer.
 """
 
 from std.testing import assert_equal, TestSuite
-from balsa import Model, Operator, NodeType, load, load_auto, encode
+from balsa import (
+    Model,
+    Operator,
+    NodeType,
+    load_editable as load,
+    load_auto_editable as load_auto,
+    encode,
+)
 from balsa.codec import read_file
 
 

@@ -4,7 +4,7 @@ from std.time import perf_counter_ns
 from std.benchmark import keep, clobber_memory
 from balsa import (
     Model,
-    decode,
+    decode_editable as decode,
     decode_into,
     encode,
     validate,
@@ -56,10 +56,14 @@ def once[
 def execute[
     dtype: DType
 ](data: List[UInt8], args: List[String], limits: Limits) raises:
-    var model = decode[dtype](data.copy(), limits, ValidationOptions(1))
-    if encode(model, limits, ValidationOptions(1)) != data:
+    var model = decode[dtype](
+        data.copy(), limits, ValidationOptions(1, enabled=True)
+    )
+    if encode(model, limits, ValidationOptions(1, enabled=True)) != data:
         raise Error("Byte parity failed")
-    var options = ValidationOptions(Int(args[2]), Int(args[3]), Int(args[4]))
+    var options = ValidationOptions(
+        Int(args[2]), Int(args[3]), Int(args[4]), enabled=True
+    )
     var loops = Int(args[5])
     if loops <= 0 or Int(args[6]) != 1:
         raise Error("Positive loops and exactly one caller required")

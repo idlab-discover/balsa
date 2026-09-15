@@ -1,6 +1,13 @@
 """Build a stump, save it, and load it without specifying its precision."""
 
-from balsa import Model, ModelBuilder, TreeBuilder, Operator, load_auto, save
+from balsa import (
+    Model,
+    ModelBuilder,
+    TreeBuilder,
+    Operator,
+    load_auto_editable as load_auto,
+    save,
+)
 
 
 def describe[dtype: DType](model: Model[dtype]) raises:

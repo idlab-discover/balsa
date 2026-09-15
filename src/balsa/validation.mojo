@@ -11,13 +11,15 @@ from .wire import Limits
 struct ValidationOptions(Copyable, Movable):
     """Control automatic model validation and its concurrency per call.
 
-    enabled=False skips automatic validation in codec calls and ModelBuilder.
+    Codec calls skip semantic validation by default (enabled=False).
+    Pass enabled=True for untrusted or uncertain inputs. Builders and packed
+    to_model() explicitly default to checked construction/conversion.
     Explicit validate() always checks the model, regardless of enabled.
     Thresholds apply together. The shared runtime may use fewer workers.
     """
 
     var enabled: Bool
-    """Whether codec and builder calls validate automatically; default True."""
+    """Whether codec and builder calls validate automatically; default False."""
     var max_workers: Int
     """Per-call worker cap; values <= 1 select serial validation."""
     var min_trees: Int
@@ -31,7 +33,7 @@ struct ValidationOptions(Copyable, Movable):
         min_trees: Int = 4096,
         min_nodes: Int = 65536,
         *,
-        enabled: Bool = True,
+        enabled: Bool = False,
     ):
         """Set automatic validation policy and parallel execution thresholds.
 

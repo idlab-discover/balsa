@@ -248,7 +248,8 @@ struct ModelBuilder[dtype: DType = DType.float32](Movable):
         self._model.num_tree = UInt64(len(self._model.trees))
 
     def build(
-        deinit self, options: ValidationOptions = ValidationOptions()
+        deinit self,
+        options: ValidationOptions = ValidationOptions(enabled=True),
     ) raises -> Model[Self.dtype]:
         """Consume the builder, validating the model unless options disables it.
         """

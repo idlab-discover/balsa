@@ -5,7 +5,7 @@ from std.time import perf_counter_ns
 from std.benchmark import keep, clobber_memory
 from balsa import (
     Model,
-    decode,
+    decode_editable as decode,
     encode,
     Limits,
     ValidationOptions,
@@ -13,6 +13,7 @@ from balsa import (
 )
 from balsa.codec import read_file
 import balsa.packed as packed
+import balsa
 
 
 @no_inline
@@ -26,7 +27,19 @@ def once[
     options: ValidationOptions,
     operation: String,
 ) raises -> UInt64:
-    if operation == "packed-decode":
+    if operation == "default-decode":
+        var decoded = balsa.decode[dtype](data.copy(), limits)
+        keep(decoded)
+        return 1
+    elif operation == "checked-decode":
+        var decoded = balsa.decode[dtype](data.copy(), limits, options)
+        keep(decoded)
+        return 1
+    elif operation == "default-encode":
+        var encoded = balsa.encode(stored)
+        keep(encoded)
+        return UInt64(len(encoded))
+    elif operation == "packed-decode":
         var decoded = packed.decode[dtype](data.copy(), limits, options)
         keep(decoded)
         return 1
@@ -54,8 +67,12 @@ def once[
 def execute[
     dtype: DType
 ](data: List[UInt8], args: List[String], limits: Limits) raises:
-    var model = decode[dtype](Span(data), limits, ValidationOptions(1))
-    var stored = packed.decode[dtype](data.copy(), limits, ValidationOptions(1))
+    var model = decode[dtype](
+        Span(data), limits, ValidationOptions(1, enabled=True)
+    )
+    var stored = packed.decode[dtype](
+        data.copy(), limits, ValidationOptions(1, enabled=True)
+    )
     if encode(model, limits) != data or packed.encode(stored) != data:
         raise Error("Byte parity failed")
     var options = ValidationOptions(1, enabled=Int(args[3]) != 0)
@@ -71,9 +88,11 @@ def execute[
         checksum += once(data, model, stored, limits, options, args[2])
     clobber_memory()
     var elapsed = perf_counter_ns() - start
-    var expected = UInt64(len(data)) if args[2] == "encode" or args[
-        2
-    ] == "packed-encode" else UInt64(1)
+    var expected = (
+        UInt64(len(data)) if args[2] == "encode"
+        or args[2] == "packed-encode"
+        or args[2] == "default-encode" else UInt64(1)
+    )
     if checksum != expected * UInt64(loops):
         raise Error("Operation checksum failed")
     print(Float64(elapsed) / Float64(loops))

@@ -19,7 +19,7 @@ def decode[
     limits: Limits = Limits(),
     options: ValidationOptions = ValidationOptions(),
 ) raises -> Model[dtype]:
-    """Decode a checkpoint, validating its model unless options disables it.
+    """Decode editable fields; automatic semantic validation is opt-in.
 
     Wire bounds, format checks and parser limits always apply. Precision must
     match the file tags. A skipped validation pass can be run with validate().
@@ -277,7 +277,8 @@ def save[
     limits: Limits = Limits(),
     options: ValidationOptions = ValidationOptions(),
 ) raises:
-    """Encode (and by default validate) before replacing the destination."""
+    """Encode before replacing the destination; semantic validation is opt-in.
+    """
     var bytes = encode(model, limits, options)
     with open(path, "w") as file:
         file.write_all(Span(bytes))

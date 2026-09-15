@@ -4,7 +4,7 @@ Compile with -I src -I PATH_CONTAINING_BASELINE_BALSA. Keep the snapshot outside
 production src. Both decoders must accept the same limits and wire format.
 """
 from std.testing import assert_equal
-from balsa import decode, encode, Limits, ValidationOptions
+from balsa import decode_editable as decode, encode, Limits, ValidationOptions
 from balsa.codec import read_file
 from baseline_balsa import (
     decode as reference_decode,
@@ -19,7 +19,7 @@ def outcome[dtype: DType](data: List[UInt8], workers: Int) raises -> String:
         var model = decode[dtype](
             data.copy(),
             Limits(max_trees=100, max_nodes=10000),
-            ValidationOptions(workers, 0, 0),
+            ValidationOptions(workers, 0, 0, enabled=True),
         )
         assert_equal(encode(model), data)
     except err:

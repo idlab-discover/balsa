@@ -2,7 +2,7 @@
 
 from std.testing import assert_equal, assert_raises, TestSuite
 import balsa.packed as packed
-from balsa import decode, encode, ValidationOptions, Limits
+from balsa import decode_editable as decode, encode, ValidationOptions, Limits
 from balsa.codec import read_file
 
 
@@ -200,7 +200,7 @@ def test_packed_semantic_validation_and_corruption() raises:
     var unchecked = ValidationOptions(enabled=False)
     original.trees[0].cleft[0] = 0
     var invalid = encode(original, options=unchecked)
-    compare_errors(invalid, Limits(), ValidationOptions())
+    compare_errors(invalid, Limits(), ValidationOptions(enabled=True))
     var model = packed.decode(invalid.copy(), options=unchecked)
     assert_equal(packed.encode(model), invalid)
     with assert_raises():
@@ -208,4 +208,4 @@ def test_packed_semantic_validation_and_corruption() raises:
     for i in range(len(bytes)):
         var mutated = bytes.copy()
         mutated[i] ^= UInt8(255)
-        compare_errors(mutated, Limits(), ValidationOptions(1))
+        compare_errors(mutated, Limits(), ValidationOptions(1, enabled=True))

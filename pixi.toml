@@ -4,7 +4,7 @@ channels = ["https://conda.modular.com/max", "conda-forge"]
 name = "balsa"
 description = "A native Mojo implementation of the Treelite model format"
 platforms = ["linux-64"]
-version = "0.1.0"
+version = "0.2.0"
 
 [tasks]
 prepare = "mkdir -p build"
@@ -15,9 +15,12 @@ smoke = { cmd = "./build/balsa inspect tests/fixtures/float32_op2_missing0.tl", 
 test-core = { cmd = "mojo run -I src tests/test_balsa.mojo", depends-on = ["prepare"] }
 test-frameworks = { cmd = "mojo run -I src tests/test_frameworks.mojo", depends-on = ["prepare"] }
 test-packed = { cmd = "mojo run -I src tests/test_packed.mojo", depends-on = ["prepare"] }
-test = { depends-on = ["test-core", "test-frameworks", "test-packed"] }
+test-defaults = { cmd = "mojo run -I src tests/test_defaults.mojo", depends-on = ["prepare"] }
+test-ownership = "bash tools/check_ownership.sh"
+test-package = { cmd = "mojo run -I build tests/test_defaults.mojo", depends-on = ["package"] }
+test = { depends-on = ["test-core", "test-frameworks", "test-packed", "test-defaults", "test-ownership"] }
 example = { cmd = "mojo run -I src examples/construction.mojo", depends-on = ["prepare"] }
-check = { depends-on = ["smoke", "package", "test", "example"] }
+check = { depends-on = ["smoke", "package", "test", "example", "test-package"] }
 fmt = "mojo format src examples tests"
 
 [dependencies]
@@ -61,7 +64,14 @@ pyperf = "==2.10.0"
 pyperf = "python -m pyperf"
 
 [environments]
+packaging = ["packaging"]
 docs = ["docs"]
 oracle = ["oracle"]
 frameworks = ["oracle", "frameworks"]
 benchmark = ["oracle", "benchmark"]
+
+[feature.packaging.dependencies]
+rattler-build = "*"
+
+[feature.packaging.tasks]
+conda-build = "rattler-build build --recipe conda.recipe/recipe.yaml --output-dir build/conda -c https://conda.modular.com/max -c conda-forge"

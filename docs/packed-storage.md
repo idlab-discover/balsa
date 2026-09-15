@@ -1,6 +1,6 @@
 # Packed checkpoint storage
 
-Experimental alternative on `feature/packed-checkpoints`, based on `fbba1fc`.
+Default load/decode representation since Balsa 0.2.0.
 It targets frequent loading/saving of trained models with uncommon editing.
 
 ## Interface
@@ -47,7 +47,8 @@ Every load scans the entire wire structure with version, precision, byte,
 array-element, extension, tree-count and total-node limits. Truncations and
 trailing bytes are rejected even when semantic validation is disabled.
 
-Semantic validation is enabled by default. It shares the editable codec's
+Semantic validation is disabled by default; pass
+`ValidationOptions(enabled=True)` for safety-first loading. It shares the editable codec's
 metadata and topology rules, decoding one temporary tree at a time into reused
 capacities. It never constructs an editable forest, but it still copies tree
 fields during this validation pass and needs scratch space for the largest
@@ -55,7 +56,7 @@ tree seen. This implementation uses one validation worker; `max_workers` is
 treated as a cap. There is no inference or structural-editing implementation.
 
 `encode` and `save` emit preserved bytes without repeating semantic validation.
-If the caller chose `ValidationOptions(enabled=False)` on load, that policy is
+If loading was unchecked (the default), that policy is
 also reflected in subsequent saving: structurally readable but semantically
 invalid input can be preserved. Explicit `model.validate()` always validates.
 
@@ -100,8 +101,8 @@ All 16 validation-off medians improved. With validation on, 15 improved and the
 small RF multiclass case regressed. A targeted seven-batch repeat with 20,000
 calls per batch measured 4.60 microseconds for editable consuming, 4.45 for
 editable borrowed, and 4.79 for packed consuming: about 4% slower than editable
-consuming. This remains an experimental alternative rather than a replacement
-for the normal codec. Raw repeat data is in
+consuming. These are historical experiment results; 0.2 adopts unchecked packed storage
+as the default based on the matched unchecked measurements. Raw repeat data is in
 `benchmarking/packed/multiclass-repeat.txt`.
 
 Without revalidation, rebuilding the large XGBoost/RF serializations took

@@ -103,8 +103,8 @@ def main():
         'Compiler signatures may expand default values and normalize type names.',
         'All entries below are available from `balsa`. This is the supported public\n'
         'surface; other declarations in implementation modules are internal.\n'
-        'See the [usage guide](usage.md) for examples and [API design](api-design.md)\n'
-        'for import, ownership and version conventions.',
+        'See the [0.2 migration guide](release-0.2.0.md) for storage, validation,\n'
+        'ownership and compatibility conventions.',
         "## Index\n\n" + "\n".join(f"- [`{name}`](#{name.lower()})" for name, _, _ in exports),
     ]
     for name, module, item in exports:
