@@ -531,6 +531,54 @@ def main() raises:
     TestSuite.discover_tests[__functions_in_module()]().run()
 
 
+def test_sized_writer_enforces_extent() raises:
+    var writer = Writer[False, True](Limits(), 3)
+    writer.scalar(UInt8(17))
+    with assert_raises():
+        writer.scalar(UInt32(42))
+    assert_equal(writer.size(), 1)
+    writer.scalar(UInt8(23))
+    writer.scalar(UInt8(31))
+    var expected: List[UInt8] = [17, 23, 31]
+    assert_equal(writer^.finish(), expected)
+    var array_writer = Writer[False, True](Limits(), 8)
+    with assert_raises():
+        array_writer.array(expected)
+    assert_equal(array_writer.size(), 0)
+    var short = Writer[False, True](Limits(), 2)
+    short.scalar(UInt8(1))
+    with assert_raises():
+        _ = short^.finish()
+    with assert_raises():
+        _ = Writer[False, True](Limits(max_bytes=1), 2)
+    with assert_raises():
+        _ = Writer[False, True](Limits(), -1)
+
+
+def test_sized_encode_matches_incremental_and_limits() raises:
+    from balsa.codec import write_model
+    from balsa import ValidationOptions
+
+    var model = make_stump()
+    model.extensions.append(
+        Extension(bytes_of("unaligned"), 1, 3, bytes_of("abc"))
+    )
+    model.trees[0].node_extensions.append(Extension([], 0, 7, []))
+    var incremental = Writer(Limits())
+    write_model(model, incremental)
+    var expected = incremental^.finish()
+    for enabled in [True, False]:
+        var options = ValidationOptions(enabled=enabled)
+        assert_equal(encode(model, options=options), expected)
+        assert_equal(
+            encode(model, Limits(max_bytes=len(expected)), options), expected
+        )
+        with assert_raises():
+            _ = encode(model, Limits(max_bytes=len(expected) - 1), options)
+        with assert_raises():
+            _ = encode(model, Limits(max_elements=2), options)
+
+
 def check_borrowed_reuse[dtype: DType](prefix: String) raises:
     var destination = Model[dtype]()
     for shape in ["deep", "leaf", "vector", "category", "multi_target", "deep"]:

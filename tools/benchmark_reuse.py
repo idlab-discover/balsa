@@ -22,9 +22,9 @@ def run(command):
     return subprocess.run(command, cwd=ROOT, check=True, capture_output=True, text=True).stdout
 
 
-def build(revision):
-    OUT.mkdir(exist_ok=True)
-    baseline = OUT / "baseline"
+def build(revision, out=OUT):
+    out.mkdir(exist_ok=True)
+    baseline = out / "baseline"
     baseline.mkdir(exist_ok=True)
     commit = run(["git", "rev-parse", "--verify", revision + "^{commit}"]).strip()
     archive = subprocess.check_output(["git", "archive", commit, "src", "tools"], cwd=ROOT)
@@ -32,7 +32,7 @@ def build(revision):
         files.extractall(baseline, filter="data")
     for label, source in [("before", baseline), ("after", ROOT)]:
         run(["pixi", "run", "mojo", "build", "-O3", "-I", str(source / "src"),
-             str(source / "tools/validation_policy_worker.mojo"), "-o", str(OUT / label)])
+             str(source / "tools/validation_policy_worker.mojo"), "-o", str(out / label)])
     provenance = {
         "baseline": commit,
         "compiler": run(["pixi", "run", "mojo", "--version"]).strip(),
@@ -40,7 +40,7 @@ def build(revision):
                           for p in (ROOT / "src/balsa").glob("*.mojo")},
         "cpu": 14, "blocks": 5, "warmups": 8,
     }
-    (OUT / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
+    (out / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
 
 
 def measure(case, operation, enabled, loops):

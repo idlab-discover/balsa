@@ -176,15 +176,22 @@ def encode[
     # One shared field traversal, specialized to count or emit at compile time.
     var counter = Writer[True](limits)
     write_model(model, counter)
-    var writer = Writer(limits)
-    writer.data.reserve(counter.size())
+    var writer = Writer[False, True](limits, counter.size())
     write_model(model, writer)
     return writer^.finish()
 
 
 def write_model[
-    dtype: DType, count_only: Bool
-](model: Model[dtype], mut writer: Writer[count_only]) raises:
+    dtype: DType, count_only: Bool, fixed_size: Bool
+](model: Model[dtype], mut writer: Writer[count_only, fixed_size]) raises:
+    write_header(model, writer)
+    for tree in model.trees:
+        write_tree(tree, writer)
+
+
+def write_header[
+    dtype: DType, count_only: Bool, fixed_size: Bool
+](model: Model[dtype], mut writer: Writer[count_only, fixed_size]) raises:
     writer.scalar(model.major)
     writer.scalar(model.minor)
     writer.scalar(model.patch)
@@ -205,32 +212,36 @@ def write_model[
     writer.array(model.base_scores)
     writer.array(model.attributes)
     writer.extensions(model.extensions)
-    for tree in model.trees:
-        writer.scalar(tree.num_nodes)
-        writer.scalar(tree.has_categorical_split)
-        writer.array(tree.node_type)
-        writer.array(tree.cleft)
-        writer.array(tree.cright)
-        writer.array(tree.split_index)
-        writer.array(tree.default_left)
-        writer.array(tree.leaf_value)
-        writer.array(tree.threshold)
-        writer.array(tree.cmp)
-        writer.array(tree.category_list_right_child)
-        writer.array(tree.leaf_vector)
-        writer.array(tree.leaf_vector_begin)
-        writer.array(tree.leaf_vector_end)
-        writer.array(tree.category_list)
-        writer.array(tree.category_list_begin)
-        writer.array(tree.category_list_end)
-        writer.array(tree.data_count)
-        writer.array(tree.data_count_present)
-        writer.array(tree.sum_hess)
-        writer.array(tree.sum_hess_present)
-        writer.array(tree.gain)
-        writer.array(tree.gain_present)
-        writer.extensions(tree.tree_extensions)
-        writer.extensions(tree.node_extensions)
+
+
+def write_tree[
+    dtype: DType, count_only: Bool, fixed_size: Bool
+](tree: Tree[dtype], mut writer: Writer[count_only, fixed_size]) raises:
+    writer.scalar(tree.num_nodes)
+    writer.scalar(tree.has_categorical_split)
+    writer.array(tree.node_type)
+    writer.array(tree.cleft)
+    writer.array(tree.cright)
+    writer.array(tree.split_index)
+    writer.array(tree.default_left)
+    writer.array(tree.leaf_value)
+    writer.array(tree.threshold)
+    writer.array(tree.cmp)
+    writer.array(tree.category_list_right_child)
+    writer.array(tree.leaf_vector)
+    writer.array(tree.leaf_vector_begin)
+    writer.array(tree.leaf_vector_end)
+    writer.array(tree.category_list)
+    writer.array(tree.category_list_begin)
+    writer.array(tree.category_list_end)
+    writer.array(tree.data_count)
+    writer.array(tree.data_count_present)
+    writer.array(tree.sum_hess)
+    writer.array(tree.sum_hess_present)
+    writer.array(tree.gain)
+    writer.array(tree.gain_present)
+    writer.extensions(tree.tree_extensions)
+    writer.extensions(tree.node_extensions)
 
 
 def read_file(path: String, limits: Limits = Limits()) raises -> List[UInt8]:

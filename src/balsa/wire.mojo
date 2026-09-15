@@ -227,30 +227,39 @@ struct Reader[origin: Origin[mut=False]](Movable):
         extension.count = elements
 
 
-struct Writer[count_only: Bool = False](Movable):
+struct Writer[count_only: Bool = False, fixed_size: Bool = False](Movable):
     """Builds a bounded checkpoint byte stream."""
 
     var data: List[UInt8]
     var limits: Limits
     var counted: Int
 
-    def __init__(out self, limits: Limits) raises:
+    def __init__(out self, limits: Limits, size: Int = 0) raises:
+        comptime assert not (Self.count_only and Self.fixed_size)
         limits.validate()
         self.data = List[UInt8]()
         self.counted = 0
         self.limits = limits.copy()
+        comptime if Self.fixed_size:
+            if size < 0 or size > limits.max_bytes:
+                raise Error("Encoded checkpoint exceeds byte limit")
+            self.data.resize(unsafe_uninit_length=size)
 
     def size(self) -> Int:
-        comptime if Self.count_only:
+        comptime if Self.count_only or Self.fixed_size:
             return self.counted
         else:
             return len(self.data)
 
     def grow(mut self, count: Int) raises:
         # Subtract before adding, so an untrusted size cannot overflow.
-        if count < 0 or count > self.limits.max_bytes - self.size():
-            raise Error("Encoded checkpoint exceeds byte limit")
-        comptime if Self.count_only:
+        comptime if Self.fixed_size:
+            if count < 0 or count > len(self.data) - self.counted:
+                raise Error("Encoded checkpoint exceeds sized output")
+        else:
+            if count < 0 or count > self.limits.max_bytes - self.size():
+                raise Error("Encoded checkpoint exceeds byte limit")
+        comptime if Self.count_only or Self.fixed_size:
             self.counted += count
         else:
             self.data.resize(unsafe_uninit_length=len(self.data) + count)
@@ -260,10 +269,18 @@ struct Writer[count_only: Bool = False](Movable):
         var start = self.size()
         self.grow(n)
         comptime if not Self.count_only:
+            self.store_scalar(start, value)
+
+    def store_scalar[dtype: DType](mut self, start: Int, value: SIMD[dtype, 1]):
+        """Emit into an extent already checked by grow or array sizing."""
+        comptime n = width[dtype]()
+        comptime if is_little_endian() or n == 1:
+            self.data.unsafe_ptr().unsafe_offset(start).unsafe_bitcast[
+                SIMD[dtype, 1]
+            ]().unsafe_store[alignment=1](value)
+        else:
             var bits: UInt64
-            comptime if n == 1:
-                bits = UInt64(value.to_bits[DType.uint8]())
-            elif n == 4:
+            comptime if n == 4:
                 bits = UInt64(value.to_bits[DType.uint32]())
             else:
                 bits = value.to_bits[DType.uint64]()
@@ -272,12 +289,30 @@ struct Writer[count_only: Bool = False](Movable):
                     UInt8((bits >> UInt64(i * 8)) & 255)
                 )
 
-    def finish(deinit self) -> List[UInt8]:
+    def finish(deinit self) raises -> List[UInt8]:
+        comptime if Self.fixed_size:
+            if self.counted != len(self.data):
+                raise Error("Encoded checkpoint does not fill sized output")
         return self.data^
 
     def array[dtype: DType](mut self, values: List[SIMD[dtype, 1]]) raises:
         if len(values) > self.limits.max_elements:
             raise Error("Encoded array exceeds element limit")
+        comptime if Self.count_only:
+            self.counted += self.array_extent[dtype](len(values))
+            return
+        elif Self.fixed_size and is_little_endian():
+            var extent = self.array_extent[dtype](len(values))
+            var start = self.size()
+            self.grow(extent)
+            self.store_scalar(start, UInt64(len(values)))
+            if extent > 8:
+                unsafe_memcpy(
+                    dest=self.data.unsafe_ptr().unsafe_offset(start + 8),
+                    src=values.unsafe_ptr().unsafe_bitcast[UInt8](),
+                    count=extent - 8,
+                )
+            return
         self.scalar[DType.uint64](UInt64(len(values)))
         comptime n = width[dtype]()
         if len(values) > (self.limits.max_bytes - self.size()) // n:
@@ -285,7 +320,7 @@ struct Writer[count_only: Bool = False](Movable):
         comptime if Self.count_only:
             self.grow(len(values) * n)
         elif is_little_endian() or n == 1:
-            var start = len(self.data)
+            var start = self.size()
             var byte_count = len(values) * n
             self.grow(byte_count)
             if byte_count > 0:
@@ -297,6 +332,15 @@ struct Writer[count_only: Bool = False](Movable):
         else:
             for value in values:
                 self.scalar[dtype](value)
+
+    def array_extent[dtype: DType](self, count: Int) raises -> Int:
+        """Check header plus payload size before multiplying the element count.
+        """
+        var remaining = self.limits.max_bytes - self.size()
+        comptime n = width[dtype]()
+        if remaining < 8 or count > (remaining - 8) // n:
+            raise Error("Encoded checkpoint exceeds byte limit")
+        return 8 + count * n
 
     def extensions(mut self, values: List[Extension]) raises:
         if len(values) > self.limits.max_extensions:
