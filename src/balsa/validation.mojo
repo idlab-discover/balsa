@@ -98,13 +98,14 @@ def check_stat[
     check_bool(present, field)
 
 
-def validate[
+def _validate_header[
     dtype: DType
 ](
     model: Model[dtype],
+    tree_count: Int,
     limits: Limits = Limits(),
     options: ValidationOptions = ValidationOptions(),
-) raises:
+) raises -> Int:
     """Reject malformed metadata, lengths, topology and segment offsets.
 
     Always validates, including when options.enabled is False.
@@ -118,8 +119,8 @@ def validate[
         model.threshold_type == tag and model.leaf_output_type == tag,
         "dtype tags",
     )
-    require(model.num_tree == UInt64(len(model.trees)), "num_tree")
-    require(len(model.trees) <= limits.max_trees, "tree limit")
+    require(model.num_tree == UInt64(tree_count), "num_tree")
+    require(tree_count <= limits.max_trees, "tree limit")
     require(model.num_feature >= 0, "num_feature")
     require(model.num_target > 0, "num_target")
     require(model.task_type <= TaskType.ISOLATION_FOREST, "task_type")
@@ -149,14 +150,29 @@ def validate[
         or Int(model.leaf_vector_shape[1]) == max_class,
         "leaf_vector_shape classes",
     )
-    require(len(model.target_id) == len(model.trees), "target_id length")
-    require(len(model.class_id) == len(model.trees), "class_id length")
+    require(len(model.target_id) == tree_count, "target_id length")
+    require(len(model.class_id) == tree_count, "class_id length")
     check_extensions(model.extensions, limits)
     require(options.max_workers > 0, "validation max_workers")
     require(
         options.min_trees >= 0 and options.min_nodes >= 0,
         "validation thresholds",
     )
+    return max_class
+
+
+def validate[
+    dtype: DType
+](
+    model: Model[dtype],
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises:
+    """Reject malformed metadata, lengths, topology and segment offsets.
+
+    Always validates, including when options.enabled is False.
+    """
+    var max_class = _validate_header(model, len(model.trees), limits, options)
     if options.max_workers > 1 and len(model.trees) >= options.min_trees:
         var total_nodes = 0
         var largest_tree = 0
@@ -197,6 +213,26 @@ def _check_tree_metadata[
     max_class: Int,
     mut total_nodes: Int,
 ) raises:
+    _check_tree_annotation(
+        model,
+        tree_id,
+        Int(model.trees[tree_id].num_nodes),
+        limits,
+        max_class,
+        total_nodes,
+    )
+
+
+def _check_tree_annotation[
+    dtype: DType
+](
+    model: Model[dtype],
+    tree_id: Int,
+    nodes: Int,
+    limits: Limits,
+    max_class: Int,
+    mut total_nodes: Int,
+) raises:
     var target = Int(model.target_id[tree_id])
     var cls = Int(model.class_id[tree_id])
     require(target >= -1 and target < Int(model.num_target), "target_id value")
@@ -206,7 +242,6 @@ def _check_tree_metadata[
     if target < 0 and cls >= 0:
         for classes in model.num_class:
             require(cls < Int(classes), "class_id across targets")
-    var nodes = Int(model.trees[tree_id].num_nodes)
     require(
         nodes > 0 and nodes <= limits.max_nodes - total_nodes,
         "node count/limit",

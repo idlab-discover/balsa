@@ -14,7 +14,8 @@ package = { cmd = "mojo precompile src/balsa -o build/balsa.mojoc", depends-on =
 smoke = { cmd = "./build/balsa inspect tests/fixtures/float32_op2_missing0.tl", depends-on = ["build"] }
 test-core = { cmd = "mojo run -I src tests/test_balsa.mojo", depends-on = ["prepare"] }
 test-frameworks = { cmd = "mojo run -I src tests/test_frameworks.mojo", depends-on = ["prepare"] }
-test = { depends-on = ["test-core", "test-frameworks"] }
+test-packed = { cmd = "mojo run -I src tests/test_packed.mojo", depends-on = ["prepare"] }
+test = { depends-on = ["test-core", "test-frameworks", "test-packed"] }
 example = { cmd = "mojo run -I src examples/construction.mojo", depends-on = ["prepare"] }
 check = { depends-on = ["smoke", "package", "test", "example"] }
 fmt = "mojo format src examples tests"

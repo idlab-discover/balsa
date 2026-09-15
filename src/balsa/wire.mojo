@@ -160,6 +160,19 @@ struct Reader[origin: Origin[mut=False]](Movable):
         self.array_into(result)
         return result^
 
+    def array_bytes[dtype: DType](mut self) raises -> Span[UInt8, Self.origin]:
+        """Borrow a checked wire array payload without allocating typed storage.
+        """
+        var count = self.scalar[DType.uint64]()
+        comptime n = width[dtype]()
+        if count > UInt64(self.limits.max_elements):
+            self.fail("array element limit exceeded")
+        if count > UInt64((len(self.data) - self.pos) // n):
+            self.fail("truncated array")
+        var start = self.pos
+        self.pos += Int(count) * n
+        return self.data[start : self.pos]
+
     def array_into[
         dtype: DType
     ](mut self, mut result: List[SIMD[dtype, 1]]) raises:

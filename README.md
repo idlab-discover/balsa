@@ -45,6 +45,29 @@ the model may contain partially updated fields: decode into it again or discard
 it before using it as a model. Bounds, format and resource checks always apply;
 model validation is enabled by default for all decoding APIs.
 
+### Packed storage (experimental)
+
+For storage and occasional inspection, `balsa.packed` retains tree payloads in
+one owned checkpoint buffer. It provides read-only typed views and preserves
+the original bytes for saving. The ordinary editable model remains available.
+
+```mojo
+import balsa.packed as packed
+
+
+def main() raises:
+    var model = packed.load_auto("tests/fixtures/float32_leaf.tl")
+    packed.save(model, "build/packed-copy.tl")
+```
+
+Use typed `packed.load(path)` or `packed.load[DType.float64](path)` to inspect
+`model.tree(i)` or call `model.to_model()` for an independent editable copy.
+Loading validates by default. Packed validation currently runs serially using
+one reusable tree; saving emits preserved bytes without repeating validation.
+If loading with validation disabled, explicitly call `model.validate()` before
+using it when semantic validation is required. See [packed storage](docs/packed-storage.md)
+for ownership, limitations and benchmark contracts.
+
 ## Import and link
 
 ```sh
