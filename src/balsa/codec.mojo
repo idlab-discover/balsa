@@ -24,8 +24,48 @@ def decode[
     Wire bounds, format checks and parser limits always apply. Precision must
     match the file tags. A skipped validation pass can be run with validate().
     """
-    var reader = Reader(data^, limits)
+    return decode[dtype](Span(data), limits, options)
+
+
+def decode[
+    origin: Origin[mut=False], //, dtype: DType = DType.float32
+](
+    data: Span[UInt8, origin],
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises -> Model[dtype]:
+    """Borrow checkpoint bytes and return independently owned model fields."""
     var model = Model[dtype]()
+    decode_into(model, data, limits, options)
+    return model^
+
+
+def decode_into[
+    dtype: DType, origin: Origin[mut=False]
+](
+    mut model: Model[dtype],
+    data: Span[UInt8, origin],
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises:
+    """Decode into owned storage, reusing existing field capacities.
+
+    On failure fields may be partially updated and must not be used as a valid
+    model. The destination remains safe to destroy or pass to decode_into again.
+    Input bytes are borrowed only for this call. All parser checks still apply.
+    """
+    var reader = Reader(data, limits)
+    read_header(model, reader)
+    read_trees(model, reader)
+    if reader.pos != len(reader.data):
+        reader.fail("trailing bytes")
+    if options.enabled:
+        validate(model, limits, options)
+
+
+def read_header[
+    dtype: DType, origin: Origin[mut=False]
+](mut model: Model[dtype], mut reader: Reader[origin]) raises:
     reader.read["major"](model.major)
     reader.read["minor"](model.minor)
     reader.read["patch"](model.patch)
@@ -44,7 +84,7 @@ def decode[
             "Unsupported checkpoint precision or mismatched decode dtype"
         )
     reader.read["num_tree"](model.num_tree)
-    if model.num_tree > UInt64(limits.max_trees):
+    if model.num_tree > UInt64(reader.limits.max_trees):
         reader.fail("tree count limit exceeded")
     reader.read["num_feature"](model.num_feature)
     reader.read["task_type"](model.task_type)
@@ -60,6 +100,11 @@ def decode[
     reader.read["base_scores"](model.base_scores)
     reader.read["attributes"](model.attributes)
     reader.read["extensions"](model.extensions)
+
+
+def read_trees[
+    dtype: DType, origin: Origin[mut=False]
+](mut model: Model[dtype], mut reader: Reader[origin]) raises:
     # Bound the capacity hint by actual input bytes, not just an untrusted count.
     model.trees.reserve(
         min(
@@ -70,44 +115,49 @@ def decode[
     var total_nodes = 0
     for tree_id in range(Int(model.num_tree)):
         reader.tree_id = tree_id
-        var tree = Tree[dtype]()
-        reader.read["num_nodes"](tree.num_nodes)
-        if (
-            tree.num_nodes <= 0
-            or Int(tree.num_nodes) > limits.max_nodes - total_nodes
-        ):
-            reader.fail("invalid node count or total node limit exceeded")
-        total_nodes += Int(tree.num_nodes)
-        reader.read["has_categorical_split"](tree.has_categorical_split)
-        reader.read["node_type"](tree.node_type)
-        reader.read["cleft"](tree.cleft)
-        reader.read["cright"](tree.cright)
-        reader.read["split_index"](tree.split_index)
-        reader.read["default_left"](tree.default_left)
-        reader.read["leaf_value"](tree.leaf_value)
-        reader.read["threshold"](tree.threshold)
-        reader.read["cmp"](tree.cmp)
-        reader.read["category_list_right_child"](tree.category_list_right_child)
-        reader.read["leaf_vector"](tree.leaf_vector)
-        reader.read["leaf_vector_begin"](tree.leaf_vector_begin)
-        reader.read["leaf_vector_end"](tree.leaf_vector_end)
-        reader.read["category_list"](tree.category_list)
-        reader.read["category_list_begin"](tree.category_list_begin)
-        reader.read["category_list_end"](tree.category_list_end)
-        reader.read["data_count"](tree.data_count)
-        reader.read["data_count_present"](tree.data_count_present)
-        reader.read["sum_hess"](tree.sum_hess)
-        reader.read["sum_hess_present"](tree.sum_hess_present)
-        reader.read["gain"](tree.gain)
-        reader.read["gain_present"](tree.gain_present)
-        reader.read["tree_extensions"](tree.tree_extensions)
-        reader.read["node_extensions"](tree.node_extensions)
-        model.trees.append(tree^)
-    if reader.pos != len(reader.data):
-        reader.fail("trailing bytes")
-    if options.enabled:
-        validate(model, limits, options)
-    return model^
+        if tree_id == len(model.trees):
+            model.trees.append(Tree[dtype]())
+        read_tree(model.trees[tree_id], reader, total_nodes)
+    while len(model.trees) > Int(model.num_tree):
+        _ = model.trees.pop()
+
+
+def read_tree[
+    dtype: DType, origin: Origin[mut=False]
+](
+    mut tree: Tree[dtype], mut reader: Reader[origin], mut total_nodes: Int
+) raises:
+    reader.read["num_nodes"](tree.num_nodes)
+    if (
+        tree.num_nodes <= 0
+        or Int(tree.num_nodes) > reader.limits.max_nodes - total_nodes
+    ):
+        reader.fail("invalid node count or total node limit exceeded")
+    total_nodes += Int(tree.num_nodes)
+    reader.read["has_categorical_split"](tree.has_categorical_split)
+    reader.read["node_type"](tree.node_type)
+    reader.read["cleft"](tree.cleft)
+    reader.read["cright"](tree.cright)
+    reader.read["split_index"](tree.split_index)
+    reader.read["default_left"](tree.default_left)
+    reader.read["leaf_value"](tree.leaf_value)
+    reader.read["threshold"](tree.threshold)
+    reader.read["cmp"](tree.cmp)
+    reader.read["category_list_right_child"](tree.category_list_right_child)
+    reader.read["leaf_vector"](tree.leaf_vector)
+    reader.read["leaf_vector_begin"](tree.leaf_vector_begin)
+    reader.read["leaf_vector_end"](tree.leaf_vector_end)
+    reader.read["category_list"](tree.category_list)
+    reader.read["category_list_begin"](tree.category_list_begin)
+    reader.read["category_list_end"](tree.category_list_end)
+    reader.read["data_count"](tree.data_count)
+    reader.read["data_count_present"](tree.data_count_present)
+    reader.read["sum_hess"](tree.sum_hess)
+    reader.read["sum_hess_present"](tree.sum_hess_present)
+    reader.read["gain"](tree.gain)
+    reader.read["gain_present"](tree.gain_present)
+    reader.read["tree_extensions"](tree.tree_extensions)
+    reader.read["node_extensions"](tree.node_extensions)
 
 
 def encode[
@@ -230,16 +280,19 @@ def checkpoint_dtype(
     data: List[UInt8], limits: Limits = Limits()
 ) raises -> DType:
     """Inspect the v4 header and both dtype tags; does not validate the body."""
+    return checkpoint_dtype(Span(data), limits)
+
+
+def checkpoint_dtype[
+    origin: Origin[mut=False]
+](data: Span[UInt8, origin], limits: Limits = Limits()) raises -> DType:
+    """Inspect precision directly from borrowed checkpoint bytes."""
     limits.validate()
     if len(data) > limits.max_bytes:
         raise Error("Checkpoint exceeds byte limit")
     if len(data) < 14:
         raise Error("Truncated checkpoint header")
-    # Reuse bounded version decoding, copying only the fixed-size header.
-    var header = List[UInt8]()
-    for i in range(14):
-        header.append(data[i])
-    var reader = Reader(header^, limits)
+    var reader = Reader(data, limits)
     var major = reader.scalar[DType.int32]()
     var minor = reader.scalar[DType.int32]()
     var patch = reader.scalar[DType.int32]()
@@ -266,9 +319,20 @@ def decode_auto(
     options: ValidationOptions = ValidationOptions(),
 ) raises -> AnyModel:
     """Discover precision from the checkpoint, preserving its typed storage."""
+    return decode_auto(Span(data), limits, options)
+
+
+def decode_auto[
+    origin: Origin[mut=False]
+](
+    data: Span[UInt8, origin],
+    limits: Limits = Limits(),
+    options: ValidationOptions = ValidationOptions(),
+) raises -> AnyModel:
+    """Discover precision from borrowed bytes and return owned model fields."""
     if checkpoint_dtype(data, limits) == DType.float32:
-        return AnyModel(decode[DType.float32](data^, limits, options))
-    return AnyModel(decode[DType.float64](data^, limits, options))
+        return AnyModel(decode[DType.float32](data, limits, options))
+    return AnyModel(decode[DType.float64](data, limits, options))
 
 
 def load_auto(

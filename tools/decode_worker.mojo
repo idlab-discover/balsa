@@ -5,6 +5,7 @@ from std.benchmark import keep, clobber_memory
 from balsa import (
     Model,
     decode,
+    decode_into,
     encode,
     validate,
     ValidationOptions,
@@ -19,13 +20,26 @@ def once[
     dtype: DType
 ](
     data: List[UInt8],
-    model: Model[dtype],
+    mut model: Model[dtype],
     limits: Limits,
     options: ValidationOptions,
     operation: String,
 ) raises -> UInt64:
     if operation == "decode":
         var decoded = decode[dtype](data.copy(), limits, options)
+        keep(decoded)
+        return 1
+    elif operation == "borrowed":
+        var decoded = decode[dtype](Span(data), limits, options)
+        keep(decoded)
+        return 1
+    elif operation == "reuse":
+        decode_into(model, Span(data), limits, options)
+        keep(model)
+        return 1
+    elif operation == "cold-into":
+        var decoded = Model[dtype]()
+        decode_into(decoded, Span(data), limits, options)
         keep(decoded)
         return 1
     elif operation == "encode":

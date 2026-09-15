@@ -2,6 +2,7 @@
 
 from .codec import (
     decode,
+    decode_into,
     encode,
     load,
     save,

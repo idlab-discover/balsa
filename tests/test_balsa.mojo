@@ -12,6 +12,7 @@ from balsa import (
     TypeInfo,
     load_auto,
     decode_auto,
+    decode_into,
     checkpoint_dtype,
 )
 from balsa.model import Model, Tree, Extension
@@ -196,11 +197,12 @@ def test_extension_overflow_and_negative_count() raises:
     writer.array[DType.uint8](bytes_of("x"))
     writer.scalar[DType.uint64](UInt64(0xFFFFFFFFFFFFFFFF))
     writer.scalar[DType.uint64](UInt64(0xFFFFFFFFFFFFFFFF))
-    var reader = Reader(writer^.finish(), Limits())
+    var input_bytes = writer^.finish()
+    var reader = Reader(Span(input_bytes), Limits())
     with assert_raises():
         _ = reader.extensions()
     var negative: List[UInt8] = [255, 255, 255, 255]
-    var reader2 = Reader(negative^, Limits())
+    var reader2 = Reader(Span(negative), Limits())
     with assert_raises():
         _ = reader2.extensions()
 
@@ -420,7 +422,7 @@ def check_bulk_array[dtype: DType](values: List[SIMD[dtype, 1]]) raises:
         scalar.scalar[dtype](value)
     var bytes = bulk^.finish()
     assert_equal(bytes, scalar^.finish())
-    var reader = Reader(bytes.copy(), Limits())
+    var reader = Reader(Span(bytes), Limits())
     assert_equal(reader.scalar[DType.uint8](), UInt8(42))
     var restored = reader.array[dtype]()
     var roundtrip = Writer(Limits())
@@ -467,7 +469,7 @@ def test_bulk_limits_and_error_context() raises:
         too_many.array[DType.uint8]([1, 2])
     var bytes = writer^.finish()
     _ = bytes.pop()
-    var reader = Reader(bytes^, Limits())
+    var reader = Reader(Span(bytes), Limits())
     reader.tree_id = 7
     var destination: List[UInt32] = [99]
     var failed = False
@@ -527,6 +529,101 @@ def test_zero_sized_extensions() raises:
 
 def main() raises:
     TestSuite.discover_tests[__functions_in_module()]().run()
+
+
+def check_borrowed_reuse[dtype: DType](prefix: String) raises:
+    var destination = Model[dtype]()
+    for shape in ["deep", "leaf", "vector", "category", "multi_target", "deep"]:
+        var data = read_file("tests/fixtures/" + prefix + "_" + shape + ".tl")
+        var borrowed = decode[dtype](Span(data))
+        assert_equal(encode(borrowed), data)
+        assert_equal(encode(decode_auto(Span(data))), data)
+        assert_equal(checkpoint_dtype(Span(data)), dtype)
+        decode_into(destination, Span(data))
+        assert_equal(encode(destination), data)
+        # Repeating a shape must preserve the existing payload allocation.
+        var address = Int(destination.trees[0].leaf_value.unsafe_ptr())
+        var capacity = destination.trees[0].leaf_value.capacity()
+        decode_into(destination, Span(data))
+        assert_equal(Int(destination.trees[0].leaf_value.unsafe_ptr()), address)
+        assert_equal(destination.trees[0].leaf_value.capacity(), capacity)
+        assert_equal(encode(destination), data)
+        var expected = data.copy()
+        data.clear()
+        assert_equal(encode(borrowed), expected)
+        assert_equal(encode(destination), expected)
+    # The last input has gone out of scope; both storage and origins are owned.
+    validate(destination)
+
+
+def test_borrowed_decoding_and_reused_storage() raises:
+    check_borrowed_reuse[DType.float32]("float32")
+    check_borrowed_reuse[DType.float64]("float64")
+
+
+def test_reuse_extensions_and_tree_counts() raises:
+    var model = make_stump()
+    model.extensions.append(Extension(bytes_of("name"), 1, 4, bytes_of("data")))
+    model.trees[0].tree_extensions = model.extensions.copy()
+    model.trees[0].node_extensions = model.extensions.copy()
+    var data = encode(model)
+    var destination = decode(Span(data))
+    var address = Int(destination.extensions[0].payload.unsafe_ptr())
+    decode_into(destination, Span(data))
+    assert_equal(Int(destination.extensions[0].payload.unsafe_ptr()), address)
+    assert_equal(encode(destination), data)
+    for count in [3, 1, 4, 2]:
+        while len(model.trees) < count:
+            model.trees.append(model.trees[0].copy())
+        while len(model.trees) > count:
+            _ = model.trees.pop()
+        model.num_tree = UInt64(count)
+        model.target_id.resize(count, 0)
+        model.class_id.resize(count, 0)
+        model.extensions.clear()
+        model.trees[0].tree_extensions.clear()
+        model.trees[0].node_extensions.clear()
+        data = encode(model)
+        decode_into(destination, Span(data))
+        assert_equal(encode(destination), data)
+
+
+def test_reuse_failure_diagnostics_and_recovery() raises:
+    from balsa import ValidationOptions
+
+    var model = make_stump()
+    model.extensions.append(Extension(bytes_of("name"), 1, 4, bytes_of("data")))
+    var data = encode(model)
+    var destination = make_stump()
+    for enabled in [True, False]:
+        var options = ValidationOptions(enabled=enabled)
+        for length in range(len(data)):
+            var prefix = data.copy()
+            prefix.resize(length, 0)
+            var expected = String()
+            try:
+                _ = decode(prefix.copy(), options=options)
+            except err:
+                expected = String(err)
+            assert_equal(expected != "", True)
+            var actual = String()
+            try:
+                decode_into(destination, Span(prefix), options=options)
+            except err:
+                actual = String(err)
+            assert_equal(actual, expected)
+            decode_into(destination, Span(data), options=options)
+            assert_equal(encode(destination), data)
+        with assert_raises():
+            decode_into(destination, Span(data), Limits(max_bytes=14), options)
+        with assert_raises():
+            decode_into(destination, Span(data), Limits(max_nodes=1), options)
+    model.num_feature = -1
+    var invalid = encode(model, options=ValidationOptions(enabled=False))
+    with assert_raises():
+        decode_into(destination, Span(invalid))
+    decode_into(destination, Span(data))
+    assert_equal(encode(destination), data)
 
 
 def validation_error(
@@ -703,7 +800,7 @@ def check_scalar_reads[dtype: DType]() raises:
                 writer.scalar[DType.uint8](0xA5)
             writer.scalar[dtype](value)
             var bytes = writer^.finish()
-            var reader = Reader(bytes.copy(), Limits())
+            var reader = Reader(Span(bytes), Limits())
             reader.pos = offset
             var restored = reader.scalar[dtype]()
             assert_equal(reader.pos, offset + n)
@@ -715,7 +812,7 @@ def check_scalar_reads[dtype: DType]() raises:
             for available in range(n):
                 var short = bytes.copy()
                 short.resize(offset + available, 0)
-                var truncated = Reader(short^, Limits())
+                var truncated = Reader(Span(short), Limits())
                 truncated.pos = offset
                 truncated.field = "threshold"
                 truncated.tree_id = 3
@@ -747,7 +844,7 @@ def test_scalar_reads_alignment_bits_and_truncation() raises:
 def test_reader_rejects_invalid_cursor() raises:
     for position in [-1, 2]:
         var bytes: List[UInt8] = [0]
-        var reader = Reader(bytes^, Limits())
+        var reader = Reader(Span(bytes), Limits())
         reader.pos = position
         with assert_raises():
             reader.require(1)
@@ -847,7 +944,8 @@ def test_validation_opt_out_preserves_wire_checks() raises:
 
 def test_named_reader_scalar_and_extension_errors() raises:
     # A failed named read retains the destination and identifies the wire field.
-    var reader = Reader(List[UInt8](), Limits())
+    var empty = List[UInt8]()
+    var reader = Reader(Span(empty), Limits())
     var scalar = Int32(99)
     var failed = False
     try:
@@ -863,7 +961,8 @@ def test_named_reader_scalar_and_extension_errors() raises:
 
     var writer = Writer(Limits())
     writer.scalar(Int32(-1))
-    var extensions_reader = Reader(writer^.finish(), Limits())
+    var input_bytes = writer^.finish()
+    var extensions_reader = Reader(Span(input_bytes), Limits())
     extensions_reader.tree_id = 2
     var extensions = List[Extension]()
     extensions.append(Extension(bytes_of("kept"), 1, 1, bytes_of("x")))

@@ -43,6 +43,8 @@ def execute[
         checksum += once(data, model, limits, options, operation)
     clobber_memory()
     var elapsed = perf_counter_ns() - start
+    if encode(model, limits) != data:
+        raise Error("Post-operation byte parity failed")
     var expected = UInt64(len(data)) if operation == "encode" else UInt64(1)
     if checksum != expected * UInt64(loops):
         raise Error("Operation checksum failed")

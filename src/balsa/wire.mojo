@@ -65,20 +65,22 @@ def width[dtype: DType]() -> Int:
         return 8
 
 
-struct Reader(Movable):
-    """Owns input bytes and reports the failing field and byte offset."""
+struct Reader[origin: Origin[mut=False]](Movable):
+    """Borrows input bytes and reports the failing field and byte offset."""
 
-    var data: List[UInt8]
+    var data: Span[UInt8, Self.origin]
     var pos: Int
     var field: StaticString
     var tree_id: Int
     var limits: Limits
 
-    def __init__(out self, var data: List[UInt8], limits: Limits) raises:
+    def __init__(
+        out self, data: Span[UInt8, Self.origin], limits: Limits
+    ) raises:
         limits.validate()
         if len(data) > limits.max_bytes:
             raise Error("Checkpoint exceeds byte limit")
-        self.data = data^
+        self.data = data
         self.pos = 0
         self.field = "header"
         self.tree_id = -1
@@ -99,14 +101,14 @@ struct Reader(Movable):
     ](mut self, mut value: List[SIMD[dtype, 1]]) raises:
         """Read a named array, inferring its wire dtype from the destination."""
         self.field = field
-        value = self.array[dtype]()
+        self.array_into(value)
 
     @always_inline
     def read[field: StaticString](mut self, mut value: List[Extension]) raises:
         """Read a named extension slot with its dedicated wire representation.
         """
         self.field = field
-        value = self.extensions()
+        self.extensions_into(value)
 
     def fail(self, message: String) raises:
         var context = String(self.field)
@@ -154,6 +156,13 @@ struct Reader(Movable):
             return SIMD[dtype, 1](from_bits=bits)
 
     def array[dtype: DType](mut self) raises -> List[SIMD[dtype, 1]]:
+        var result = List[SIMD[dtype, 1]]()
+        self.array_into(result)
+        return result^
+
+    def array_into[
+        dtype: DType
+    ](mut self, mut result: List[SIMD[dtype, 1]]) raises:
         var count = self.scalar[DType.uint64]()
         comptime n = width[dtype]()
         if count > UInt64(self.limits.max_elements):
@@ -163,7 +172,7 @@ struct Reader(Movable):
         comptime if is_little_endian() or n == 1:
             # Extent was proved by division before multiplication/allocation.
             # Copy bytes: the wire payload need not have typed alignment.
-            var result = List[SIMD[dtype, 1]](unsafe_uninit_length=Int(count))
+            result.resize(unsafe_uninit_length=Int(count))
             var byte_count = Int(count) * n
             if byte_count > 0:
                 unsafe_memcpy(
@@ -172,43 +181,50 @@ struct Reader(Movable):
                     count=byte_count,
                 )
             self.pos += byte_count
-            return result^
         else:
             # Portable explicit little-endian conversion on big-endian hosts.
-            var result = List[SIMD[dtype, 1]](capacity=Int(count))
+            result.clear()
+            result.reserve(Int(count))
             for _ in range(Int(count)):
                 result.append(self.scalar[dtype]())
-            return result^
 
     def extensions(mut self) raises -> List[Extension]:
+        var result = List[Extension]()
+        self.extensions_into(result)
+        return result^
+
+    def extensions_into(mut self, mut result: List[Extension]) raises:
         var count = self.scalar[DType.int32]()
         if count < 0 or Int(count) > self.limits.max_extensions:
             self.fail("invalid extension count")
-        var result = List[Extension]()
-        for _ in range(Int(count)):
-            var name = self.array[DType.uint8]()
-            var size = self.scalar[DType.uint64]()
-            var elements = self.scalar[DType.uint64]()
-            if elements > UInt64(self.limits.max_elements):
-                self.fail("extension element limit exceeded")
-            if size > UInt64(self.limits.max_bytes):
-                self.fail("extension element size limit exceeded")
-            if (
-                size != 0
-                and elements > UInt64(len(self.data) - self.pos) // size
-            ):
-                self.fail("truncated extension or size overflow")
-            var byte_count = Int(size * elements)
-            var payload = List[UInt8](unsafe_uninit_length=byte_count)
-            if byte_count > 0:
-                unsafe_memcpy(
-                    dest=payload.unsafe_ptr(),
-                    src=self.data.unsafe_ptr().unsafe_offset(self.pos),
-                    count=byte_count,
-                )
-            self.pos += byte_count
-            result.append(Extension(name^, size, elements, payload^))
-        return result^
+        for i in range(Int(count)):
+            if i == len(result):
+                result.append(Extension([], 0, 0, []))
+            self.extension_into(result[i])
+        while len(result) > Int(count):
+            _ = result.pop()
+
+    def extension_into(mut self, mut extension: Extension) raises:
+        self.array_into(extension.name)
+        var size = self.scalar[DType.uint64]()
+        var elements = self.scalar[DType.uint64]()
+        if elements > UInt64(self.limits.max_elements):
+            self.fail("extension element limit exceeded")
+        if size > UInt64(self.limits.max_bytes):
+            self.fail("extension element size limit exceeded")
+        if size != 0 and elements > UInt64(len(self.data) - self.pos) // size:
+            self.fail("truncated extension or size overflow")
+        var byte_count = Int(size * elements)
+        extension.payload.resize(unsafe_uninit_length=byte_count)
+        if byte_count > 0:
+            unsafe_memcpy(
+                dest=extension.payload.unsafe_ptr(),
+                src=self.data.unsafe_ptr().unsafe_offset(self.pos),
+                count=byte_count,
+            )
+        self.pos += byte_count
+        extension.element_size = size
+        extension.count = elements
 
 
 struct Writer[count_only: Bool = False](Movable):

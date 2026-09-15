@@ -35,6 +35,16 @@ def main() raises:
 `load` defaults to float32. Use `load[DType.float64](path)` for float64, or
 `load_auto(path)` to discover precision. Loading and saving validate by default.
 
+For an input buffer you want to retain, use `decode(Span(data))` or
+`decode_auto(Span(data))`. The result owns its fields independently of the input.
+The consuming `decode(data^)` and `decode_auto(data^)` APIs remain available.
+
+For repeated loads, `decode_into(model, Span(data))` reuses the destination's
+tree and field capacities. Its precision must match the checkpoint. On failure,
+the model may contain partially updated fields: decode into it again or discard
+it before using it as a model. Bounds, format and resource checks always apply;
+model validation is enabled by default for all decoding APIs.
+
 ## Import and link
 
 ```sh
