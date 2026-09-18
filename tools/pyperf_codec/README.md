@@ -9,14 +9,20 @@ pixi run -e benchmark python tools/pyperf_codec/analyze.py benchmarking/your-new
 pixi run -e benchmark python tools/pyperf_codec/verify.py benchmarking/your-new-run
 ```
 
-`build.py` refuses to overwrite a directory. By default it archives main
-`fbba1fc` and packed experiment `e7f11c0`, rather than compiling the working
-tree; use `--main` and `--packed` for an intentional revision change. It links
+`build.py` refuses to overwrite a directory. By default it archives `HEAD` for both editable and packed workers, rather
+than compiling uncommitted source changes. Use `--revision COMMIT_OR_TAG` to
+measure an older revision, or `--main` / `--packed` to select different revisions
+for the two representations. The selected revisions must contain the worker
+APIs being measured; older incompatible revisions fail at build time.
+To reproduce the historical September 15 comparison, pass
+`--main fbba1fc --packed e7f11c0`. Full resolved commit hashes are recorded. Builds use the current locked Pixi
+environment; selecting a historical commit does not restore its compiler.
+For actual file APIs and process memory, see the [storage workload harness](../storage_workload/README.md). It links
 the C++ reference to the installed Treelite 4.6.1 wheel's library and records
 source, binary, corpus, compiler, library, and environment provenance.
 
 `controlled.py` defaults to CPU 14 for the serial matrix and CPUs 14–17 for
-the default-validation supplement. Choose available physical cores with
+the checked four-worker supplement. Choose available physical cores with
 `--cpu` and `--multicore` on another machine. These settings are saved in the
 schedule; a resumed run uses the saved settings. No governor, isolation, or
 other system configuration is changed. Avoid unrelated CPU-heavy work while
@@ -34,12 +40,12 @@ are skipped, but existing output for an unfinished cell requires inspection.
   source into an owned input list. Encode rebuilds bytes from model fields.
 - `balsa-borrow-on` / `balsa-borrow-off`: editable borrowed-input decode,
   avoiding that input ownership copy. The decoded model still owns its fields.
-- `packed-on` / `packed-off`: experimental packed consuming decode, retaining
+- `packed-on` / `packed-off`: packed consuming decode, retaining
   the input copy and an offset index instead of allocating all tree arrays.
 - `packed-copy`: copy already serialized bytes from a packed model validated
   during setup. No timed semantic revalidation; **not** an editable encoder.
-- `balsa-default`: editable consuming API with the default four-worker
-  validation policy, measured separately with four available CPU cores.
+- `balsa-default`: editable consuming API with explicit checked four-worker
+  validation (legacy engine ID; **not** the current public API defaults), measured separately with four available CPU cores.
 
 Disabling Balsa semantic validation does not disable structural parsing,
 bounds checks, resource limits, or encoder sizing checks. Treelite uses its
@@ -53,7 +59,7 @@ The scaled cases repeat real trees; they are allocation/scale probes, not
 independently trained large models. The corpus includes float32 and float64.
 
 The serial matrix has eight decode and five encode arms, repeated in two
-blocks with reversed engine order: 416 cells. The supplement has 16 cells
+blocks with reversed engine order: 416 cells. The checked four-worker supplement has 16 cells
 covering two large forests, two operations, and two engines in two blocks.
 Case/operation pairs use a fixed shuffled order. Each cell has three pyperf
 process groups, five measured values per group, two pyperf warmups, and a

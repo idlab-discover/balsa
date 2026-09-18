@@ -1,0 +1,30 @@
+{
+  "date": "2026-09-18",
+  "checks": {
+    "pixi_run_locked_check": "passed: build, package, 49 runtime tests, ownership compile-fail checks, example, 3 packaged-consumer tests",
+    "docs_check": "passed after source-reference cleanup",
+    "oracle_fixtures": "14 byte-reproducible fixtures",
+    "oracle_interop": "14 byte-exact roundtrips and field comparisons, including native-created models, builders and extensions",
+    "analysis_unit_tests": 5,
+    "codec_smoke_configurations": {
+      "HEAD": 30,
+      "fbba1fc_editable_e7f11c0_packed": 30
+    },
+    "public_default_smoke_revisions": [
+      "b933b55f409d155190b3df25e0763ddcbd66fe56",
+      "35479755ff4e877ba712c1fef7e9a9b6602b4b51"
+    ],
+    "storage_samples": 357,
+    "storage_samples_per_cell": 7,
+    "storage_worker_stderr_samples": 0,
+    "rss_launcher": "propagates exit 1 and missing-executable exit 127 without emitting a success RSS",
+    "public_markdown_local_links": "all resolve",
+    "git_diff_check": "passed"
+  },
+  "archive": {
+    "path": "benchmarking/storage-2026-09-18-v2.tar.gz",
+    "bytes": 12811410,
+    "sha256": "ae169e282358fafa352a86f245d50607c4c73d8be7bc983bf6d48be98f6f8f91"
+  },
+  "limits": "Codec harness verification used small and scaled fixtures, not a rerun of the full historical 432-cell matrix. No macOS/ARM testing or CI changes."
+}

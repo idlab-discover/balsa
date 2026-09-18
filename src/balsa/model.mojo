@@ -1,6 +1,6 @@
 """Owned Treelite v4 fields. Wire booleans and strings retain their exact bytes.
 
-Field definitions follow the Treelite v4 specification; see docs/mvp-plan.md.
+Field definitions follow the Treelite v4 specification; see THIRD_PARTY_NOTICES.md.
 Only float32/float32 and float64/float64 are supported.
 """
 

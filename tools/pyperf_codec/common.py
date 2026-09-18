@@ -16,10 +16,10 @@ ENGINES = {
     "balsa-off": "Editable consuming API; semantic validation disabled",
     "balsa-borrow-on": "Editable borrowed-input API; serial semantic validation enabled",
     "balsa-borrow-off": "Editable borrowed-input API; semantic validation disabled",
-    "packed-on": "Experimental packed consuming API; serial semantic validation enabled",
-    "packed-off": "Experimental packed consuming API; semantic validation disabled",
+    "packed-on": "Packed consuming API; serial semantic validation enabled",
+    "packed-off": "Packed consuming API; semantic validation disabled",
     "packed-copy": "Preserved-byte copy; setup validated, no timed revalidation",
-    "balsa-default": "Editable consuming API; default four-worker validation policy",
+    "balsa-default": "Editable consuming API; explicit checked four-worker policy (legacy ID, not public defaults)",
 }
 
 

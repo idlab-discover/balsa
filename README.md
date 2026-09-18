@@ -125,9 +125,11 @@ For a quick CLI example:
 
 Regenerate the API reference with `pixi run -e docs docs`.
 
-See the [performance and completion report](docs/final-report.md) for the
-controlled Treelite comparison, validation-on/off results, experimental packed
-storage trade-offs, and remaining release decisions. The
+See the [historical performance report](docs/benchmarks/final-report.md) for the
+controlled Treelite comparison, validation-on/off results, early packed
+storage trade-offs. See [release status](docs/release-status.md) for current
+completion and remaining work, and [storage workloads](docs/benchmarks/storage-workload-2026-09-18.md)
+for larger trained forests, file I/O, conversion and memory measurements. The
 [pyperf harness](tools/pyperf_codec/README.md) documents reproduction and timing
 contracts.
 

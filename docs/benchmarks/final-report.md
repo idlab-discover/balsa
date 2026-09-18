@@ -1,4 +1,13 @@
-# Balsa: performance and completion assessment
+# Historical Balsa performance and completion assessment
+
+This is the **2026-09-15 pre-release assessment**, preserved with its original
+revision boundaries and findings. It is not the current release checklist.
+Since this run, 0.2.0 promoted packed storage, changed validation defaults,
+added CI and Conda packaging, and selected Apache-2.0 licensing. See
+[current release status](../release-status.md), [0.2 migration](../release-0.2.0.md),
+and [larger storage workloads](storage-workload-2026-09-18.md).
+Any “default”, “main”, “experimental”, or outstanding-item statements below
+refer to the historical revisions, not current HEAD.
 
 Report date: 2026-09-15. The format-only acceptance checks pass. Balsa is close
 to a first scoped release; remaining release housekeeping should be separated
@@ -117,7 +126,7 @@ user. It stores original tree payload bytes with an offset index, exposes
 read-only views, and supports an explicit copy to an editable model. Semantic
 validation reuses one scratch tree and currently runs serially. Packed saving
 emits preserved bytes without another semantic validation pass. See
-[packed storage](packed-storage.md) for the complete ownership and policy
+[packed storage](../packed-storage.md) for the complete ownership and policy
 contract.
 
 ## What the benchmark measures
@@ -185,7 +194,7 @@ classified as inconsistent/overlapping, even where a bootstrap interval alone
 excludes one. No failed jobs, reruns, or sample exclusions were needed.
 
 The reusable harness and full methodology are in
-[tools/pyperf_codec](../tools/pyperf_codec/README.md). Local raw evidence is in
+[tools/pyperf_codec](../../tools/pyperf_codec/README.md). Local raw evidence is in
 `benchmarking/final-2026-09-15/`: source snapshots, build/library/corpus hashes,
 preflight checks, schedule, per-cell pyperf JSON/logs, and analysis output. This
 directory is git-ignored and needs separate preservation when publishing the

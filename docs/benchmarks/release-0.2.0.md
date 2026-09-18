@@ -1,5 +1,10 @@
 # 0.2.0 public API benchmark
 
+Historical release measurements. The harness now defaults to `HEAD`; pass
+`--revision v0.2.0` to select the release source and worker. Use the matching
+compiler environment for historical reproduction. See the [storage study](storage-workload-2026-09-18.md)
+for larger trained models, file I/O, conversion and worker RSS.
+
 Median microseconds per call; five shuffled batches by default. Consuming decode
 includes the input copy and result destruction. Checked runs use one worker.
 Output compares copying packed bytes with serializing editable fields. File I/O,

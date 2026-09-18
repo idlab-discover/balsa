@@ -1,4 +1,4 @@
-"""Build pinned main/packed/native workers and a reproducible 16-shape corpus."""
+"""Build revision-selected editable/packed/native workers and a reproducible 16-shape corpus."""
 
 import argparse
 from datetime import datetime, timezone
@@ -68,14 +68,15 @@ def corpus(directory):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("directory", type=Path)
-    parser.add_argument("--main", default="fbba1fc")
-    parser.add_argument("--packed", default="e7f11c0")
+    parser.add_argument("--revision", default="HEAD", help="Commit/tag/branch for both workers (default: HEAD)")
+    parser.add_argument("--main", help="Override editable worker revision")
+    parser.add_argument("--packed", help="Override packed worker revision")
     args = parser.parse_args()
     directory = args.directory.resolve()
     directory.mkdir(parents=True, exist_ok=False)
     assert treelite.__version__ == "4.6.1"
     revisions = {label: checkout(revision, directory / (label + "-src"))
-                 for label, revision in [("main", args.main), ("packed", args.packed)]}
+                 for label, revision in [("main", args.main or args.revision), ("packed", args.packed or args.revision)]}
     for binary, label, source in [("balsa", "main", "validation_policy_worker.mojo"),
                                   ("packed", "packed", "packed_worker.mojo")]:
         snapshot = directory / (label + "-src")

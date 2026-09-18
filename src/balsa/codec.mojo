@@ -1,7 +1,7 @@
 """Native Treelite v4 binary checkpoint codec.
 
 Sequence follows the pinned specification and serializer listed in
- docs/mvp-plan.md. No Python or libtreelite runtime dependency.
+THIRD_PARTY_NOTICES.md. No Python or libtreelite runtime dependency.
 """
 
 from std.utils import Variant
