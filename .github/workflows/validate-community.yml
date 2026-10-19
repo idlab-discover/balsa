@@ -1,0 +1,53 @@
+name: Validate exact Balsa community recipe
+on:
+  push:
+    branches: [validation/balsa-recipe-mojo-1.1.0]
+permissions:
+  contents: read
+jobs:
+  recipe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: bfe2003
+      - uses: prefix-dev/setup-pixi@d3f436a425481402e6a95a1d1fc10331c708cd9e
+        with:
+          pixi-version: v0.80.0
+          environments: packaging
+          locked: true
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: Str-Gen/modular-community
+          ref: aff1703
+          path: community
+      - name: Build exact recipe with strict community channel order
+        run: |
+          pixi run --locked -e packaging rattler-build build --recipe community/recipes/balsa/recipe.yaml --output-dir build/community --channel-priority strict -c conda-forge -c https://conda.modular.com/max -c https://prefix.dev/modular-community
+      - name: Install from local output and declared channels in a clean workspace
+        shell: bash
+        run: |
+          install_dir=$(mktemp -d)
+          cat > "$install_dir/pixi.toml" <<TOML
+          [workspace]
+          name = "balsa-installed-consumer"
+          channels = ["file://$PWD/build/community", "conda-forge", "https://conda.modular.com/max", "https://prefix.dev/modular-community"]
+          channel-priority = "strict"
+          platforms = ["linux-64"]
+          [dependencies]
+          balsa = "==0.2.0"
+          gcc_linux-64 = "*"
+          TOML
+          cp community/recipes/balsa/test.mojo "$install_dir/test.mojo"
+          cd "$install_dir"
+          pixi install
+          pixi list
+          pixi run mojo --version
+          pixi run mojo run test.mojo
+          cp pixi.lock "$GITHUB_WORKSPACE/build/community/isolated-consumer.lock"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: exact-community-recipe-linux-64
+          path: build/community
