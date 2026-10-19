@@ -16,9 +16,12 @@ pixi run --locked -e packaging conda-build
 ```
 
 The supported platform is Linux x86-64. A C linker such as GCC is needed for
-consumer compilation. Mojo 1.0.0 and MAX core 26.5.0 come from the same stable
+consumer compilation. Mojo 1.1.0 and MAX core 26.6.0 come from the same stable
 channel; their version numbers intentionally differ. MAX core supplies parallel
 validation primitives; the Python framework packages are test-only dependencies.
+The [26.6 release announcement](https://www.modular.com/blog/modular-26-6-open-compiler-contributions-audio-generation-and-expanded-model-support)
+pairs MAX 26.6 with Mojo 1.1. The stable `max-core 26.6.0` package metadata
+requires exactly `mojo-compiler ==1.1.0`. Balsa has no `mojo-snappy` dependency.
 
 The CI workflow runs on Ubuntu 24.04 for pushes, pull requests and version tags.
 It uses pinned `setup-pixi`, checkout and artifact actions, installs locked
@@ -34,7 +37,7 @@ Performance benchmarks stay local because shared runners give noisy timings.
 imports Balsa without a source include path, constructs a model, roundtrips it
 through the public packed API, validates it, and converts it back for editing.
 
-The recipe pins Mojo compiler 1.0.0 and MAX core 26.5.0 for both compilation and
+The recipe pins Mojo compiler 1.1.0 and MAX core 26.6.0 for both compilation and
 installation: precompiled Mojo packages are tied to their toolchain. Rebuild
 with a new recipe build number when updating the compiler for the same Balsa
 version. No cross-platform claim is made. The CLI remains a source-build example;
@@ -50,7 +53,8 @@ SHA inside the released repository's own build recipe.
 
 Balsa uses Apache-2.0 without LLVM exceptions. The package includes its
 [license](../LICENSE) and the separate Treelite license and attribution.
-Conda build 1 adds this licensing metadata to version 0.2.0. The published
+Conda build 1 added this licensing metadata to version 0.2.0; build 2 rebuilds
+the same Balsa version for Mojo 1.1.0 and MAX core 26.6.0. The published
 `v0.2.0` tag predates the licensing commit; a community recipe must pin the
 subsequent licensed commit.
 
