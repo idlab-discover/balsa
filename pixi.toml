@@ -22,12 +22,13 @@ test-ownership = "bash tools/check_ownership.sh"
 test-package = { cmd = "mojo run -I build tests/test_defaults.mojo", depends-on = ["package"] }
 test = { depends-on = ["test-core", "test-frameworks", "test-packed", "test-defaults", "test-ownership"] }
 example = { cmd = "mojo run -I src examples/construction.mojo", depends-on = ["prepare"] }
-check = { depends-on = ["smoke", "package", "test", "example", "test-package"] }
+hello = "mojo run -I src examples/hello.mojo"
+check = { depends-on = ["hello", "smoke", "package", "test", "example", "test-package"] }
 fmt = "mojo format src examples tests"
 
 [dependencies]
-mojo = ">=1.0.0,<2"
-max-core = "==26.5.0"
+mojo = "==1.1.0"
+max-core = "==26.6.0"
 
 [feature.oracle.dependencies]
 python = "3.12.*"

@@ -14,7 +14,7 @@ See [third-party notices](THIRD_PARTY_NOTICES.md) for Treelite attribution.
 ## Build
 
 Requires Linux x86-64, Pixi and a C linker such as GCC. The locked environment
-provides Mojo 1.0.0 and MAX core 26.5.0.
+provides Mojo 1.1.0 and MAX core 26.6.0.
 
 ```sh
 pixi install --locked
