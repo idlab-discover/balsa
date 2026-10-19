@@ -1,4 +1,4 @@
-"""Render Balsa's root exports from Mojo 1.0 `mojo doc` JSON.
+"""Render Balsa's root exports from `mojo doc` JSON.
 
 The compiler owns signatures and docstrings. Imports in __init__.mojo own the
 public surface; internal codec/wire helpers are deliberately excluded.

@@ -48,13 +48,13 @@ ownership and compatibility conventions.
 Defined in `balsa.packed`.
 
 ```mojo
-def decode[dtype: DType = DType.float32](var data: List[UInt8], limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> PackedModel[dtype]
+def decode[dtype: DType = .float32](var data: List[UInt8], limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> PackedModel[dtype]
 ```
 
 Own checkpoint bytes with bounds checks; semantic validation is opt-in.
 
 ```mojo
-def decode[origin: ImmOrigin, //, dtype: DType = DType.float32](data: Span[UInt8, origin], limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> PackedModel[dtype]
+def decode[origin: ImmOrigin, //, dtype: DType = .float32](data: Span[UInt8, origin], limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> PackedModel[dtype]
 ```
 
 Copy borrowed input once so the packed result owns its bytes.
@@ -64,7 +64,7 @@ Copy borrowed input once so the packed result owns its bytes.
 Defined in `balsa.packed`.
 
 ```mojo
-def load[dtype: DType = DType.float32](path: String, limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> PackedModel[dtype]
+def load[dtype: DType = .float32](path: String, limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> PackedModel[dtype]
 ```
 
 Load directly into owned packed storage; no editable forest is allocated.
@@ -185,7 +185,7 @@ representation currently uses one worker. No editable forest is built.
 Defined in `balsa.packed`.
 
 ```mojo
-comptime AnyPackedModel = Variant[PackedModel[DType.float32], PackedModel[DType.float64]]
+comptime AnyPackedModel = Variant[PackedModel[.float32], PackedModel[.float64]]
 ```
 
 ## `encode`
@@ -199,7 +199,7 @@ def encode[dtype: DType](model: PackedModel[dtype]) -> List[UInt8]
 Copy retained serialization without semantic revalidation.
 
 ```mojo
-def encode(model: Variant[PackedModel[DType.float32], PackedModel[DType.float64]]) -> List[UInt8]
+def encode(model: Variant[PackedModel[.float32], PackedModel[.float64]]) -> List[UInt8]
 ```
 
 Copy retained serialization without semantic revalidation.
@@ -211,7 +211,7 @@ def encode[dtype: DType](model: Model[dtype], limits: Limits = Limits(Int(671088
 Serialize editable fields; pass enabled=True options for semantic checks.
 
 ```mojo
-def encode(model: Variant[Model[DType.float32], Model[DType.float64]], limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> List[UInt8]
+def encode(model: Variant[Model[.float32], Model[.float64]], limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> List[UInt8]
 ```
 
 Serialize editable fields; pass enabled=True options for semantic checks.
@@ -227,7 +227,7 @@ def save[dtype: DType](model: PackedModel[dtype], path: String) raises
 Copy retained serialization without semantic revalidation.
 
 ```mojo
-def save(model: Variant[PackedModel[DType.float32], PackedModel[DType.float64]], path: String) raises
+def save(model: Variant[PackedModel[.float32], PackedModel[.float64]], path: String) raises
 ```
 
 Copy retained serialization without semantic revalidation.
@@ -239,7 +239,7 @@ def save[dtype: DType](model: Model[dtype], path: String, limits: Limits = Limit
 Serialize editable fields; pass enabled=True options for semantic checks.
 
 ```mojo
-def save(model: Variant[Model[DType.float32], Model[DType.float64]], path: String, limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises
+def save(model: Variant[Model[.float32], Model[.float64]], path: String, limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises
 ```
 
 Serialize editable fields; pass enabled=True options for semantic checks.
@@ -249,7 +249,7 @@ Serialize editable fields; pass enabled=True options for semantic checks.
 Defined in `balsa.codec`.
 
 ```mojo
-def decode[dtype: DType = DType.float32](var data: List[UInt8], limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> Model[dtype]
+def decode[dtype: DType = .float32](var data: List[UInt8], limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> Model[dtype]
 ```
 
 Decode editable fields; automatic semantic validation is opt-in.
@@ -258,7 +258,7 @@ Wire bounds, format checks and parser limits always apply. Precision must
 match the file tags. A skipped validation pass can be run with validate().
 
 ```mojo
-def decode[origin: ImmOrigin, //, dtype: DType = DType.float32](data: Span[UInt8, origin], limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> Model[dtype]
+def decode[origin: ImmOrigin, //, dtype: DType = .float32](data: Span[UInt8, origin], limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> Model[dtype]
 ```
 
 Borrow checkpoint bytes and return independently owned model fields.
@@ -282,7 +282,7 @@ Input bytes are borrowed only for this call. All parser checks still apply.
 Defined in `balsa.codec`.
 
 ```mojo
-def load[dtype: DType = DType.float32](path: String, limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> Model[dtype]
+def load[dtype: DType = .float32](path: String, limits: Limits = Limits(Int(67108864), Int(8388608), Int(100000), Int(1000000), Int(1024)), options: ValidationOptions = ValidationOptions(Int(4), Int(4096), Int(65536), enabled=False)) raises -> Model[dtype]
 ```
 
 Load a checkpoint of the specified precision (float32 by default).
@@ -334,7 +334,7 @@ Inspect precision directly from borrowed checkpoint bytes.
 Defined in `balsa.codec`.
 
 ```mojo
-comptime AnyModel = Variant[Model[DType.float32], Model[DType.float64]]
+comptime AnyModel = Variant[Model[.float32], Model[.float64]]
 ```
 
 Owned model with discovered float32 or float64 precision; accepted by encode and save.
@@ -676,7 +676,7 @@ Traits: `AnyType`, `Copyable`, `Deinitable`, `Movable`.
 Defined in `balsa.builder`.
 
 ```mojo
-struct ModelBuilder[dtype: DType = DType.float32]
+struct ModelBuilder[dtype: DType = .float32]
 ```
 
 Build a model with derived tree/target counts and default scalar metadata.
@@ -716,7 +716,7 @@ Consume the builder, validating the model unless options disables it.
 Defined in `balsa.builder`.
 
 ```mojo
-struct TreeBuilder[dtype: DType = DType.float32]
+struct TreeBuilder[dtype: DType = .float32]
 ```
 
 Fill dense node IDs in any order; node 0 is the root.
