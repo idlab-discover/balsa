@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: bfe2003
+          ref: b32c4a3814c35cd77634ea207da0fa1e03aeb31e
       - uses: prefix-dev/setup-pixi@d3f436a425481402e6a95a1d1fc10331c708cd9e
         with:
           pixi-version: v0.80.0
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: Str-Gen/modular-community
-          ref: aff1703
+          ref: bb43015cd583d1c94d609293a6f6e91184ddec90
           path: community
       - name: Build exact recipe with strict community channel order
         run: |
