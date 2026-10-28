@@ -1,7 +1,7 @@
 """Bounded little-endian primitives with byte-aligned bulk transfers."""
 
 from std.memory import unsafe_memcpy
-from std.sys.info import is_little_endian
+from std.sys.info import Endian
 
 from .model import Extension
 
@@ -135,7 +135,7 @@ struct Reader[origin: Origin[mut=False]](Movable):
     def scalar[dtype: DType](mut self) raises -> SIMD[dtype, 1]:
         comptime n = width[dtype]()
         self.require(n)
-        comptime if is_little_endian() or n == 1:
+        comptime if Endian.native() == .little or n == 1:
             var value = (
                 self.data.unsafe_ptr()
                 .unsafe_offset(self.pos)
@@ -182,7 +182,7 @@ struct Reader[origin: Origin[mut=False]](Movable):
             self.fail("array element limit exceeded")
         if count > UInt64((len(self.data) - self.pos) // n):
             self.fail("truncated array")
-        comptime if is_little_endian() or n == 1:
+        comptime if Endian.native() == .little or n == 1:
             # Extent was proved by division before multiplication/allocation.
             # Copy bytes: the wire payload need not have typed alignment.
             result.resize(unsafe_uninit_length=Int(count))
@@ -287,7 +287,7 @@ struct Writer[count_only: Bool = False, fixed_size: Bool = False](Movable):
     def store_scalar[dtype: DType](mut self, start: Int, value: SIMD[dtype, 1]):
         """Emit into an extent already checked by grow or array sizing."""
         comptime n = width[dtype]()
-        comptime if is_little_endian() or n == 1:
+        comptime if Endian.native() == .little or n == 1:
             self.data.unsafe_ptr().unsafe_offset(start).unsafe_bitcast[
                 SIMD[dtype, 1]
             ]().unsafe_store[alignment=1](value)
@@ -314,7 +314,7 @@ struct Writer[count_only: Bool = False, fixed_size: Bool = False](Movable):
         comptime if Self.count_only:
             self.counted += self.array_extent[dtype](len(values))
             return
-        elif Self.fixed_size and is_little_endian():
+        elif Self.fixed_size and Endian.native() == .little:
             var extent = self.array_extent[dtype](len(values))
             var start = self.size()
             self.grow(extent)
@@ -332,7 +332,7 @@ struct Writer[count_only: Bool = False, fixed_size: Bool = False](Movable):
             raise Error("Encoded checkpoint exceeds byte limit")
         comptime if Self.count_only:
             self.grow(len(values) * n)
-        elif is_little_endian() or n == 1:
+        elif Endian.native() == .little or n == 1:
             var start = self.size()
             var byte_count = len(values) * n
             self.grow(byte_count)
