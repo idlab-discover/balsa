@@ -16,7 +16,7 @@ pixi run --locked -e packaging conda-build
 ```
 
 The supported platform is Linux x86-64. A C linker such as GCC is needed for
-consumer compilation. Mojo 1.0.0 and MAX core 26.5.0 come from the same stable
+consumer compilation. Mojo 1.1.0 and MAX core 26.6.0 come from the same stable
 channel; their version numbers intentionally differ. MAX core supplies parallel
 validation primitives; the Python framework packages are test-only dependencies.
 
@@ -34,7 +34,7 @@ Performance benchmarks stay local because shared runners give noisy timings.
 imports Balsa without a source include path, constructs a model, roundtrips it
 through the public packed API, validates it, and converts it back for editing.
 
-The recipe pins Mojo compiler 1.0.0 and MAX core 26.5.0 for both compilation and
+The recipe pins Mojo compiler 1.1.0 and MAX core 26.6.0 for both compilation and
 installation: precompiled Mojo packages are tied to their toolchain. Rebuild
 with a new recipe build number when updating the compiler for the same Balsa
 version. No cross-platform claim is made. The CLI remains a source-build example;

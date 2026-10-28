@@ -26,8 +26,8 @@ check = { depends-on = ["smoke", "package", "test", "example", "test-package"] }
 fmt = "mojo format src examples tests"
 
 [dependencies]
-mojo = ">=1.0.0,<2"
-max-core = "==26.5.0"
+mojo = "==1.1.0"
+max-core = "==26.6.0"
 
 [feature.oracle.dependencies]
 python = "3.12.*"
