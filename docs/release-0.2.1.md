@@ -13,7 +13,8 @@ see the [0.2 migration guide](release-0.2.0.md) for those contracts.
 | 0.2.0 build 0 | 1.0.0 | 26.5.0 | `v0.2.0` (`3547975`) | CI artifact |
 | 0.2.0 build 1 | 1.0.0 | 26.5.0 | `ccd68c6` (Apache-2.0 licensing) | CI artifact |
 | 0.2.0 build 2 | 1.1.0 | 26.6.0 | `b32c4a3` | CI artifact |
-| 0.2.1 build 0 | 1.2.0 | 26.7.0 | `v0.2.1` | modular-community (pending review) |
+| 0.2.1 build 0 | 1.2.0 | 26.7.0 | `v0.2.1` | GitHub release; also packaged a stray empty `share/max/firstActivation` |
+| 0.2.1 build 1 | 1.2.0 | 26.7.0 | `v0.2.1` source, recipe packages only `lib/mojo/balsa.mojoc` | CI artifact |
 
 From 0.2.1 on, each compiler migration gets a new library version and tag. A
 build number increment is reserved for recipe-only rebuilds of the same source.
