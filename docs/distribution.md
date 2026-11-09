@@ -72,9 +72,9 @@ community channel. See the table in the [0.2.1 release notes](release-0.2.1.md).
    draft GitHub release with the notes, `.conda` file, checksum file and
    source-commit record.
 3. Review the draft release and publish it.
-4. Update `recipes/balsa/recipe.yaml` and `recipes/balsa/test.mojo` in a fork
+4. Update `recipes/balsa/recipe.yaml` in a fork
    of `modular/modular-community`: version, compiler pins, build number 0 and
-   the tag's commit as `rev`. Run the **Validate community recipe** workflow
+   the tag's commit as `rev`. The recipe tests the tagged `conda.recipe/test.mojo`. Run the **Validate community recipe** workflow
    (manual dispatch) with the fork's repository and commit. It builds the exact
    recipe with upstream's Rattler-Build version, variants and channel order and
    installs the result into a clean workspace. Then open the PR with the
