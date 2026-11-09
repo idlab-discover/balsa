@@ -45,6 +45,13 @@ jobs:
         run: |
           set -euo pipefail
           version="$(grep -E '^  version: "' recipes/balsa/recipe.yaml | cut -d'"' -f2)"
+          rev="$(grep -E '^ +rev: [0-9a-f]{40}$' recipes/balsa/recipe.yaml | awk '{print $2}')"
+          [ -n "$rev" ] || { echo "::error::recipe has no full-SHA rev"; exit 1; }
+          # The recipe tests the tagged source's conda.recipe/test.mojo; use the same file.
+          src=$(mktemp -d)
+          git init -q "$src"
+          git -C "$src" fetch -q --depth=1 https://github.com/idlab-discover/balsa.git "$rev"
+          git -C "$src" show "FETCH_HEAD:conda.recipe/test.mojo" > "$src/test.mojo"
           install_dir=$(mktemp -d)
           cat > "$install_dir/pixi.toml" <<TOML
           [workspace]
@@ -56,7 +63,7 @@ jobs:
           balsa = "==$version"
           gcc_linux-64 = "*"
           TOML
-          cp recipes/balsa/test.mojo "$install_dir/test.mojo"
+          cp "$src/test.mojo" "$install_dir/test.mojo"
           cd "$install_dir"
           pixi install
           pixi list
