@@ -17,8 +17,11 @@ source:
     - THIRD_PARTY_NOTICES.md
 
 build:
-  number: 0
+  number: 1
   skip: not linux or not x86_64
+  # Package only the library; MAX activation writes share/max/firstActivation into the prefix.
+  files:
+    - lib/mojo/balsa.mojoc
   script:
     - mkdir -p "$PREFIX/lib/mojo"
     - mojo precompile -I "$PREFIX/lib/mojo" src/balsa -o "$PREFIX/lib/mojo/balsa.mojoc"
