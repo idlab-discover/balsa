@@ -872,7 +872,7 @@ Reject limits outside the inclusive range 1 through 2^30.
 Defined in `balsa`.
 
 ```mojo
-comptime __version__ = "0.2.0"
+comptime __version__ = "0.2.1"
 ```
 
 Balsa library version, independent of the Treelite checkpoint version.

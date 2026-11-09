@@ -30,7 +30,7 @@ from .validation import validate, ValidationOptions
 from .wire import Limits
 
 
-comptime __version__ = "0.2.0"
+comptime __version__ = "0.2.1"
 """Balsa library version, independent of the Treelite checkpoint version."""
 
 

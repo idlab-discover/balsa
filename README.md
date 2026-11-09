@@ -120,6 +120,7 @@ For a quick CLI example:
 - [Construction example](examples/construction.mojo) — build and save a model.
 - [Packed storage](docs/packed-storage.md) — ownership and validation details.
 - [0.2 migration guide](docs/release-0.2.0.md) — changed defaults and compatibility.
+- [0.2.1 release notes](docs/release-0.2.1.md) — Mojo 1.2.0 migration and build history.
 - [Release benchmarks](docs/benchmarks/release-0.2.0.md) — measurements and limits.
 - [Packaging and CI](docs/distribution.md) — builds, checks and distribution.
 
