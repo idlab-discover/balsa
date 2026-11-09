@@ -2,10 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [main, 'feature/**', 'release/**']
-    tags: ['v*']
+    # Tags run through release.yml, which calls this workflow.
+    branches: ["**"]
   pull_request:
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -50,8 +51,17 @@ jobs:
           locked: true
       - name: Build Conda package and test an isolated installation
         run: pixi run --locked -e packaging conda-build
+      - name: Record package checksums and source revision
+        shell: bash
+        run: |
+          cd build/conda/linux-64
+          sha256sum ./*.conda > SHA256SUMS
+          git rev-parse HEAD > SOURCE_COMMIT
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: balsa-conda-linux-64
-          path: build/conda/linux-64/*.conda
+          path: |
+            build/conda/linux-64/*.conda
+            build/conda/linux-64/SHA256SUMS
+            build/conda/linux-64/SOURCE_COMMIT
           if-no-files-found: error

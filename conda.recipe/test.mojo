@@ -12,7 +12,7 @@ from balsa import (
 
 
 def main() raises:
-    assert_equal(version(), "0.2.0")
+    assert_equal(version(), "0.2.1")
     var builder = ModelBuilder(1)
     var tree = TreeBuilder(1)
     tree.leaf(0, 2.5)

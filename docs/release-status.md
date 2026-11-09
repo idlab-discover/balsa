@@ -1,6 +1,6 @@
 # Release status
 
-As of 2026-09-18, Balsa 0.2.0 has completed its scoped Treelite v4 checkpoint
+As of 2026-09-18, Balsa 0.2.0 completed its scoped Treelite v4 checkpoint
 milestone on Linux x86-64: reading, inspection, editing, validation and writing,
 with float32/float32 and float64/float64 models. Compatibility is tested against
 Treelite 4.6.1. This is not a claim of full Treelite API or producer-version parity.
@@ -22,10 +22,10 @@ outstanding tasks. Its performance results remain tied to its named revisions.
 
 ## Remaining release and compatibility work
 
-- Confirm channel publication separately. A local recipe and CI artifact do not
-  establish that a package is available to install from modular-community.
-  Follow the [distribution instructions](distribution.md); use a licensed commit
-  for a submission because the original v0.2.0 tag predates the licensing change.
+- Balsa 0.2.1 (Mojo 1.2.0, MAX core 26.7.0) is the first community-channel
+  candidate. Confirm channel publication separately: a local recipe, CI artifact
+  or GitHub release does not establish that a package is installable from
+  modular-community. Follow the [release sequence](distribution.md#release-sequence).
 - Native macOS ARM measurements and installation tests precede any platform
   support claim. Linux ARM is a separate target. Neither is covered by Linux
   x86-64 measurements or the current recipe/CI.

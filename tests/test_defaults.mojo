@@ -50,7 +50,7 @@ def check_precision[dtype: DType](path: String) raises:
 
 
 def test_public_storage_defaults() raises:
-    assert_equal(version(), "0.2.0")
+    assert_equal(version(), "0.2.1")
     assert_equal(ValidationOptions().enabled, False)
     check_precision[DType.float32]("tests/fixtures/float32_leaf.tl")
     check_precision[DType.float64]("tests/fixtures/float64_leaf.tl")

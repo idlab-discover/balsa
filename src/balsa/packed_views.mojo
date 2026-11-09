@@ -1,6 +1,6 @@
 """Read-only, origin-tracked views over checked little-endian checkpoint bytes."""
 
-from std.sys.info import is_little_endian
+from std.sys.info import Endian
 from .wire import Reader, Limits, width
 
 
@@ -22,7 +22,7 @@ struct PackedArray[dtype: DType, origin: Origin[mut=False]](
         if index < 0 or index >= len(self):
             raise Error("Packed array index out of bounds")
         comptime n = width[Self.dtype]()
-        comptime if is_little_endian() or n == 1:
+        comptime if Endian.native() == .little or n == 1:
             return (
                 self._bytes.unsafe_ptr()
                 .unsafe_offset(index * n)
